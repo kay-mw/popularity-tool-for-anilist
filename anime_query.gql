@@ -1,0 +1,18 @@
+query ($page: Int, $id_in: [Int]) {
+  Page (page: $page) {
+    pageInfo {
+      total
+      currentPage
+      lastPage
+      hasNextPage
+      perPage
+    }
+    media (id_in: $id_in) {
+      id
+      averageScore
+      title {
+        romaji
+      }
+    }
+  }
+}
