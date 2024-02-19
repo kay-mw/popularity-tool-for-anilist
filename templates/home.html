@@ -1,43 +1,33 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>
             How Popular is Your Anime Taste?
         </title>
-        <style>
-            h1 {
-                font-size: 40px;
-                font-family: serif;
-                font-weight: normal;
-            }
-            #instructions {
-                font-size: 20px;
-                font-family: serif;
-                font-weight: normal;
-            }
-            #container {
-                max-width: 720px;
-                margin: 0 auto 0 auto;
-            }
-            #images {
-                object-fit: cover;
-                width: 885px;
-            }
-        </style>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     </head>
     <body>
-        <div id="container">
-            <h1>Instructions:</h1>
-                <p id="instructions">
+        <div class="container">
+            <form class="text-center t-2 mt-4">
+                Enter your AniList ID: <input type="text" name="anilist_id">
+            </form>
+            <div class="text-center">
+            <button class="badge rounded-pill bg-secondary"> Submit </button>
+            </div>
+            <br>
+            <h3>Instructions:</h3>
+                <p class="lead">
                     Step 1: go to your AniList profile.
                     <br>
                     Step 2: right-click on your profile image and select "Open Image in New Tab".
                     <br>
-                        <img src="https://i.imgur.com/J4SHQFL.png">
+                        <img class="img-fluid" src="https://i.imgur.com/J4SHQFL.png">
                     <br>
                     Step 3: in the image tab that you opened, look at the URL to find your unique ID number.
                     <br>
-                        <img id="images" src="https://i.imgur.com/bl3ca1L.png">
+                        <img class="img-fluid" src="https://i.imgur.com/bl3ca1L.png", width=885px>
                 </p>
         </div>
     </body>
