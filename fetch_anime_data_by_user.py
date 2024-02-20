@@ -1,12 +1,12 @@
-import requests
-import pandas as pd
-import time
-
 import os
+import time
+from urllib.parse import quote_plus
+
+import pandas as pd
+import requests
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, inspect, exc
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-from urllib.parse import quote_plus
 
 
 def load_query(file_name):
@@ -15,8 +15,22 @@ def load_query(file_name):
         return file.read()
 
 
+def fetch_anilist_data(query, variables):
+    try:
+        response = requests.post(URL, json={'query': query, 'variables': variables}, timeout=10)
+        response.raise_for_status()
+        global response_header
+        response_header = response.headers
+        return response.json()
+    except requests.exceptions.Timeout:
+        print("Request timed out.")
+        return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error in request: {e}")
+        return None
+
+
 QUERY_USER = load_query("user_query.gql")
-print(QUERY_USER)
 
 anilist_id = 6136704
 
@@ -27,23 +41,20 @@ variables_user = {
 
 URL = 'https://graphql.anilist.co'
 
-response = requests.post(URL, json={'query': QUERY_USER, 'variables': variables_user}, timeout=10)
-json_response = response.json()
+json_response = fetch_anilist_data(QUERY_USER, variables_user)
 
-print(json_response)
-
-# print(response.headers)
-# print(response.status_code)
-# print(response.reason)
-
-user_score = pd.json_normalize(json_response, record_path=['data', 'Page', 'users', 'statistics', 'anime', 'scores'],
+user_score = pd.json_normalize(json_response,
+                               record_path=['data', 'Page', 'users', 'statistics', 'anime', 'scores'],
                                meta=[['data', 'Page', 'users', 'id']])
 
 user_score = user_score.explode('mediaIds', ignore_index=True)
 user_score['mediaIds'] = user_score['mediaIds'].astype(int)
 
 user_score.rename(columns={
-    'mediaIds': 'anime_id', 'data.Page.users.id': 'user_id', 'id': 'anime_id', 'score': 'user_score'
+    'mediaIds': 'anime_id',
+    'data.Page.users.id': 'user_id',
+    'id': 'anime_id',
+    'score': 'user_score'
 }, inplace=True)
 
 print(user_score.to_string())
@@ -53,13 +64,13 @@ print(user_score.to_string())
 user_info = pd.json_normalize(json_response, record_path=['data', 'Page', 'users'])
 user_info.drop('statistics.anime.scores', axis=1, inplace=True)
 
-headers_dict = dict(response.headers)
-headers_dict = headers_dict['Date']
+response_header = response_header['Date']
+response_header = pd.Series(response_header)
 
-headers_dict = pd.Series(headers_dict)
-
-user_info = pd.concat([user_info, headers_dict], axis=1)
-user_info.rename(columns={0: 'request_date', 'id': 'user_id', 'name': 'user_name'}, inplace=True)
+user_info = pd.concat([user_info, response_header], axis=1)
+user_info.rename(columns={0: 'request_date',
+                          'id': 'user_id',
+                          'name': 'user_name'}, inplace=True)
 
 user_info['request_date'] = pd.to_datetime(user_info['request_date'])
 
@@ -81,23 +92,21 @@ URL = 'https://graphql.anilist.co'
 anime_info = pd.DataFrame()
 
 while True:
-    response_ids = requests.post(URL, json={'query': QUERY_ANIME, 'variables': variables_anime}, timeout=10)
-    json_response_ids = response_ids.json()
-    print(response_ids.reason)
-    print(json_response_ids)
+    response_ids = fetch_anilist_data(QUERY_ANIME, variables_anime)
+    print("Fetching anime info...")
     time.sleep(5)
 
-    page_df = pd.json_normalize(json_response_ids, record_path=['data', 'Page', 'media'])
+    page_df = pd.json_normalize(response_ids, record_path=['data', 'Page', 'media'])
     anime_info = pd.concat([anime_info, page_df], ignore_index=True)
 
-    if not json_response_ids['data']['Page']['pageInfo']['hasNextPage']:
+    if not response_ids['data']['Page']['pageInfo']['hasNextPage']:
         break
 
     variables_anime['page'] += 1
 
-anime_info.rename(columns={
-    'averageScore': 'average_score', 'title.romaji': 'title_romaji', 'id': 'anime_id'
-}, inplace=True)
+anime_info.rename(columns={'averageScore': 'average_score',
+                           'title.romaji': 'title_romaji',
+                           'id': 'anime_id'}, inplace=True)
 
 print(anime_info.to_string())
 

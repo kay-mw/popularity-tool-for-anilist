@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,12 +10,13 @@
     </head>
     <body>
         <div class="container">
-            <form class="text-center t-2 mt-4">
-                Enter your AniList ID: <input type="text" name="anilist_id">
+            <form method="post">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-lg">AniList ID:</span>
+                      <input type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" name="anilist_id">
+                      <input type="submit" value="Submit">
+                </div>
             </form>
-            <div class="text-center">
-            <button class="badge rounded-pill bg-secondary"> Submit </button>
-            </div>
             <br>
             <h3>Instructions:</h3>
                 <p class="lead">
