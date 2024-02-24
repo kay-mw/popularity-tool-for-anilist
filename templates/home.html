@@ -1,35 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+        />
+        <style>
+            .container {
+                width: 50%;
+                margin-top: 10px;
+            }
+            .span {
+                font-size: larger;
+                font-weight: bold;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-image: radial-gradient(circle 897px at 9% 80.3%,  rgba(55,60,245,1) 0%, rgba(234,161,15,0.90) 100.2%);
+            }
+            .br {
+                margin: 20px;
+            }
+            .box {
+                position: relative;
+                background-color: #00DBDE;
+                background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
+                padding: 2px;
+            }
+            .holder {
+                width: auto;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                display: inline-block;
+            }
+            .img1 {
+                width: 72%;
+            }
+            .img2 {
+                scaleY(2);
+            }
+            .line-height {
+                line-height: 200%;
+            }
+            .instructionsh {
+                margin-bottom: 5px;
+            }
+        </style>
         <title>
             How Popular is Your Anime Taste?
         </title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     </head>
     <body>
         <div class="container">
-            <form method="post">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-lg">AniList ID:</span>
-                      <input type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" name="anilist_id">
-                      <input type="submit" value="Submit">
-                </div>
+            <form method="POST" action="/" >
+                <span class="span">AniList ID:</span>
+                <br class="br">
+                  <input type="text" aria-label="id-text-input" name="anilist_id">
+                  <input type="submit" value="Submit">
             </form>
-            <br>
-            <h3>Instructions:</h3>
-                <p class="lead">
-                    Step 1: go to your AniList profile.
-                    <br>
-                    Step 2: right-click on your profile image and select "Open Image in New Tab".
-                    <br>
-                        <img class="img-fluid" src="https://i.imgur.com/J4SHQFL.png">
-                    <br>
-                    Step 3: in the image tab that you opened, look at the URL to find your unique ID number.
-                    <br>
-                        <img class="img-fluid" src="https://i.imgur.com/bl3ca1L.png", width=885px>
-                </p>
+            <div class="line-height">
+                <h3 class="instructionsh">Instructions:</h3>
+                <li>Go to your AniList profile.</li>
+                <li>Right-click on your profile image and select "Open Image in New Tab".</li>
+                    <div class="holder">
+                    <img class="box img1" src="../static/showcase_click.png" alt="showcasing how to open image">
+                    </div>
+                <li>In the image tab that you opened, look at the URL to find your unique ID number.</li>
+                    <div clas="holder">
+                    <img class="box img2" src="../static/showcase_url.png" alt="showcasing anilist url bar">
+                    </div>
+            </div>
         </div>
     </body>
 </html>

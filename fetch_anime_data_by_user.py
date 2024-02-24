@@ -1,6 +1,7 @@
 import os
 import time
 from urllib.parse import quote_plus
+from pathlib import Path
 
 import pandas as pd
 import requests
@@ -32,7 +33,9 @@ def fetch_anilist_data(query, variables):
 
 QUERY_USER = load_query("user_query.gql")
 
-anilist_id = 6136704
+anilist_id = Path('anilist_id.txt').read_text()
+anilist_id = anilist_id.replace('"', '')
+anilist_id = int(anilist_id)
 
 variables_user = {
     "page": 1,

@@ -1,17 +1,30 @@
-from flask import Flask, render_template, request
-from fetch_anime_data_by_user import fetch_data_for_user
+from flask import Flask, render_template, request, redirect, url_for
+import jsonpickle
 
 app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
-@app.route('/fetch_data', methods=['POST'])
-def fetch_data():
-    user_id = request.form['user_id']
-    fetch_data_for_user(user_id)
-    return render_template('result.html', user_id=user_id)
+def set_anilist_id(anilist_id):
+    with open('anilist_id.txt', 'w') as file:
+        file.write(jsonpickle.encode(anilist_id))
+
+
+def get_anilist_id():
+    try:
+        with open('anilist_id.txt', 'r') as file:
+            return jsonpickle.decode(file.read())
+    except FileNotFoundError:
+        return None
+
+
+@app.route("/", methods=['GET', 'POST'])
+def anilist():
+    if request.method == 'POST':
+        anilist_id = request.form.get('anilist_id')
+        set_anilist_id(anilist_id)
+        return redirect(url_for('anilist'))
+    return render_template('home.html')
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
