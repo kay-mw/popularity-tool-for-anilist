@@ -5,7 +5,7 @@ from urllib.parse import quote_plus
 import pandas as pd
 import requests
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, inspect, exc
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
 
@@ -134,11 +134,10 @@ def upload_table(primary_key, table_name, df, identifier):
                     f"SELECT {primary_key} FROM {table_name} WHERE {primary_key} IN ({identity})", con=connection
                 )[primary_key].tolist()
 
-                new_rows = df[~df[primary_key].isin(existing_values)]
-                new_rows.to_sql(table_name, connection, if_exists='append', index=False)
+                query = f"DELETE FROM {table_name} WHERE {primary_key}={existing_values}"
+                connection.execute(text(query))
 
-                existing_rows = df[df[primary_key].isin(existing_values)]
-                existing_rows.to_sql(table_name, connection, if_exists='replace', index=False)
+                df.to_sql(table_name, con=connection, if_exists='append', index=False)
         else:
             existing_values = pd.read_sql(
                 f"SELECT {primary_key} FROM {table_name} WHERE {primary_key} = {identifier}", con=connection
@@ -148,9 +147,9 @@ def upload_table(primary_key, table_name, df, identifier):
             new_rows.to_sql(table_name, connection, if_exists='append', index=False)
 
             existing_rows = df[df[primary_key].isin(existing_values)]
-            existing_rows.to_sql(table_name, connection, if_exists='replace', index=False)
+            existing_rows.to_sql(table_name, connection, if_exists='append', index=False)
 
 
 upload_table("anime_id", "anime_info", anime_info, id_list)
-upload_table("user_id", "user_score", user_score, 6248047)
-upload_table("user_id", "user_info", user_info, 6248047)
+# upload_table("user_id", "user_score", user_score, 6248047)
+# upload_table("user_id", "user_info", user_info, 6248047)
