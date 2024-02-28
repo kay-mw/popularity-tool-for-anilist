@@ -127,12 +127,19 @@ def fetch_data(anilist_id):
 
             df.to_sql("temp_table", con=connection, if_exists="replace")
 
-            query = f"MERGE {table_name} AS target USING temp_table AS source ON source.{primary_key} = target.{primary_key} WHEN NOT MATCHED BY target THEN INSERT ({primary_key}, {column_1}, {column_2}) VALUES (source.{primary_key}, source.{column_1}, source.{column_2}) WHEN MATCHED THEN UPDATE SET target.{primary_key} = source.{primary_key}, target.{column_1} = source.{column_1}, target.{column_2} = source.{column_2};"
+            query = (f"MERGE {table_name} AS target USING temp_table AS source "
+                     f"ON source.{primary_key} = target.{primary_key} "
+                     f"WHEN NOT MATCHED BY target THEN INSERT ({primary_key}, {column_1}, {column_2}) "
+                     f"VALUES (source.{primary_key}, source.{column_1}, source.{column_2}) "
+                     f"WHEN MATCHED THEN UPDATE "
+                     f"SET target.{primary_key} = source.{primary_key}, "
+                     f"target.{column_1} = source.{column_1}, "
+                     f"target.{column_2} = source.{column_2};")
             print(query)
             connection.execute(text(query))
             connection.commit()
 
     upload_table("anime_id", "anime_info", anime_info, "average_score", "title_romaji")
-    upload_table("user_id", "user_score", user_score, "anime_id", "user_score")
+    upload_table("anime_id", "user_score", user_score, "user_id", "user_score")
     upload_table("user_id", "user_info", user_info, "user_name", "request_date")
 
