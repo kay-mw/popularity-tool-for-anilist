@@ -35,7 +35,7 @@ query_user = load_query("user_query.gql")
 
 variables_user = {
     "page": 1,
-    "id": 6248047
+    "id": 6136704
 }
 
 url = 'https://graphql.anilist.co'
@@ -123,33 +123,22 @@ session = session()
 df_list = [anime_info, user_info, user_score]
 table_names = ['anime_info', 'user_info', 'user_score']
 
+# anime_info.to_sql('anime_info', engine, if_exists='replace')
+# user_score.to_sql('user_score', engine, if_exists='replace')
+# user_info.to_sql('user_info', engine, if_exists='replace')
 
-def upload_table(primary_key, table_name, df, identifier):
+
+def upload_table(primary_key, table_name, df, column_1, column_2):
     with engine.connect() as connection:
         print(f"Uploading {table_name} to Azure SQL Database...")
 
-        if table_name == "anime_info":
-            for identity in identifier:
-                existing_values = pd.read_sql(
-                    f"SELECT {primary_key} FROM {table_name} WHERE {primary_key} IN ({identity})", con=connection
-                )[primary_key].tolist()
+        df.to_sql("temp_table", con=connection, if_exists="replace")
 
-                query = f"DELETE FROM {table_name} WHERE {primary_key}={existing_values}"
-                connection.execute(text(query))
-
-                df.to_sql(table_name, con=connection, if_exists='append', index=False)
-        else:
-            existing_values = pd.read_sql(
-                f"SELECT {primary_key} FROM {table_name} WHERE {primary_key} = {identifier}", con=connection
-            )[primary_key].tolist()
-
-            new_rows = df[~df[primary_key].isin(existing_values)]
-            new_rows.to_sql(table_name, connection, if_exists='append', index=False)
-
-            existing_rows = df[df[primary_key].isin(existing_values)]
-            existing_rows.to_sql(table_name, connection, if_exists='append', index=False)
+        query = f"MERGE {table_name} AS target USING temp_table AS source ON source.{primary_key} = target.{primary_key} WHEN NOT MATCHED BY target THEN INSERT ({primary_key}, {column_1}, {column_2}) VALUES (source.{primary_key}, source.{column_1}, source.{column_2}) WHEN MATCHED THEN UPDATE SET target.{primary_key} = source.{primary_key}, target.{column_1} = source.{column_1}, target.{column_2} = source.{column_2};"
+        print(query)
+        connection.execute(text(query))
 
 
-upload_table("anime_id", "anime_info", anime_info, id_list)
-# upload_table("user_id", "user_score", user_score, 6248047)
-# upload_table("user_id", "user_info", user_info, 6248047)
+upload_table("anime_id", "anime_info", anime_info, "average_score", "title_romaji")
+upload_table("user_id", "user_score", user_score, "anime_id", "user_score")
+upload_table("user_id", "user_info", user_info, "user_name", "request_date")
