@@ -123,10 +123,6 @@ session = session()
 df_list = [anime_info, user_info, user_score]
 table_names = ['anime_info', 'user_info', 'user_score']
 
-# anime_info.to_sql('anime_info', engine, if_exists='replace')
-# user_score.to_sql('user_score', engine, if_exists='replace')
-# user_info.to_sql('user_info', engine, if_exists='replace')
-
 
 def upload_table(primary_key, table_name, df, column_1, column_2):
     with engine.connect() as connection:
@@ -137,6 +133,7 @@ def upload_table(primary_key, table_name, df, column_1, column_2):
         query = f"MERGE {table_name} AS target USING temp_table AS source ON source.{primary_key} = target.{primary_key} WHEN NOT MATCHED BY target THEN INSERT ({primary_key}, {column_1}, {column_2}) VALUES (source.{primary_key}, source.{column_1}, source.{column_2}) WHEN MATCHED THEN UPDATE SET target.{primary_key} = source.{primary_key}, target.{column_1} = source.{column_1}, target.{column_2} = source.{column_2};"
         print(query)
         connection.execute(text(query))
+        connection.commit()
 
 
 upload_table("anime_id", "anime_info", anime_info, "average_score", "title_romaji")

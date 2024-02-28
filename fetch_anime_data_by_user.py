@@ -6,7 +6,7 @@ def fetch_data(anilist_id):
     import pandas as pd
     import requests
     from dotenv import load_dotenv
-    from sqlalchemy import create_engine, inspect, exc
+    from sqlalchemy import create_engine, text
     from sqlalchemy.orm import sessionmaker
 
     def load_query(file_name):
@@ -16,7 +16,7 @@ def fetch_data(anilist_id):
 
     def fetch_anilist_data(query, variables):
         try:
-            response = requests.post(URL, json={'query': query, 'variables': variables}, timeout=10)
+            response = requests.post(url, json={'query': query, 'variables': variables}, timeout=10)
             response.raise_for_status()
             global response_header
             response_header = response.headers['Date']
@@ -29,16 +29,16 @@ def fetch_data(anilist_id):
             print(f"Error in request: {e}")
             return None
 
-    QUERY_USER = load_query("user_query.gql")
+    query_user = load_query("user_query.gql")
 
     variables_user = {
         "page": 1,
         "id": anilist_id
     }
 
-    URL = 'https://graphql.anilist.co'
+    url = 'https://graphql.anilist.co'
 
-    json_response = fetch_anilist_data(QUERY_USER, variables_user)
+    json_response = fetch_anilist_data(query_user, variables_user)
 
     user_score = pd.json_normalize(json_response,
                                    record_path=['data', 'Page', 'users', 'statistics', 'anime', 'scores'],
@@ -72,7 +72,7 @@ def fetch_data(anilist_id):
 
     # # # # # # # # # # # # # # # # # # # # # # # # # Get anime info # # # # # # # # # # # # # # # # # # # # # # # # #
 
-    QUERY_ANIME = load_query('anime_query.gql')
+    query_anime = load_query('anime_query.gql')
 
     id_list = user_score['anime_id'].values.tolist()
 
@@ -81,12 +81,12 @@ def fetch_data(anilist_id):
         "id_in": id_list
     }
 
-    URL = 'https://graphql.anilist.co'
+    url = 'https://graphql.anilist.co'
 
     anime_info = pd.DataFrame()
 
     while True:
-        response_ids = fetch_anilist_data(QUERY_ANIME, variables_anime)
+        response_ids = fetch_anilist_data(query_anime, variables_anime)
         print("Fetching anime info...")
         time.sleep(5)
 
@@ -115,46 +115,24 @@ def fetch_data(anilist_id):
     connection_url = f"mssql+pyodbc:///?odbc_connect={params}"
     engine = create_engine(connection_url)
 
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    session = sessionmaker(bind=engine)
+    session = session()
 
     df_list = [anime_info, user_info, user_score]
     table_names = ['anime_info', 'user_info', 'user_score']
 
-    with engine.connect() as connection:
-        for df, table_name in zip(df_list, table_names):
-            try:
-                print(f'Loading dataframe into table {table_name}')
+    def upload_table(primary_key, table_name, df, column_1, column_2):
+        with engine.connect() as connection:
+            print(f"Uploading {table_name} to Azure SQL Database...")
 
-                inspector = inspect(engine)
-                table_exists = table_name in inspector.get_table_names(schema="dbo")
+            df.to_sql("temp_table", con=connection, if_exists="replace")
 
-                if table_name == 'anime_info':
-                    primary_key_column = 'anime_id'
-                elif table_name == 'user_info' or table_name == 'user_score':
-                    primary_key_column = 'user_id'
-                else:
-                    primary_key_column = None
+            query = f"MERGE {table_name} AS target USING temp_table AS source ON source.{primary_key} = target.{primary_key} WHEN NOT MATCHED BY target THEN INSERT ({primary_key}, {column_1}, {column_2}) VALUES (source.{primary_key}, source.{column_1}, source.{column_2}) WHEN MATCHED THEN UPDATE SET target.{primary_key} = source.{primary_key}, target.{column_1} = source.{column_1}, target.{column_2} = source.{column_2};"
+            print(query)
+            connection.execute(text(query))
+            connection.commit()
 
-                if table_exists:
-                    existing_columns = inspector.get_columns(table_name, schema="dbo")
-                    existing_column_names = [col['name'] for col in existing_columns]
+    upload_table("anime_id", "anime_info", anime_info, "average_score", "title_romaji")
+    upload_table("user_id", "user_score", user_score, "anime_id", "user_score")
+    upload_table("user_id", "user_info", user_info, "user_name", "request_date")
 
-                    if primary_key_column in existing_column_names:
-                        existing_values = pd.read_sql(
-                            f"SELECT {primary_key_column} FROM {table_name}", engine
-                        )[primary_key_column].tolist()
-
-                        new_rows = df[~df[primary_key_column].isin(existing_values)]
-
-                        new_rows.to_sql(table_name, engine, if_exists='append', index=False)
-
-                        df[df[primary_key_column].isin(existing_values)].to_sql(
-                            table_name, engine, if_exists='replace', index=False
-                        )
-                    else:
-                        df.to_sql(table_name, engine, if_exists='append', index=False)
-                else:
-                    df.to_sql(table_name, engine, if_exists='append', index=False)
-            except (exc.IntegrityError, exc.DataError) as e:
-                print(f'Error loading dataframe into table {table_name}: {str(e)}')
