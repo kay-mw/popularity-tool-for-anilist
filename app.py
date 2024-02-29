@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 
 def process_data(anilist_id):
@@ -12,10 +14,17 @@ def process_data(anilist_id):
 def anilist():
     if request.method == 'POST':
         anilist_id = request.form.get('anilist_id')
+        socketio.emit('start_processing', namespace='/loader')
         process_data(anilist_id)
-        return redirect(url_for('anilist'))
+        socketio.emit('stop_processing', namespace='/loader')
+        return redirect(url_for('dashboard'))
     return render_template('home.html')
 
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    socketio.run(app, host='0.0.0.0', debug=True, use_reloader=False, allow_unsafe_werkzeug=True)
