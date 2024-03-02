@@ -105,6 +105,12 @@ def fetch_data(anilist_id):
     print(anime_info.to_string())
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+    # Merge dataframes to calculate avg. score diff, least popular take, most popular take
+    # GraphQL query to fetch the anime cover images for least and most popular takes
+    # Use Jinja to insert these into HTML, e.g. {{ image1 }} in HTML, in flask image1=image_variable or something
+
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
     load_dotenv(dotenv_path="F:/PyCharm Projects/project/.env")
 
     server = "anilist-sqlserver.database.windows.net"
@@ -116,10 +122,6 @@ def fetch_data(anilist_id):
     engine = create_engine(connection_url)
 
     session = sessionmaker(bind=engine)
-    session = session()
-
-    df_list = [anime_info, user_info, user_score]
-    table_names = ['anime_info', 'user_info', 'user_score']
 
     def upload_table(primary_key, table_name, df, column_1, column_2):
         with engine.connect() as connection:
