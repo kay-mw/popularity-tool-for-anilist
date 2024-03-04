@@ -8,7 +8,7 @@ def process_data(anilist_id):
     fetch_anime_data_by_user.fetch_data(anilist_id)
 
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def anilist():
     if request.method == 'POST':
         anilist_id = request.form.get('anilist_id')

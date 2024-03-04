@@ -1,3 +1,4 @@
+import json
 import os
 import time
 from urllib.parse import quote_plus
@@ -83,8 +84,6 @@ variables_anime = {
     "id_in": id_list
 }
 
-url = 'https://graphql.anilist.co'
-
 anime_info = pd.DataFrame()
 
 while True:
@@ -107,7 +106,37 @@ anime_info.rename(columns={'averageScore': 'average_score',
 print(anime_info.to_string())
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-load_dotenv(dotenv_path="F:/PyCharm Projects/project/.env")
+
+merged_dfs = user_score.merge(anime_info, on='anime_id', how='left')
+
+merged_dfs['score_diff'] = merged_dfs['user_score'] - merged_dfs['average_score']
+
+max_diff = merged_dfs.loc[merged_dfs['score_diff'].abs() == max(merged_dfs['score_diff'].abs())]
+min_diff = merged_dfs.loc[merged_dfs['score_diff'].abs() == min(merged_dfs['score_diff'].abs())]
+
+image_id_1 = int(max_diff['anime_id'].iloc[0])
+image_id_2 = int(min_diff['anime_id'].iloc[0])
+
+query_image = load_query('image_query.gql')
+
+variables_image_1 = {
+    "id": image_id_1
+}
+variables_image_2 = {
+    "id": image_id_2
+}
+
+cover_image_1 = fetch_anilist_data(query_image, variables_image_1)
+cover_image_2 = fetch_anilist_data(query_image, variables_image_2)
+
+cover_image_1 = cover_image_1['data']['Media']['coverImage']['extraLarge']
+cover_image_2 = cover_image_2['data']['Media']['coverImage']['extraLarge']
+
+# Merge dataframes to calculate avg. score diff, least popular take, most popular take
+# GraphQL query to fetch the anime cover images for least and most popular takes
+# Use Jinja to insert these into HTML, e.g. {{ image1 }} in HTML, in flask image1=image_variable or something
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+load_dotenv(dotenv_path='F:/PyCharm Projects/project/.env')
 
 server = "anilist-sqlserver.database.windows.net"
 database = "anilist-db"
