@@ -1,11 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for
-import fetch_anime_data_by_user
+from fetch_anime_data_by_user import FetchAnimeDataByUser
 
 app = Flask(__name__)
 
+anilist_fetcher = None
+
 
 def process_data(anilist_id):
-    fetch_anime_data_by_user.fetch_data(anilist_id)
+    global anilist_fetcher
+    anilist_fetcher = FetchAnimeDataByUser(anilist_id)
+    anilist_fetcher.fetch_data()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -19,7 +23,17 @@ def anilist():
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+    return render_template(
+        'dashboard.html',
+        image1=anilist_fetcher.cover_image_1,
+        image2=anilist_fetcher.cover_image_2,
+        u_score_max=anilist_fetcher.score_max,
+        u_score_min=anilist_fetcher.score_min,
+        avg_score_max=anilist_fetcher.avg_max,
+        avg_score_min=anilist_fetcher.avg_min,
+        title_max=anilist_fetcher.title_max,
+        title_min=anilist_fetcher.title_min
+    )
 
 
 if __name__ == '__main__':

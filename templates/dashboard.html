@@ -1,47 +1,58 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
     <head>
+        <meta charset="utf8">
         <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
         />
         <style>
-            div.container {
-                width: 50%;
-                margin-top: 10px;
-            }
-            .span {
-                font-size: larger;
-                font-weight: bold;
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-image: radial-gradient(circle 897px at 9% 80.3%,  rgba(55,60,245,1) 0%, rgba(234,161,15,0.90) 100.2%);
-            }
-            .br {
-                margin: 20px;
-            }
             .box {
                 position: relative;
                 background-color: #00DBDE;
                 background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
                 padding: 2px;
+                width: 300px;
+                height: 400px;
             }
-            .holder {
-                width: auto;
-                padding-top: 10px;
-                padding-bottom: 10px;
-                display: inline-block;
+            .container {
+                width: 70%;
+                text-align: center;
+                padding: 25px;
             }
-            .img1 {
-                width: 72%;
+            .image-container {
+                display: flex;
+                justify-content: space-between;
             }
-            .img2 {
-                scaleY(2);
+            .image-wrapper {
+                text-align: center;
             }
-            .line-height {
-                line-height: 200%;
+            .text-wrapper {
+                text-align: center;
             }
-            .instructions-h {
-                margin-bottom: 5px;
+            h1 {
+                font-size: 70px;
+                font-weight: 600;
+                background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
+                color: transparent;
+                background-clip: text;
+                -webkit-background-clip: text;
+            }
+            h2 {
+                font-weight: 600;
+                background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
+                color: transparent;
+                background-clip: text;
+                -webkit-background-clip: text;
+            }
+            h3 {
+                font-weight: 600;
+                background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
+                color: transparent;
+                background-clip: text;
+                -webkit-background-clip: text;
+            }
+            .caption {
+                padding-top: 20px;
             }
         </style>
         <title>
@@ -50,12 +61,31 @@
     </head>
     <body>
         <div class="container">
-                    <div class="holder">
-                    <img class="box img1" src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx120377-GdoVPT4ZVxJn.jpg" alt="showcasing how to open image">
-                    </div>
-                    <div class="holder">
-                    <img class="box img2" src="../static/showcase_url.png" alt="showcasing anilist url bar">
-                    </div>
+            <h1>Your Anime Taste</h1>
+            {% block content %}
+            <div class="image-container">
+                <div class="image-wrapper">
+                    <h2>Your Most Unpopular Take</h2>
+                    <img class="box" src="{{ image1 }}" alt="unpopular anime cover image">
+                    <h3 class="caption">{{ title_max }}</h3>
+                    <p style="text-align: left">
+                        Your Score: {{ u_score_max }}
+                        <br>
+                        Average Score: {{ avg_score_max }}
+                    </p>
+                </div>
+                <div class="image-wrapper">
+                    <h2>Your Most Popular Take</h2>
+                    <img class="box" src="{{ image2 }}" alt="popular anime cover image">
+                    <h3 class="caption">{{ title_min }}</h3>
+                    <p style="text-align: left">
+                        Your Score: {{ u_score_min }}
+                        <br>
+                        Average Score: {{ avg_score_min }}
+                    </p>
+                </div>
+            </div>
+            {% endblock content %}
         </div>
     </body>
 </html>
