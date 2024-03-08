@@ -1,0 +1,6 @@
+Flask==3.0.2
+pandas==2.2.1
+python-dotenv==1.0.1
+Requests==2.31.0
+SQLAlchemy==2.0.27
+waitress==3.0.0
