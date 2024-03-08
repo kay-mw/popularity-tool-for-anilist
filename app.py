@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from fetch_anime_data_by_user import FetchAnimeDataByUser
+from waitress import serve
 
 app = Flask(__name__)
 
@@ -36,5 +37,10 @@ def dashboard():
     )
 
 
+mode = "prod"
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    if mode == "dev":
+        app.run(host='0.0.0.0', debug=True)
+    else:
+        serve(app, host='0.0.0.0', port=50100, threads=2)
