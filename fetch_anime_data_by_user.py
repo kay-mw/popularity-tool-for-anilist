@@ -77,7 +77,10 @@ class FetchAnimeDataByUser:
                                   'id': 'user_id',
                                   'name': 'user_name'}, inplace=True)
 
-        user_info['request_date'] = pd.to_datetime(user_info['request_date'])
+        user_info['request_date'] = pd.to_datetime(
+            user_info['request_date'], 
+            format='%a, %d %b %Y %H:%M:%S %Z'
+            ).dt.tz_localize(None)
 
         print(user_info.to_string())
 
@@ -155,7 +158,7 @@ class FetchAnimeDataByUser:
 
         server = "anilist-sqlserver.database.windows.net"
         database = "anilist-db"
-        connection_string = os.getenv('azure_odbc')
+        connection_string = os.getenv('AZURE_ODBC')
 
         params = quote_plus(connection_string)
         connection_url = f"mssql+pyodbc:///?odbc_connect={params}"

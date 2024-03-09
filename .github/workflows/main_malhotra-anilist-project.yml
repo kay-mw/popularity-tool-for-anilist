@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  azure_odbc: ${{ secrets.AZURE_ODBC }}
+  AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
 
 jobs:
   build:
