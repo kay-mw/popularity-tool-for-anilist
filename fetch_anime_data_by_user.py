@@ -152,11 +152,10 @@ class FetchAnimeDataByUser:
         self.cover_image_2 = cover_image_2['data']['Media']['coverImage']['extraLarge']
 
         # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-        load_dotenv(dotenv_path="F:/PyCharm Projects/project/.env")
 
         server = "anilist-sqlserver.database.windows.net"
         database = "anilist-db"
-        connection_string = os.getenv('AZURE_ODBC')
+        connection_string = os.getenv('azure_odbc')
 
         params = quote_plus(connection_string)
         connection_url = f"mssql+pyodbc:///?odbc_connect={params}"
