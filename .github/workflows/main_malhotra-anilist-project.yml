@@ -10,6 +10,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  azure_odbc: ${{ secrets.AZURE_ODBC }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
