@@ -14,6 +14,12 @@ env:
   AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
 
 jobs:
+  checkout-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
   build:
     runs-on: ubuntu-latest
 
