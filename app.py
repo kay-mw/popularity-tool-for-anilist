@@ -43,4 +43,4 @@ if __name__ == '__main__':
     if mode == "dev":
         app.run(host='0.0.0.0', debug=True)
     else:
-        serve(app, host='0.0.0.0', port=50100, threads=2)
+        serve(app)
