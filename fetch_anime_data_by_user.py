@@ -158,7 +158,7 @@ class FetchAnimeDataByUser:
 
         server = "anilist-sqlserver.database.windows.net"
         database = "anilist-db"
-        connection_string = os.getenv('AZURE_ODBC')
+        connection_string = os.environ['AZURE_ODBC']
 
         params = quote_plus(connection_string)
         connection_url = f"mssql+pyodbc:///?odbc_connect={params}"
