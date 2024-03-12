@@ -1,8 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for
-from fetch_anime_data_by_user import FetchAnimeDataByUser
-from waitress import serve
+from flask import Flask, render_template, request, redirect, url_for, Blueprint
+from .scripts.fetch_anime_data_by_user import FetchAnimeDataByUser
 
-app = Flask(__name__)
+main = Blueprint("main", __name__)
 
 anilist_fetcher = None
 
@@ -13,16 +12,16 @@ def process_data(anilist_id):
     anilist_fetcher.fetch_data()
 
 
-@app.route('/', methods=['GET', 'POST'])
+@main.route('/', methods=['GET', 'POST'])
 def anilist():
     if request.method == 'POST':
         anilist_id = request.form.get('anilist_id')
         process_data(anilist_id)
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('main.dashboard'))
     return render_template('home.html')
 
 
-@app.route('/dashboard')
+@main.route('/dashboard')
 def dashboard():
     return render_template(
         'dashboard.html',
@@ -35,12 +34,3 @@ def dashboard():
         title_max=anilist_fetcher.title_max,
         title_min=anilist_fetcher.title_min
     )
-
-
-mode = "prod"
-
-if __name__ == '__main__':
-    if mode == "dev":
-        app.run(host='0.0.0.0', debug=True)
-    else:
-        serve(app)

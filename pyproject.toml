@@ -1,0 +1,11 @@
+[project]
+name = "app"
+version = "2024.03.12"
+description = "test"
+dependencies = [
+    "flask",
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
