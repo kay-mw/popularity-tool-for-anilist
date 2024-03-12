@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, Blueprint
-from .scripts.fetch_anime_data_by_user import FetchAnimeDataByUser
+from .api_request.fetch_anime_data_by_user import FetchAnimeDataByUser
 
 main = Blueprint("main", __name__)
 
