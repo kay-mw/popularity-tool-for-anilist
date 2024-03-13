@@ -14,12 +14,6 @@ env:
   AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
 
 jobs:
-  checkout-code:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
   build:
     runs-on: ubuntu-latest
 
@@ -60,7 +54,6 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
       id-token: write #This is required for requesting the JWT
-      contents: read
       
 
     steps:
@@ -76,7 +69,6 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          auth-type: IDENTITY
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_95B117BB0F4C433EAF8916AF2DFB611B }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_AC91E523C8404CE9A96FD6FED9C8E923 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_5BEEF17CDCDF4919A375D4C1F639BA23 }}
