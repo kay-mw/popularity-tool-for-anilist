@@ -21,7 +21,7 @@ class FetchAnimeDataByUser:
         from sqlalchemy import create_engine, text
 
         def load_query(file_name):
-            file_path = os.path.join("./app/scripts/", file_name)
+            file_path = os.path.join("./app/api_request/", file_name)
             with open(file_path, "r") as file:
                 return file.read()
 
