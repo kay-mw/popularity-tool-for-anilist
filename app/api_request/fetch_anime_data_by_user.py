@@ -102,7 +102,7 @@ class FetchAnimeDataByUser:
         while True:
             response_ids = fetch_anilist_data(query_anime, variables_anime)
             print("Fetching anime info...")
-            time.sleep(5)
+            time.sleep(2)
 
             page_df = pd.json_normalize(response_ids, record_path=['data', 'Page', 'media'])
             anime_info = pd.concat([anime_info, page_df], ignore_index=True)
