@@ -15,6 +15,7 @@ class FetchAnimeDataByUser:
         import time
         import requests
         import pandas as pd
+        import great_expectations as ge
         from dotenv import load_dotenv
         from urllib.parse import quote_plus
         from sqlalchemy.orm import sessionmaker
@@ -153,6 +154,38 @@ class FetchAnimeDataByUser:
 
         self.cover_image_1 = cover_image_1['data']['Media']['coverImage']['extraLarge']
         self.cover_image_2 = cover_image_2['data']['Media']['coverImage']['extraLarge']
+
+        # # # # # # # # # # # # # # # # # # # # # # # Data Quality Checks # # # # # # # # # # # # # # # # # # # # # # #
+
+        ge_anime_info = ge.from_pandas(anime_info)
+        ge_user_info = ge.from_pandas(user_info)
+        ge_user_score = ge.from_pandas(user_score)
+
+        ge_anime_info.expect_column_values_to_be_unique('anime_id')
+        ge_anime_info.expect_column_values_to_not_be_null('anime_id')
+        ge_anime_info.expect_column_max_to_be_between('average_score', 0, 100)
+        anime_info_suite = ge_anime_info.get_expectation_suite()
+
+        ge_user_score.expect_column_values_to_be_unique('anime_id')
+        ge_user_score.expect_column_values_to_not_be_null('anime_id')
+        ge_user_score.expect_column_max_to_be_between('user_score', 0, 100)
+        user_score_suite = ge_user_score.get_expectation_suite()
+
+        ge_user_info.expect_column_values_to_be_unique('user_id')
+        ge_user_info.expect_column_values_to_not_be_null('user_id')
+        user_info_suite = ge_user_info.get_expectation_suite()
+
+        anime_info_results = ge_anime_info.validate(expectation_suite=anime_info_suite)
+        user_score_results = ge_user_score.validate(expectation_suite=user_score_suite)
+        user_info_results = ge_user_info.validate(expectation_suite=user_info_suite)
+
+        all_ge_results = anime_info_results, user_score_results, user_info_results
+
+        for results in all_ge_results:
+            if results["success"]:
+                print("Success: Data Quality Checks All Passed")
+            else:
+                raise Exception("Failure: Some Data Quality Check(s) Failed")
 
         # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
