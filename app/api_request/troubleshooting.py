@@ -28,9 +28,22 @@ def fetch_anilist_data(query, variables):
         print(f"Error in request: {e}")
         return None
 
-query_user = load_query("user_query.gql")
+query_get_id = load_query("get_id.gql")
 
-anilist_id = 6136704
+username = 'keejan'
+
+variables_get_id = {
+    "name": username
+}
+
+url = 'https://graphql.anilist.co'
+
+json_response = fetch_anilist_data(query_get_id, variables_get_id)
+anilist_id = json_response['data']['User']['id']
+
+# # # # # # # # # # # # # # # # # # # # # 
+
+query_user = load_query("user_query.gql")
 
 variables_user = {
     "page": 1,

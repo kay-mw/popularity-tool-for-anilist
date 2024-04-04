@@ -1,6 +1,6 @@
 class FetchAnimeDataByUser:
-    def __init__(self, anilist_id):
-        self.anilist_id = anilist_id
+    def __init__(self, username):
+        self.username = username
         self.cover_image_1 = None
         self.cover_image_2 = None
         self.score_max = None
@@ -41,14 +41,25 @@ class FetchAnimeDataByUser:
                 print(f"Error in request: {e}")
                 return None
 
+        query_get_id = load_query("get_id.gql")
+
+        variables_get_id = {
+            "name": self.username
+        }
+
+        url = 'https://graphql.anilist.co'
+
+        json_response = fetch_anilist_data(query_get_id, variables_get_id)
+        anilist_id = json_response['data']['User']['id']
+
+        # # # # # # # # # # # # # # # # # # # # #
+
         query_user = load_query("user_query.gql")
 
         variables_user = {
             "page": 1,
-            "id": self.anilist_id
+            "id": anilist_id
         }
-
-        url = 'https://graphql.anilist.co'
 
         json_response = fetch_anilist_data(query_user, variables_user)
 
@@ -103,7 +114,7 @@ class FetchAnimeDataByUser:
         while True:
             response_ids = fetch_anilist_data(query_anime, variables_anime)
             print("Fetching anime info...")
-            time.sleep(2)
+            time.sleep(1)
 
             page_df = pd.json_normalize(response_ids, record_path=['data', 'Page', 'media'])
             anime_info = pd.concat([anime_info, page_df], ignore_index=True)

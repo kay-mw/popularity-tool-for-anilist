@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
     <head>
-        <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
-        />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css"/>
         <style>
             div.container {
-                width: 50%;
+                width: 60%;
                 margin-top: 10px;
             }
             .span {
@@ -86,24 +85,11 @@
     <body>
         <div class="loader" style="display: none;"></div>
         <div class="container">
+            <h2 class="pico-color-purple-700">Anilist Username:</h2>
             <form method="POST" action="/" >
-                <span class="span">AniList ID:</span>
-                <br class="br">
-                  <input type="text" aria-label="id-text-input" name="anilist_id">
-                  <input type="submit" value="Submit" onclick="loading();">
+                <input type="text" aria-label="id-text-input" name="username">
+                <input type="submit" value="Submit" onclick="loading();">
             </form>
-            <div class="line-height">
-                <h3 class="instructionsh">Instructions:</h3>
-                <li>Go to your AniList profile.</li>
-                <li>Right-click on your profile image and select "Open Image in New Tab".</li>
-                    <div class="holder">
-                    <img class="box img1" src="../static/showcase_click.png" alt="showcasing how to open image">
-                    </div>
-                <li>In the image tab that you opened, look at the URL to find your unique ID number.</li>
-                    <div clas="holder">
-                    <img class="box img2" src="../static/showcase_url.png" alt="showcasing anilist url bar">
-                    </div>
-            </div>
         </div>
     </body>
 </html>

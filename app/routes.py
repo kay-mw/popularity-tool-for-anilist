@@ -6,17 +6,17 @@ main = Blueprint("main", __name__)
 anilist_fetcher = None
 
 
-def process_data(anilist_id):
+def process_data(username):
     global anilist_fetcher
-    anilist_fetcher = FetchAnimeDataByUser(anilist_id)
+    anilist_fetcher = FetchAnimeDataByUser(username)
     anilist_fetcher.fetch_data()
 
 
 @main.route('/', methods=['GET', 'POST'])
 def anilist():
     if request.method == 'POST':
-        anilist_id = request.form.get('anilist_id')
-        process_data(anilist_id)
+        username = request.form.get('username')
+        process_data(username)
         return redirect(url_for('main.dashboard'))
     return render_template('home.html')
 
