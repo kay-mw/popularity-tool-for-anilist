@@ -8,7 +8,7 @@ Alternatively, you can run it locally using the following steps:
 
 1. Clone the github repo.
 
-`git clone https://github.com/kay-mw/anilist-popularity`
+`git clone https://github.com/kay-mw/anilist-popularity.git`
 
 2. Change into the directory.
 
