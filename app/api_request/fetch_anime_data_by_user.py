@@ -9,6 +9,8 @@ class FetchAnimeDataByUser:
         self.avg_min = None
         self.title_max = None
         self.title_min = None
+        self.avg_score_diff = None
+        self.true_score_diff = None
 
     def fetch_data(self):
         import os
@@ -114,7 +116,7 @@ class FetchAnimeDataByUser:
         while True:
             response_ids = fetch_anilist_data(query_anime, variables_anime)
             print("Fetching anime info...")
-            time.sleep(1)
+            time.sleep(2)
 
             page_df = pd.json_normalize(response_ids, record_path=['data', 'Page', 'media'])
             anime_info = pd.concat([anime_info, page_df], ignore_index=True)
@@ -135,6 +137,12 @@ class FetchAnimeDataByUser:
         merged_dfs = user_score.merge(anime_info, on='anime_id', how='left')
 
         merged_dfs['score_diff'] = merged_dfs['user_score'] - merged_dfs['average_score']
+
+        float_avg_score_diff = abs(merged_dfs.loc[:, 'score_diff']).mean()
+        self.avg_score_diff = round(float_avg_score_diff, 2)
+
+        float_true_score_diff = merged_dfs.loc[:, 'score_diff'].mean()
+        self.true_score_diff = round(float_true_score_diff, 2)
 
         max_diff = merged_dfs.loc[merged_dfs['score_diff'].abs() == max(merged_dfs['score_diff'].abs())]
         min_diff = merged_dfs.loc[merged_dfs['score_diff'].abs() == min(merged_dfs['score_diff'].abs())]

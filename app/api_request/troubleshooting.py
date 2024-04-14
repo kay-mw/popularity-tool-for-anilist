@@ -142,6 +142,8 @@ title_min = min_diff['title_romaji'].iloc[0]
 image_id_1 = int(max_diff['anime_id'].iloc[0])
 image_id_2 = int(min_diff['anime_id'].iloc[0])
 
+avg_score_diff = merged_dfs.loc[:, 'score_diff'].mean()
+
 query_image = load_query('image_query.gql')
 
 variables_image_1 = {

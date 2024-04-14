@@ -63,6 +63,13 @@
         <div class="container">
             <h1>Your Anime Taste</h1>
             {% block content %}
+            <h1 style="text-align: center;">{{ taste_message }}</h1>
+            <h3 style="text-align: center;">
+                On average, you score anime {{ avg_score_diff }} differently compared to the average user!
+            </h3>
+            <h3 style="text-align: center;">
+                {{ true_score_diff_msg }} ({{ true_score_diff }})
+            </h3>
             <div class="image-container">
                 <div class="image-wrapper">
                     <h2>Your Most Unpopular Take</h2>
