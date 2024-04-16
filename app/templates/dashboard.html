@@ -15,10 +15,17 @@
                 width: 300px;
                 height: 400px;
             }
-            .container {
-                width: 70%;
-                text-align: center;
-                padding: 25px;
+            body {
+                margin: 0;
+                font-family: 'League Spartan', sans-serif;
+                color: white;
+            }
+            section {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 2vw 15vw;
             }
             .image-container {
                 display: flex;
@@ -27,27 +34,19 @@
             .image-wrapper {
                 text-align: center;
             }
-            .text-wrapper {
-                text-align: center;
-            }
             h1 {
-                font-size: 70px;
-                font-weight: 600;
-                font-family: 'League Spartan', sans-serif;
+                font-weight: 900;
+                font-size: 35pt;
+                text-align: center;
+                color: white;
             }
             h2 {
-                font-weight: 600;
-                background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
-                color: transparent;
-                background-clip: text;
-                -webkit-background-clip: text;
+                font-weight: 500;
+                color: white;
             }
             h3 {
-                font-weight: 600;
-                background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
-                color: transparent;
-                background-clip: text;
-                -webkit-background-clip: text;
+                font-weight: 300;
+                color: white;
             }
             .caption {
                 padding-top: 20px;
@@ -58,16 +57,33 @@
         </title>
     </head>
     <body>
-        <div class="container">
+        <section style="background: #2e8bc0;">
             {% block content %}
-            <h1 style="text-align: center;">{{ taste_message }}</h1>
-            <h3 style="text-align: center;">
+            <h1>{{ taste_message }}</h1>
+        </section>
+        <section style="background: #145da0">
+            <h3>
                 On average, you score anime {{ avg_score_diff }} points differently compared to the average user!
             </h3>
-            <h3 style="text-align: center;">
+        </section>
+        <section style="background: #0c2d48;">
+            <h3>
                 {{ true_score_diff_msg }} ({{ true_score_diff }})
             </h3>
+        </section>
+        </section>
+        <section>
             <div class="image-container">
+                <div class="image-wrapper" style="padding-right: 15vw;">
+                    <h2>Your Most Popular Take</h2>
+                    <img class="box" src="{{ image2 }}" alt="popular anime cover image">
+                    <h3 class="caption">{{ title_min }}</h3>
+                    <p style="text-align: left">
+                        Your Score: {{ u_score_min }}
+                        <br>
+                        AniList Average: {{ avg_score_min }}
+                    </p>
+                </div>
                 <div class="image-wrapper">
                     <h2>Your Most Unpopular Take</h2>
                     <img class="box" src="{{ image1 }}" alt="unpopular anime cover image">
@@ -75,21 +91,11 @@
                     <p style="text-align: left">
                         Your Score: {{ u_score_max }}
                         <br>
-                        Average Score: {{ avg_score_max }}
-                    </p>
-                </div>
-                <div class="image-wrapper">
-                    <h2>Your Most Popular Take</h2>
-                    <img class="box" src="{{ image2 }}" alt="popular anime cover image">
-                    <h3 class="caption">{{ title_min }}</h3>
-                    <p style="text-align: left">
-                        Your Score: {{ u_score_min }}
-                        <br>
-                        Average Score: {{ avg_score_min }}
+                        AniList Average: {{ avg_score_max }}
                     </p>
                 </div>
             </div>
             {% endblock content %}
-        </div>
+        </section>
     </body>
 </html>
