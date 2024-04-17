@@ -1,6 +1,7 @@
-Flask==3.0.2
+aiohttp==3.9.5
+Flask==3.0.3
 great_expectations==0.18.11
-pandas==2.2.1
+pandas==2.2.2
 pytest==8.1.1
 python-dotenv==1.0.1
 Requests==2.31.0
