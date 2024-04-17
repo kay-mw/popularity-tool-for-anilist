@@ -1,5 +1,7 @@
 import os
 import time
+import asyncio
+import aiohttp
 import requests
 import pandas as pd
 import great_expectations as ge
@@ -13,7 +15,7 @@ def load_query(file_name):
     with open(file_path, "r") as file:
         return file.read()
 
-def fetch_anilist_data(query, variables):
+def fetch_anilist_data_sync(query, variables):
     try:
         response = requests.post(url, json={'query': query, 'variables': variables}, timeout=10)
         response.raise_for_status()
@@ -28,6 +30,23 @@ def fetch_anilist_data(query, variables):
         print(f"Error in request: {e}")
         return None
 
+
+async def fetch_anilist_data_async(query, variables):
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json={'query': query, 'variables': variables}, timeout=10) as response:
+                response.raise_for_status()
+                global response_header
+                response_header = response.headers['Date']
+                response_header = pd.Series(response_header)
+                return await response.json()
+    except asyncio.TimeoutError:
+        print("Request timed out.")
+        return None
+    except aiohttp.ClientResponseError as e:
+        print(f"Error in request: {e}")
+        return None
+
 query_get_id = load_query("get_id.gql")
 
 username = 'keejan'
@@ -38,7 +57,7 @@ variables_get_id = {
 
 url = 'https://graphql.anilist.co'
 
-json_response = fetch_anilist_data(query_get_id, variables_get_id)
+json_response = fetch_anilist_data_sync(query_get_id, variables_get_id)
 anilist_id = json_response['data']['User']['id']
 
 # # # # # # # # # # # # # # # # # # # # # 
@@ -50,9 +69,7 @@ variables_user = {
     "id": anilist_id
 }
 
-url = 'https://graphql.anilist.co'
-
-json_response = fetch_anilist_data(query_user, variables_user)
+json_response = fetch_anilist_data_sync(query_user, variables_user)
 
 user_score = pd.json_normalize(json_response,
                             record_path=['data', 'Page', 'users', 'statistics', 'anime', 'scores'],
@@ -89,31 +106,34 @@ print(user_info.to_string())
 
 # # # # # # # # # # # # # # # # # # # # # # # # # Get anime info # # # # # # # # # # # # # # # # # # # # # # #
 
-query_anime = load_query('anime_query.gql')
+async def main():
+    anime_info = pd.DataFrame()
 
-id_list = user_score['anime_id'].values.tolist()
-
-variables_anime = {
+    id_list = user_score['anime_id'].values.tolist()
+    
+    variables_anime = {
     "page": 1,
     "id_in": id_list
-}
+    }
 
-url = 'https://graphql.anilist.co'
+    query_anime = load_query('anime_query.gql')
 
-anime_info = pd.DataFrame()
+    while True:
+        response_ids = await fetch_anilist_data_async(query_anime, variables_anime)
+        print("Fetching anime info...")
 
-while True:
-    response_ids = fetch_anilist_data(query_anime, variables_anime)
-    print("Fetching anime info...")
-    time.sleep(2)
+        page_df = pd.json_normalize(response_ids, record_path=['data', 'Page', 'media'])
+        anime_info = pd.concat([anime_info, page_df], ignore_index=True)
 
-    page_df = pd.json_normalize(response_ids, record_path=['data', 'Page', 'media'])
-    anime_info = pd.concat([anime_info, page_df], ignore_index=True)
+        if not response_ids['data']['Page']['pageInfo']['hasNextPage']:
+            break
 
-    if not response_ids['data']['Page']['pageInfo']['hasNextPage']:
-        break
+        variables_anime['page'] += 1
 
-    variables_anime['page'] += 1
+    return anime_info
+
+if __name__ == "__main__":
+    anime_info = asyncio.run(main())
 
 anime_info.rename(columns={'averageScore': 'average_score',
                         'title.romaji': 'title_romaji',
@@ -153,8 +173,8 @@ variables_image_2 = {
     "id": image_id_2
 }
 
-cover_image_1 = fetch_anilist_data(query_image, variables_image_1)
-cover_image_2 = fetch_anilist_data(query_image, variables_image_2)
+cover_image_1 = fetch_anilist_data_sync(query_image, variables_image_1)
+cover_image_2 = fetch_anilist_data_sync(query_image, variables_image_2)
 
 cover_image_1 = cover_image_1['data']['Media']['coverImage']['extraLarge']
 cover_image_2 = cover_image_2['data']['Media']['coverImage']['extraLarge']
