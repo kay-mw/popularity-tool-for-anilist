@@ -95,7 +95,12 @@
                     </p>
                 </div>
             </div>
-            {% endblock content %}
         </section>
+        <section>
+            <form action="{{ url_for('main.anilist') }}">
+                <button>Return Home</button>
+            </form>
+        </section>
+        {% endblock content %}
     </body>
 </html>

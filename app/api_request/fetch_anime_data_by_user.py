@@ -97,6 +97,11 @@ class FetchAnimeDataByUser:
             'score': 'user_score'
         }, inplace=True)
 
+        if max(user_score['user_score']) <= 10:
+            user_score['user_score'] = user_score['user_score'].apply(lambda x: x*10)
+        else:
+            pass
+
         print(user_score.to_string())
 
         # # # # # # # # # # # # # # # # # # # # # # # # Make user info table # # # # # # # # # # # # # # # # # # # # #
