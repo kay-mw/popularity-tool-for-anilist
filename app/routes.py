@@ -25,9 +25,9 @@ def taste_message(avg_score_diff):
 
 def score_diff_direction(true_score_diff):
     if true_score_diff > 0:
-        return "Specifically, you tend to give more positive scores than the average user ヽ(*・ω・)ﾉ"
+        return "Specifically, you tend to give more positive scores ヽ(*・ω・)ﾉ"
     else:
-        return "Specifically, you tend to give harsher scores than the average user ・`ω´・"
+        return "Specifically, you tend to give harsher scores ・`ω´・"
 
 
 @main.route('/', methods=['GET', 'POST'])
