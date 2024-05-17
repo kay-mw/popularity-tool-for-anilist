@@ -28,13 +28,13 @@ resource "azurerm_mssql_server" "projects-sqlserver" {
   version                      = "12.0"
   administrator_login          = var.administrator_login
   administrator_login_password = var.administrator_login_password
-  minimum_tls_version = "1.0"
+  minimum_tls_version          = "1.0"
 }
 
 resource "azurerm_sql_database" "anilist-db" {
-  name        = "anilist-db"
-  server_name   = azurerm_mssql_server.projects-sqlserver.name
-  resource_group_name          = azurerm_resource_group.projects-grp.name
-  location                     = azurerm_resource_group.projects-grp.location
-  edition = "Free"
+  name                = "anilist-db"
+  server_name         = azurerm_mssql_server.projects-sqlserver.name
+  resource_group_name = azurerm_resource_group.projects-grp.name
+  location            = azurerm_resource_group.projects-grp.location
+  edition             = "Free"
 }
