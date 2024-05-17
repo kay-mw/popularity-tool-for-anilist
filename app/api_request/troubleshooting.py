@@ -1,5 +1,4 @@
 import os
-import time
 import asyncio
 import aiohttp
 import requests
@@ -7,7 +6,6 @@ import pandas as pd
 import great_expectations as ge
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, text
 
 def load_query(file_name):
@@ -78,12 +76,15 @@ user_score = pd.json_normalize(json_response,
 user_score = user_score.explode('mediaIds', ignore_index=True)
 user_score['mediaIds'] = user_score['mediaIds'].astype(int)
 
+print(user_score.to_string())
+
 user_score.rename(columns={
     'mediaIds': 'anime_id',
     'data.Page.users.id': 'user_id',
-    'id': 'anime_id',
     'score': 'user_score'
 }, inplace=True)
+
+user_score['user_id'] = user_score['user_id'].astype(int)
 
 print(user_score.to_string())
 
@@ -110,10 +111,10 @@ async def main():
     anime_info = pd.DataFrame()
 
     id_list = user_score['anime_id'].values.tolist()
-    
+        
     variables_anime = {
-    "page": 1,
-    "id_in": id_list
+        "page": 1,
+        "id_in": id_list
     }
 
     query_anime = load_query('anime_query.gql')
@@ -213,23 +214,15 @@ for results in all_ge_results:
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-server = "anilist-sqlserver.database.windows.net"
-database = "anilist-db"
-
 load_dotenv()
-AZURE_ODBC = os.environ['AZURE_ODBC']
-connection_string = AZURE_ODBC
+connection_string = os.environ['AZURE_ODBC']
 
 params = quote_plus(connection_string)
 connection_url = f"mssql+pyodbc:///?odbc_connect={params}"
 engine = create_engine(connection_url)
 
-session = sessionmaker(bind=engine)
-
 def upload_table(primary_key, table_name, df, column_1, column_2):
     with engine.connect() as connection:
-        print(f"Uploading {table_name} to Azure SQL Database...")
-
         df.to_sql("temp_table", con=connection, if_exists="replace")
 
         query = (f"MERGE {table_name} AS target USING temp_table AS source "
@@ -237,13 +230,32 @@ def upload_table(primary_key, table_name, df, column_1, column_2):
                 f"WHEN NOT MATCHED BY target THEN INSERT ({primary_key}, {column_1}, {column_2}) "
                 f"VALUES (source.{primary_key}, source.{column_1}, source.{column_2}) "
                 f"WHEN MATCHED THEN UPDATE "
-                f"SET target.{primary_key} = source.{primary_key}, "
-                f"target.{column_1} = source.{column_1}, "
+                f"SET target.{column_1} = source.{column_1}, "
                 f"target.{column_2} = source.{column_2};")
-        print(query)
         connection.execute(text(query))
         connection.commit()
 
 upload_table("anime_id", "anime_info", anime_info, "average_score", "title_romaji")
-upload_table("anime_id", "user_score", user_score, "user_id", "user_score")
 upload_table("user_id", "user_info", user_info, "user_name", "request_date")
+
+def upload_user_score(df, table_name, foreign_key_1, foreign_key_2, column_1):
+    check_query = f'SELECT {foreign_key_1}, {foreign_key_2}, {column_1} FROM {table_name} WHERE {foreign_key_1} = {anilist_id};' 
+
+    with engine.connect() as connection:
+        check_exists = pd.read_sql(check_query, con=connection) 
+
+    if check_exists.empty:
+        with engine.connect() as connection:
+            df.to_sql(name=f"{table_name}", con=connection, if_exists="append", index=False)
+    else:
+        query = (f'DELETE FROM {table_name} WHERE {foreign_key_1} = {anilist_id}')
+        with engine.connect() as connection:
+            connection.execute(text(query))
+            connection.commit()
+
+        with engine.connect() as connection:
+            df.to_sql(name=f'{table_name}', con=connection, if_exists="append", index=False)
+
+
+upload_user_score(user_score, "user_anime_score", "user_id", "anime_id", "user_score")
+
