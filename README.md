@@ -2,7 +2,7 @@
 
 This is a basic web app/data pipeline that takes an AniList username and determines your most and least popular takes compared to the side-wide average.
 
-To try it, you can use [this link](https://malhotra-anilist-project.azurewebsites.net/).
+To try it, you can use [this link](https://ani-pop.azurewebsites.net/).
 
 Alternatively, you can run it locally using the following steps:
 
