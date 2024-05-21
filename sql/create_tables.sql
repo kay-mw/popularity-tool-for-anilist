@@ -23,3 +23,4 @@ CREATE TABLE user_anime_score
     CONSTRAINT FK_anime_info FOREIGN KEY (anime_id)
         REFERENCES anime_info (anime_id)
 );
+
