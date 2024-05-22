@@ -7,3 +7,4 @@ python-dotenv==1.0.1
 Requests==2.32.1
 SQLAlchemy==2.0.27
 waitress==3.0.0
+pyodbc==5.1.0
