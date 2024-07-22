@@ -13,14 +13,15 @@ class FetchAnimeDataByUser:
         self.true_score_diff = None
 
     def fetch_data(self):
-        import os
         import asyncio
-        import aiohttp
-        import requests
-        import pandas as pd
-        import great_expectations as ge
-        from dotenv import load_dotenv
+        import os
         from urllib.parse import quote_plus
+
+        import aiohttp
+        import great_expectations as ge
+        import pandas as pd
+        import requests
+        from dotenv import load_dotenv
         from sqlalchemy import create_engine, text
 
         def load_query(file_name):

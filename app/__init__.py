@@ -1,7 +1,9 @@
 import os
-from flask import Flask
-from .routes import main
+
 from dotenv import load_dotenv
+from flask import Flask
+
+from .routes import main
 
 load_dotenv()
 

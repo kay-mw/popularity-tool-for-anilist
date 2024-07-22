@@ -1,5 +1,6 @@
-from app import create_app
 from waitress import serve
+
+from app import create_app
 
 app = create_app()
 wsgi_app = app.wsgi_app
