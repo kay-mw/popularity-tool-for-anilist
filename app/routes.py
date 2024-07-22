@@ -1,5 +1,4 @@
-from flask import (Blueprint, redirect, render_template, request, session,
-                   url_for)
+from flask import Blueprint, redirect, render_template, request, session, url_for
 
 from .api_request.fetch_anime_data_by_user import FetchAnimeDataByUser
 

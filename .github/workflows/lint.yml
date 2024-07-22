@@ -30,3 +30,4 @@ jobs:
       with:
         sort-path: "."
         requirements-files: "./requirements.txt"
+        configuration: "--check-only --diff --profile black"
