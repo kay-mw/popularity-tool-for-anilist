@@ -17,7 +17,7 @@ let
     pandas
   ] ++ (with pkgs; [
     act
-    azure-cli
+    # azure-cli
   ]);
 in
 import ./python-shell.nix {
