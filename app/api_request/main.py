@@ -151,8 +151,24 @@ def fetch_data(username: str):
     cover_image_1 = cover_image_1["data"]["Media"]["coverImage"]["extraLarge"]
     cover_image_2 = cover_image_2["data"]["Media"]["coverImage"]["extraLarge"]
 
-    # NOTE: Upload data
+    # NOTE: Return
 
+    insights = (
+        avg_score_diff,
+        true_score_diff,
+        score_max,
+        score_min,
+        avg_max,
+        avg_min,
+        title_max,
+        title_min,
+    )
+
+    dfs = [anime_info, user_info, user_score]
+    return dfs, anilist_id, insights
+
+
+def upload_data():
     load_dotenv()
     storage_connection_string = os.environ["STORAGE_CONNECTION_STRING"]
     blob_service_client = BlobServiceClient.from_connection_string(
@@ -160,7 +176,7 @@ def fetch_data(username: str):
     )
     container_id = "projectanilist"
 
-    dfs = [anime_info, user_info, user_score]
+    dfs, anilist_id, insights = fetch_data("keejan")
     names = ["anime_info", "user_info", "user_score"]
     for i, df in enumerate(dfs):
         name = names[i]
@@ -176,18 +192,3 @@ def fetch_data(username: str):
         with open(file_path, mode="rb") as csv:
             blob_object.upload_blob(csv, overwrite=True)
             os.remove(file_path)
-
-    # NOTE: Return
-
-    insights = (
-        avg_score_diff,
-        true_score_diff,
-        score_max,
-        score_min,
-        avg_max,
-        avg_min,
-        title_max,
-        title_min,
-    )
-
-    return dfs, insights

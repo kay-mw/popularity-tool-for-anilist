@@ -7,7 +7,7 @@ from app.api_request.main import fetch_data
 
 @pytest.fixture
 def dfs():
-    dfs, insights = fetch_data("keejan")
+    dfs, anilist_id, insights = fetch_data("keejan")
     return dfs
 
 
