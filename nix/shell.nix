@@ -6,6 +6,7 @@ let
   pythonWithPkgs = myPython.withPackages (pythonPkgs: with pythonPkgs; [
     ipython
     pip
+    debugpy
     setuptools
     virtualenvwrapper
     wheel

@@ -1,13 +1,19 @@
-def fetch_data(username: str):
-    import asyncio
-    import os
+import asyncio
+import os
+from datetime import datetime as dt
 
-    import aiohttp
-    import pandas as pd
-    import requests
+import aiohttp
+import pandas as pd
+import requests
+from azure.storage.blob import BlobServiceClient
+from dotenv import load_dotenv
+
+
+def fetch_data(username: str):
+    # NOTE: Define functions
 
     def load_query(file_name: str) -> str:
-        file_path = os.path.join("./app/api_request/", file_name)
+        file_path = os.path.join("./app/api_request/gql/", file_name)
         with open(file_path, "r") as file:
             return file.read()
 
@@ -28,6 +34,8 @@ def fetch_data(username: str):
             ) as response:
                 response.raise_for_status()
                 return await response.json()
+
+    # NOTE: Fetch user ID
 
     query_get_id = load_query("get_id.gql")
     variables_get_id = {"name": username}
@@ -109,7 +117,7 @@ def fetch_data(username: str):
         inplace=True,
     )
 
-    # NOTE: Analysis
+    # NOTE: Get user insights
 
     merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
     merged_dfs["score_diff"] = merged_dfs["user_score"] - merged_dfs["average_score"]
@@ -143,10 +151,35 @@ def fetch_data(username: str):
     cover_image_1 = cover_image_1["data"]["Media"]["coverImage"]["extraLarge"]
     cover_image_2 = cover_image_2["data"]["Media"]["coverImage"]["extraLarge"]
 
-    # NOTE: Return
+    # NOTE: Upload data
+
+    load_dotenv()
+    storage_connection_string = os.environ["STORAGE_CONNECTION_STRING"]
+    blob_service_client = BlobServiceClient.from_connection_string(
+        storage_connection_string
+    )
+    container_id = "projectanilist"
 
     dfs = [anime_info, user_info, user_score]
-    analysis = (
+    names = ["anime_info", "user_info", "user_score"]
+    for i, df in enumerate(dfs):
+        name = names[i]
+        file_path = os.path.join("./app/api_request/temp/", f"{name}.csv")
+        df.to_csv(path_or_buf=file_path)
+
+        date = dt.today().strftime("%Y-%m-%d")
+        blob_path = f"data/{date}/{anilist_id}/{name}.csv"
+        blob_object = blob_service_client.get_blob_client(
+            container=container_id, blob=blob_path
+        )
+
+        with open(file_path, mode="rb") as csv:
+            blob_object.upload_blob(csv, overwrite=True)
+            os.remove(file_path)
+
+    # NOTE: Return
+
+    insights = (
         avg_score_diff,
         true_score_diff,
         score_max,
@@ -157,4 +190,4 @@ def fetch_data(username: str):
         title_min,
     )
 
-    return dfs, analysis
+    return dfs, insights
