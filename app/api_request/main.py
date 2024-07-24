@@ -145,6 +145,7 @@ def fetch_data(username: str):
 
     # NOTE: Return
 
+    dfs = [anime_info, user_info, user_score]
     analysis = (
         avg_score_diff,
         true_score_diff,
@@ -155,6 +156,5 @@ def fetch_data(username: str):
         title_max,
         title_min,
     )
-    dfs = [anime_info, user_info, user_score]
 
     return dfs, analysis

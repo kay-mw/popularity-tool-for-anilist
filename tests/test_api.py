@@ -2,12 +2,12 @@ import great_expectations as ge
 import pandas
 import pytest
 
-from app.api_request.refactor_main import fetch_data
+from app.api_request.main import fetch_data
 
 
 @pytest.fixture
 def dfs():
-    dfs = fetch_data("keejan")
+    dfs, analysis = fetch_data("keejan")
     return dfs
 
 
@@ -30,13 +30,9 @@ def test_data(dfs):
     ge_user_info.expect_column_values_to_not_be_null("user_id")
 
     ge_dfs = [ge_anime_info, ge_user_info, ge_user_score]
-    all_results = []
     for ge_df in ge_dfs:
         suite = ge_df.get_expectation_suite(discard_failed_expectations=False)
         result = ge_df.validate(expectation_suite=suite)
-        all_results.append(result)
-
-    for result in all_results:
         assert result[
             "success"
         ], f"Failure: Some Data Quality Check(s) Failed, {result}"
