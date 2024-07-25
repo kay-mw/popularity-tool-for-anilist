@@ -18,6 +18,8 @@ let
     pandas
   ] ++ (with pkgs; [
     act
+    nodejs
+    nodePackages.tailwindcss
     # azure-cli
   ]);
 in
