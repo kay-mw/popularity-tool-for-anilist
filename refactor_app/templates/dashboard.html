@@ -1,105 +1,51 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
     <head>
-        <meta charset="utf8">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
-        <style>
-            .box {
-                position: relative;
-                background-color: #00DBDE;
-                background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
-                padding: 2px;
-                width: 300px;
-                height: 400px;
-            }
-            body {
-                margin: 0;
-                font-family: 'League Spartan', sans-serif;
-                color: white;
-            }
-            section {
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 2vw 15vw;
-            }
-            .image-container {
-                display: flex;
-                justify-content: space-between;
-            }
-            .image-wrapper {
-                text-align: center;
-            }
-            h1 {
-                font-weight: 900;
-                font-size: 35pt;
-                text-align: center;
-                color: white;
-            }
-            h2 {
-                font-weight: 500;
-                color: white;
-            }
-            h3 {
-                font-weight: 300;
-                color: white;
-            }
-            .caption {
-                padding-top: 20px;
-            }
-        </style>
-        <title>
-            How Popular is Your Anime Taste?
-        </title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="../static/output.css" rel="stylesheet">
+        <title>How Popular is Your Anime Taste?</title>
     </head>
     <body>
-        <section style="background: #2e8bc0;">
+        <section>
             {% block content %}
-            <h1>{{ taste_message }}</h1>
-        </section>
-        <section style="background: #145da0">
-            <h3>
-                Your scores differ by {{ avg_score_diff }} points compared to the average AniList user...
-            </h3>
-        </section>
-        <section style="background: #0c2d48;">
-            <h3>
-                {{ true_score_diff_msg }} ({{ true_score_diff }})
-            </h3>
-        </section>
-        <section>
-            <div class="image-container">
-                <div class="image-wrapper" style="padding-right: 15vw;">
-                    <h2>Your Most Popular Take</h2>
-                    <img class="box" src="{{ image2 }}" alt="popular anime cover image">
-                    <h3 class="caption">{{ title_min }}</h3>
-                    <p style="text-align: left">
-                        Your Score: {{ u_score_min }}
-                        <br>
-                        AniList Average: {{ avg_score_min }}
-                    </p>
+                <h1>{{ taste_message }}</h1>
+            </section>
+            <section>
+                <h3>Your scores differ by {{ avg_score_diff }} points compared to the average AniList user...</h3>
+            </section>
+            <section>
+                <h3>{{ true_score_diff_msg }} ({{ true_score_diff }})</h3>
+            </section>
+            <section>
+                <div>
+                    <div>
+                        <h2>Your Most Popular Take</h2>
+                        <img src="{{ image2 }}" alt="popular anime cover image">
+                        <h3>{{ title_min }}</h3>
+                        <p>
+                            Your Score: {{ u_score_min }}
+                            <br>
+                            AniList Average: {{ avg_score_min }}
+                        </p>
+                    </div>
+                    <div>
+                        <h2>Your Most Unpopular Take</h2>
+                        <img src="{{ image1 }}" alt="unpopular anime cover image">
+                        <h3 class="caption">{{ title_max }}</h3>
+                        <p>
+                            Your Score: {{ u_score_max }}
+                            <br>
+                            AniList Average: {{ avg_score_max }}
+                        </p>
+                    </div>
                 </div>
-                <div class="image-wrapper">
-                    <h2>Your Most Unpopular Take</h2>
-                    <img class="box" src="{{ image1 }}" alt="unpopular anime cover image">
-                    <h3 class="caption">{{ title_max }}</h3>
-                    <p style="text-align: left">
-                        Your Score: {{ u_score_max }}
-                        <br>
-                        AniList Average: {{ avg_score_max }}
-                    </p>
-                </div>
-            </div>
-        </section>
-        <section>
-            <form action="{{ url_for('home') }}">
-                <button>Return Home</button>
-            </form>
-        </section>
+            </section>
+            <section>
+                <form action="{{ url_for("home") }}">
+                    <button>Return Home</button>
+                </form>
+            </section>
         {% endblock content %}
     </body>
 </html>
