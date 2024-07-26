@@ -2,7 +2,11 @@
 module.exports = {
   content: ["./refactor_app/**/*.{html,js}"],
   theme: {
-    extend: {},
+    extend: {
+      transitionProperty: {
+        'width': 'width',
+      },
+    },
   },
   plugins: [],
 };

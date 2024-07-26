@@ -4,33 +4,58 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="../static/output.css" rel="stylesheet">
-        <script type="text/javascript"
-                src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <link rel="icon" type="image/x-icon" href="../static/favicon.ico">
+        <title>How Popular is Your Anime Taste?</title>
+        <style>
+            .fade-in {
+                opacity: 0;
+                transition: opacity 2s ease-in-out;
+            }
+            .fade-in.visible {
+                opacity: 1;
+            }
+        </style>
         <script>
-            $(document).ready(function() {
+            document.addEventListener('DOMContentLoaded', function() {
                 function loading() {
-                    $(".loader").show();
-                    $("section").hide();
+                    document.querySelector(".loader").style.display = "block";
+                    document.querySelectorAll(".content").forEach(function(el) {
+                        el.style.display = "none";
+                    });
                 }
-                $("form").submit(function() {
+
+                document.querySelector("form").addEventListener('submit', function() {
                     loading();
                 });
+
+                setTimeout(function() {
+                    document.querySelectorAll('.fade-in').forEach(function(el) {
+                        el.classList.add('visible');
+                    });
+                }, 100);
             });
         </script>
-        <title>How Popular is Your Anime Taste?</title>
-        <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
     </head>
-    <body>
-        <div class="loader" style="display: none;"></div>
-        <section>
-            <h1>Have you ever wondered how controversial your anime taste is?</h1>
-        </section>
-        <section>
-            <h3>Find out by entering your AniList username below:</h3>
-            <form method="POST" action="/">
-                <input type="text" aria-label="username-text-input" name="username" required>
-                <input type="submit" value="Submit" onclick="loading();">
+    <body class="bg-slate-950 flex flex-col items-center justify-center min-h-screen">
+        <div class="border-white h-24 w-24 animate-spin rounded-full border-[10px] border-t-blue-600 loader"
+             style="display: none"></div>
+        <div class="text-center px-4 max-w-7xl w-full mb-8 fade-in content">
+            <h1 class="text-white text-4xl font-bold">Have you ever wondered how controversial your anime taste is?</h1>
+        </div>
+        <div class="text-center px-4 max-w-[40rem] w-full fade-in content">
+            <h3 class="text-white font-semibold text-2xl pb-4">Find out by entering your AniList username below...</h3>
+            <form class="flex flex-col items-center justify-center space-y-2"
+                  method="POST"
+                  action="/">
+                <input class="text-white text-center font-semibold w-full bg-slate-950 focus:bg-slate-900 border border-white rounded px-4 py-1.5"
+                       type="text"
+                       aria-label="username-text-input"
+                       name="username"
+                       required>
+                <input class="w-full bg-fuchsia-700 hover:bg-fuchsia-800 text-white font-bold py-2 px-4 rounded"
+                       type="submit"
+                       value="Submit">
             </form>
-        </section>
+        </div>
     </body>
 </html>

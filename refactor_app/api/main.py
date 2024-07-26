@@ -154,20 +154,14 @@ def fetch_data(username: str):
     # NOTE: Return
 
     def taste_message(avg_score_diff):
-        if abs(avg_score_diff) > 10:
+        if abs(avg_score_diff) > 15:
             return "Woah... are you trying to be controversial or something?"
-        elif abs(avg_score_diff) > 5:
+        elif abs(avg_score_diff) > 10:
             return "You have pretty unpopular taste!"
-        elif abs(avg_score_diff) > 2.5:
+        elif abs(avg_score_diff) > 5:
             return "You have kinda unpopular taste..."
         else:
             return "You have very popular taste!"
-
-    def score_diff_direction(true_score_diff):
-        if true_score_diff > 0:
-            return "Specifically, you tend to give more positive scores ヽ(*・ω・)ﾉ"
-        else:
-            return "Specifically, you tend to give harsher scores ・`ω´・"
 
     insights = {
         "image1": cover_image_1,
@@ -181,7 +175,6 @@ def fetch_data(username: str):
         "avg_score_diff": avg_score_diff,
         "taste_message": taste_message(avg_score_diff),
         "true_score_diff": true_score_diff,
-        "true_score_diff_msg": score_diff_direction(true_score_diff),
     }
 
     dfs = [anime_info, user_info, user_score]
