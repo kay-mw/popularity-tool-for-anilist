@@ -4,9 +4,11 @@ from datetime import datetime as dt
 
 import aiohttp
 import pandas as pd
+import plotly.graph_objects as go
 import requests
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
+from plotly.offline import plot
 
 
 def fetch_data(username: str):
@@ -38,7 +40,8 @@ def fetch_data(username: str):
     # NOTE: Fetch user ID
 
     query_get_id = load_query("get_id.gql")
-    variables_get_id = {"name": username}
+    # variables_get_id = {"name": username}
+    variables_get_id = {"name": "keejan"}  # Local testing
     json_response, response_header = fetch_anilist_data(query_get_id, variables_get_id)
     anilist_id = json_response["data"]["User"]["id"]
 
@@ -120,6 +123,37 @@ def fetch_data(username: str):
     # NOTE: Get user insights
 
     merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
+
+    # Plots
+    def generate_plot_data(column: str, color: str, name: str):
+        plot_df = merged_dfs.value_counts(column).reset_index().sort_values(by=column)
+        return go.Scatter(
+            x=plot_df[column],
+            y=plot_df["count"],
+            mode="lines+markers",
+            name=name,
+            line=dict(color=color),
+            marker=dict(color=color),
+        )
+
+    user_score_trace = generate_plot_data("user_score", "red", "Your Scores")
+    average_score_trace = generate_plot_data("average_score", "blue", "AniList Average")
+    fig = go.Figure(data=[user_score_trace, average_score_trace])
+    fig.update_layout(
+        template="plotly_dark",
+        title="Your Scores vs. The AniList Average",
+        xaxis_title="Score",
+        yaxis_title="Count",
+        legend_title="",
+        legend=dict(yanchor="top", y=1.03, xanchor="left", x=0.01),
+        showlegend=True,
+    )
+    plt_div = plot(
+        fig, output_type="div", include_plotlyjs=False, show_link=False, link_text=""
+    )
+    fig.write_html("./refactor_app/plots/temp.html")
+
+    # Scores
     merged_dfs["score_diff"] = merged_dfs["user_score"] - merged_dfs["average_score"]
 
     float_avg_score_diff = abs(merged_dfs.loc[:, "score_diff"]).mean()
@@ -175,13 +209,15 @@ def fetch_data(username: str):
         "avg_score_diff": avg_score_diff,
         "taste_message": taste_message(avg_score_diff),
         "true_score_diff": true_score_diff,
+        "plot": plt_div,
     }
 
     dfs = [anime_info, user_info, user_score]
+
     return dfs, anilist_id, insights
 
 
-def upload_data():
+def upload_data(username):
     load_dotenv()
     storage_connection_string = os.environ["STORAGE_CONNECTION_STRING"]
     blob_service_client = BlobServiceClient.from_connection_string(
@@ -189,7 +225,7 @@ def upload_data():
     )
     container_id = "projectanilist"
 
-    dfs, anilist_id, insights = fetch_data("keejan")  # Change this to username
+    dfs, anilist_id, insights = fetch_data(username)  # Change this to username
     names = ["anime_info", "user_info", "user_score"]
     for i, df in enumerate(dfs):
         name = names[i]

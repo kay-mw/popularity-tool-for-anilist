@@ -4,52 +4,87 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="../static/output.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+              rel="stylesheet">
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <title>How Popular is Your Anime Taste?</title>
     </head>
-    <body class="bg-slate-950 flex flex-col items-center justify-center min-h-screen">
+    <body class="bg-slate-950 flex flex-col items-center justify-center min-h-screen font-dm-sans font-normal">
         {% block content %}
             <div class="max-w-[60rem] space-y-6">
-                <h1 class="text-white text-center font-bold text-6xl pt-6">{{ taste_message }}</h1>
-                <div class="grid grid-cols-2 gap-4 pt-6">
-                    <h3 class="text-white text-center font-semibold text-xl">
-                        Your scores differ by <span class="text-fuchsia-400 fonharshert-bold text-xl">{{ avg_score_diff }}</span> points compared to the average AniList user!
+                <div class="pt-6"></div>
+                <a class="block w-full p-6 border rounded-lg shadow hover:bg-gray-700 bg-gray-800 border-gray-700">
+                    <h1 class="text-fuchsia-600 text-center font-medium text-6xl">{{ taste_message }}</h1>
+                </a>
+                <div class="flex w-full h-full justify-center border rounded-lg shadow border-gray-700">
+                    {% autoescape off %}
+                        {{ plot }}
+                    {% endautoescape %}
+                </div>
+                <a class="block w-full p-6 border rounded-lg shadow hover:bg-gray-700 bg-gray-800 border-gray-700">
+                    <h3 class="text-white text-center text-xl">
+                        Your scores differ by <span class="text-fuchsia-400 font-medium text-xl">{{ avg_score_diff }}</span> points compared to the average AniList user!
                     </h3>
+                    <div class="p-1"></div>
+                    <div class="bg-white w-full h-[3px]"></div>
+                    <div class="p-1"></div>
                     {% if true_score_diff >= 0 %}
-                        <h3 class="text-white text-center font-semibold text-xl">
-                            Specifically, you tend to be more positive! You score anime <span class="text-fuchsia-400 font-bold text-xl">{{ true_score_diff }}</span> points higher than the average user<span class="text-fuchsia-400 font-bold text-xl">ヽ(*・ω・)ﾉ</span>
+                        <h3 class="text-white text-center text-xl">
+                            Specifically, you tend to be more positive,
+                            scoring anime <span class="text-fuchsia-400 font-medium text-xl">{{ true_score_diff }}</span> points higher on average!
+                            <br>
+                            <span class="text-fuchsia-400 font-medium text-xl">ヽ(*・ω・)ﾉ</span>
                         </h3>
                     {% else %}
-                        <h3 class="text-white text-center font-semibold text-xl">
-                            Specifically, you tend to give more negative scores ・`ω´・. On average, you score anime {{ true_score_diff }} points lower than the average AniList user!
+                        <h3 class="text-white text-center text-xl">
+                            Specifically, you tend to be more negative, scoring anime <span class="text-fuchsia-400 font-medium text-xl">{{ true_score_diff }}</span> points lower on average!
+                            <br>
+                            <span class="text-fuchsia-400 font-medium text-xl">・`ω´・</span>
                         </h3>
                     {% endif %}
-                    <div>
-                        <h2>Your Most Popular Take</h2>
-                        <img class="max-h-[38rem]"
-                             src="{{ image2 }}"
-                             alt="popular anime cover image">
-                        <h3>{{ title_min }}</h3>
-                        <p class="text-white font-semibold text-l">
-                            Your Score: {{ u_score_min }}
-                            <br>
-                            AniList Average: {{ avg_score_min }}
-                        </p>
+                </a>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col items-center text-center">
+                        <a class="block w-full p-6 border rounded-lg shadow hover:bg-gray-700 bg-gray-800 border-gray-700">
+                            <h2 class="text-fuchsia-500 font-medium text-3xl mb-2">Your Most Popular Take</h2>
+                            <div class="relative">
+                                <img class="max-h-[36rem] w-auto object-contain"
+                                     src="{{ image2 }}"
+                                     alt="popular anime cover image">
+                                <h3 class="text-fuchsia-400 text-xl mt-2">{{ title_min }}</h3>
+                                <div class="absolute left-0 bottom-0 transform -translate-y-full text-left w-full">
+                                    <p class="text-white text-lg bg-slate-900 bg-opacity-90 p-2">
+                                        Your Score: <span class="text-fuchsia-400">{{ u_score_min }}</span>
+                                        <br>
+                                        AniList Average: <span class="text-fuchsia-400">{{ avg_score_min }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                    <div>
-                        <h2>Your Most Unpopular Take</h2>
-                        <img class="max-h-[38rem] "
-                             src="{{ image1 }}"
-                             alt="unpopular anime cover image">
-                        <h3 class="caption">{{ title_max }}</h3>
-                        <p class="text-white font-semibold text-l">
-                            Your Score: {{ u_score_max }}
-                            <br>
-                            AniList Average: {{ avg_score_max }}
-                        </p>
+                    <div class="flex flex-col items-center text-center">
+                        <a class="block w-full p-6 border rounded-lg shadow hover:bg-gray-700 bg-gray-800 border-gray-700">
+                            <h2 class="text-fuchsia-500 font-medium text-3xl mb-2">Your Most Unpopular Take</h2>
+                            <div class="relative">
+                                <img class="max-h-[36rem] w-auto object-contain"
+                                     src="{{ image1 }}"
+                                     alt="unpopular anime cover image">
+                                <h3 class="text-fuchsia-400 text-xl mt-2">{{ title_max }}</h3>
+                                <div class="absolute left-0 bottom-0 transform -translate-y-full text-left w-full">
+                                    <p class="text-white text-lg bg-slate-900 bg-opacity-90 p-2">
+                                        Your Score: <span class="text-fuchsia-400">{{ u_score_max }}</span>
+                                        <br>
+                                        AniList Average: <span class="text-fuchsia-400">{{ avg_score_max }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
                     </div>
                 </div>
-                <form class="pt-10" action="{{ url_for("home") }}">
-                    <button class="w-1/2 bg-fuchsia-700 hover:bg-fuchsia-800 text-white font-bold py-2 px-4 rounded">Return Home</button>
+                <form class="flex justify-center pb-4" action="{{ url_for("home") }}">
+                    <button class="bg-fuchsia-700 hover:bg-fuchsia-800 text-white font-medium py-2 px-4 rounded">Return Home</button>
                 </form>
             </div>
         {% endblock content %}
