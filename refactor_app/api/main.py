@@ -151,7 +151,6 @@ def fetch_data(username: str):
     plt_div = plot(
         fig, output_type="div", include_plotlyjs=False, show_link=False, link_text=""
     )
-    fig.write_html("./refactor_app/plots/temp.html")
 
     # Scores
     merged_dfs["score_diff"] = merged_dfs["user_score"] - merged_dfs["average_score"]
