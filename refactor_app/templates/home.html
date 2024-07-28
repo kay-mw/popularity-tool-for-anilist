@@ -5,6 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="../static/output.css" rel="stylesheet">
         <link rel="icon" type="image/x-icon" href="../static/favicon.ico">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+              rel="stylesheet">
         <title>How Popular is Your Anime Taste?</title>
         <style>
             .fade-in {
@@ -36,23 +40,23 @@
             });
         </script>
     </head>
-    <body class="bg-slate-950 flex flex-col items-center justify-center min-h-screen">
+    <body class="bg-slate-950 flex flex-col items-center justify-center min-h-screen font-dm-sans font-medium">
         <div class="border-white h-24 w-24 animate-spin rounded-full border-[10px] border-t-blue-600 loader"
              style="display: none"></div>
         <div class="text-center px-4 max-w-7xl w-full mb-8 fade-in content">
-            <h1 class="text-white text-4xl font-bold">Have you ever wondered how controversial your anime taste is?</h1>
+            <h1 class="text-cyan-400 text-4xl font-bold">Have you ever wondered how controversial your anime taste is?</h1>
         </div>
-        <div class="text-center px-4 max-w-[40rem] w-full fade-in content">
-            <h3 class="text-white font-semibold text-2xl pb-4">Find out by entering your AniList username below...</h3>
+        <div class="text-center px-4 max-w-[38rem] w-full fade-in content">
+            <h3 class="text-white font-medium text-2xl pb-4">Find out by entering your AniList username below...</h3>
             <form class="flex flex-col items-center justify-center space-y-2"
                   method="POST"
                   action="/">
-                <input class="text-white text-center font-semibold w-full bg-slate-950 focus:bg-slate-900 border border-white rounded px-4 py-1.5"
+                <input class="text-white text-left w-full bg-slate-950 focus:bg-slate-900 border border-white rounded px-4 py-1.5"
                        type="text"
                        aria-label="username-text-input"
                        name="username"
                        required>
-                <input class="w-full bg-fuchsia-700 hover:bg-fuchsia-800 text-white font-bold py-2 px-4 rounded"
+                <input class="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2 px-4 rounded"
                        type="submit"
                        value="Submit">
             </form>

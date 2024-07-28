@@ -20,7 +20,7 @@ let
     act
     nodejs
     nodePackages.tailwindcss
-    # azure-cli
+    google-cloud-sdk-gce
   ]);
 in
 import ./python-shell.nix {
