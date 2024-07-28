@@ -40,8 +40,8 @@ def fetch_data(username: str):
     # NOTE: Fetch user ID
 
     query_get_id = load_query("get_id.gql")
-    # variables_get_id = {"name": username}
-    variables_get_id = {"name": "keejan"}  # Local testing
+    variables_get_id = {"name": username}
+    # variables_get_id = {"name": "keejan"}  # Local testing
     json_response, response_header = fetch_anilist_data(query_get_id, variables_get_id)
     anilist_id = json_response["data"]["User"]["id"]
 
