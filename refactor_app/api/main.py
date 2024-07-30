@@ -213,10 +213,8 @@ def fetch_data(username: str):
 
     dfs = [anime_info, user_info, user_score]
 
-    return dfs, anilist_id, insights
+    # NOTE: Data upload
 
-
-def upload_data(username):
     load_dotenv()
     storage_connection_string = os.environ["STORAGE_CONNECTION_STRING"]
     blob_service_client = BlobServiceClient.from_connection_string(
@@ -224,7 +222,6 @@ def upload_data(username):
     )
     container_id = "projectanilist"
 
-    dfs, anilist_id, insights = fetch_data(username)  # Change this to username
     names = ["anime_info", "user_info", "user_score"]
     for i, df in enumerate(dfs):
         name = names[i]
@@ -240,3 +237,5 @@ def upload_data(username):
         with open(file_path, mode="rb") as csv:
             blob_object.upload_blob(csv, overwrite=True)
             os.remove(file_path)
+
+    return dfs, anilist_id, insights
