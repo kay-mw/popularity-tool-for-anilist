@@ -1,11 +1,19 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "app"
-version = "2024.03.12"
-description = "test"
-dependencies = [
-    "flask",
+name = "popularity-tool-for-anilist"
+description = "refactor"
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = [
+  "black==24.4.0",
+  "isort==5.13.2"
 ]
 
-[build-system]
-requires = ["flit_core<4"]
-build-backend = "flit_core.buildapi"
+[tool.pytest.ini_options]
+testpaths = [
+  "./**/tests"
+]

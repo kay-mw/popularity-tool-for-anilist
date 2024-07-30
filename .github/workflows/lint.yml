@@ -1,0 +1,40 @@
+name: lint
+
+on: 
+  push:
+    branches: [ dev ]
+    paths-ignore:
+      - "./docs"
+      - "./nix"
+      - "./sql"
+      - "./tf_deployment"
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - "./docs"
+      - "./nix"
+      - "./sql"
+      - "./tf_deployment"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11" ]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Black
+      uses: psf/black@stable
+      with:
+        options: "--check --verbose"
+        src: "."
+
+    - name: Isort
+      uses: isort/isort-action@master
+      with:
+        sort-path: "."
+        requirements-files: "./requirements.txt"
+        configuration: "--check-only --diff --profile black"

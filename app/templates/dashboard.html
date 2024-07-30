@@ -1,105 +1,89 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
     <head>
-        <meta charset="utf8">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="../static/output.css" rel="stylesheet">
+        <link rel="icon" type="image/x-icon" href="../static/favicon.ico">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
-        <style>
-            .box {
-                position: relative;
-                background-color: #00DBDE;
-                background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
-                padding: 2px;
-                width: 300px;
-                height: 400px;
-            }
-            body {
-                margin: 0;
-                font-family: 'League Spartan', sans-serif;
-                color: white;
-            }
-            section {
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 2vw 15vw;
-            }
-            .image-container {
-                display: flex;
-                justify-content: space-between;
-            }
-            .image-wrapper {
-                text-align: center;
-            }
-            h1 {
-                font-weight: 900;
-                font-size: 35pt;
-                text-align: center;
-                color: white;
-            }
-            h2 {
-                font-weight: 500;
-                color: white;
-            }
-            h3 {
-                font-weight: 300;
-                color: white;
-            }
-            .caption {
-                padding-top: 20px;
-            }
-        </style>
-        <title>
-            How Popular is Your Anime Taste?
-        </title>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+              rel="stylesheet">
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <title>How Popular is Your Anime Taste?</title>
     </head>
-    <body>
-        <section style="background: #2e8bc0;">
-            {% block content %}
-            <h1>{{ taste_message }}</h1>
-        </section>
-        <section style="background: #145da0">
-            <h3>
-                Your scores differ by {{ avg_score_diff }} points compared to the average AniList user...
-            </h3>
-        </section>
-        <section style="background: #0c2d48;">
-            <h3>
-                {{ true_score_diff_msg }} ({{ true_score_diff }})
-            </h3>
-        </section>
-        <section>
-            <div class="image-container">
-                <div class="image-wrapper" style="padding-right: 15vw;">
-                    <h2>Your Most Popular Take</h2>
-                    <img class="box" src="{{ image2 }}" alt="popular anime cover image">
-                    <h3 class="caption">{{ title_min }}</h3>
-                    <p style="text-align: left">
-                        Your Score: {{ u_score_min }}
-                        <br>
-                        AniList Average: {{ avg_score_min }}
-                    </p>
+    <body class="bg-slate-950 flex flex-col items-center justify-center min-h-screen font-dm-sans font-normal">
+        {% block content %}
+            <div class="max-w-[60rem] space-y-6">
+                <div class="pt-6"></div>
+                <a class="block w-full p-6 border rounded-lg shadow hover:bg-gray-700 bg-gray-800 border-gray-700">
+                    <h1 class="text-cyan-400 text-center font-medium text-6xl">{{ taste_message }}</h1>
+                </a>
+                <div class="flex w-full h-full justify-center border rounded-lg shadow border-gray-700">
+                    {% autoescape off %}
+                        {{ plot }}
+                    {% endautoescape %}
                 </div>
-                <div class="image-wrapper">
-                    <h2>Your Most Unpopular Take</h2>
-                    <img class="box" src="{{ image1 }}" alt="unpopular anime cover image">
-                    <h3 class="caption">{{ title_max }}</h3>
-                    <p style="text-align: left">
-                        Your Score: {{ u_score_max }}
-                        <br>
-                        AniList Average: {{ avg_score_max }}
-                    </p>
+                <a class="block w-full p-4 border rounded-lg shadow hover:bg-gray-700 bg-gray-800 border-gray-700">
+                    <h3 class="text-white text-center text-xl">
+                        Your scores differ by <span class="text-cyan-400 font-semibold text-xl">{{ avg_score_diff }}</span> points compared to the average AniList user!
+                    </h3>
+                    <div class="p-1"></div>
+                    <div class="bg-white w-full h-[3px]"></div>
+                    <div class="p-1"></div>
+                    {% if true_score_diff >= 0 %}
+                        <h3 class="text-white text-center text-xl">
+                            Specifically, you tend to be more positive,
+                            scoring anime <span class="text-cyan-400 font-semibold text-xl">{{ true_score_diff }}</span> points higher on average!
+                        </h3>
+                    {% else %}
+                        <h3 class="text-white text-center text-xl">
+                            Specifically, you tend to be more negative, scoring anime <span class="text-cyan-300 font-medium text-xl">{{ true_score_diff }}</span> points lower on average!
+                        </h3>
+                    {% endif %}
+                </a>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col items-center text-center">
+                        <h2 class="text-cyan-400 font-medium text-3xl mb-6">Your Most Popular Take</h2>
+                        <a class="block w-full p-3 border rounded-lg shadow hover:bg-gray-700 bg-gray-800 border-gray-700">
+                            <div class="relative">
+                                <img class="w-auto object-contain rounded"
+                                     src="{{ image2 }}"
+                                     alt="popular anime cover image">
+                                <h3 class="text-cyan-300 text-xl mt-2">{{ title_min }}</h3>
+                                <div class="absolute left-0 bottom-0 transform -translate-y-full text-left w-full">
+                                    <p class="text-white text-lg bg-slate-900 bg-opacity-90 p-2">
+                                        Your Score: <span class="text-cyan-300">{{ u_score_min }}</span>
+                                        <br>
+                                        AniList Average: <span class="text-cyan-300">{{ avg_score_min }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="flex flex-col items-center text-center">
+                        <h2 class="text-cyan-400 font-medium text-3xl mb-6">Your Most Unpopular Take</h2>
+                        <a class="block w-full p-3 border rounded-lg shadow hover:bg-gray-700 bg-gray-800 border-gray-700">
+                            <div class="relative">
+                                <img class="w-auto object-contain rounded"
+                                     src="{{ image1 }}"
+                                     alt="unpopular anime cover image">
+                                <h3 class="text-cyan-300 text-xl mt-2">{{ title_max }}</h3>
+                                <div class="absolute left-0 bottom-0 transform -translate-y-full text-left w-full">
+                                    <p class="text-white text-lg bg-slate-900 bg-opacity-90 p-2">
+                                        Your Score: <span class="text-cyan-300">{{ u_score_max }}</span>
+                                        <br>
+                                        AniList Average: <span class="text-cyan-300">{{ avg_score_max }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
+                <form class="flex justify-center pb-4" action="{{ url_for("home") }}">
+                    <button class="bg-cyan-700 hover:bg-cyan-800 text-white font-medium py-2 px-4 rounded">Return Home</button>
+                </form>
             </div>
-        </section>
-        <section>
-            <form action="{{ url_for('main.anilist') }}">
-                <button>Return Home</button>
-            </form>
-        </section>
         {% endblock content %}
     </body>
 </html>

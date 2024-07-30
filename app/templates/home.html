@@ -1,83 +1,65 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
     <head>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.colors.min.css"/>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="../static/output.css" rel="stylesheet">
+        <link rel="icon" type="image/x-icon" href="../static/favicon.ico">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+              rel="stylesheet">
+        <title>How Popular is Your Anime Taste?</title>
         <style>
-            body {
-                margin: 0;
-                font-family: 'League Spartan', sans-serif;
-                color: white;
+            .fade-in {
+                opacity: 0;
+                transition: opacity 2s ease-in-out;
             }
-            section {
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            h1 {
-                font-weight: 900;
-                font-size: 35pt;
-                text-align: center;
-            }
-            h3 {
-                font-weight: 300;
-                color: white;
-            }
-            div.loader {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                margin: -56px 0 0 -56px;
-            }
-            div.loader:after {
-                content: " ";
-                display: block;
-                width: 110px;
-                height: 110px;
-                border-radius: 50%;
-                border: 1px solid;
-                border-color: #0aa13a transparent #47a90e transparent;
-                animation: ring 1.2s linear infinite;
-            }
-            @keyframes ring {
-                0% {
-                    transform: rotate(0deg);
-                }
-                100% {
-                    transform: rotate(360deg);
-                }
+            .fade-in.visible {
+                opacity: 1;
             }
         </style>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <script>
-            $(document).ready(function() {
+            document.addEventListener('DOMContentLoaded', function() {
                 function loading() {
-                    $(".loader").show();
-                    $("section").hide();
+                    document.querySelector(".loader").style.display = "block";
+                    document.querySelectorAll(".content").forEach(function(el) {
+                        el.style.display = "none";
+                    });
                 }
-                $("form").submit(function() {
+
+                document.querySelector("form").addEventListener('submit', function() {
                     loading();
                 });
+
+                setTimeout(function() {
+                    document.querySelectorAll('.fade-in').forEach(function(el) {
+                        el.classList.add('visible');
+                    });
+                }, 100);
             });
         </script>
-        <title>How Popular is Your Anime Taste?</title>
-        <link rel="icon" type="image/x-icon" href="../static/favicon.ico">
     </head>
-    <body>
-        <div class="loader" style="display: none;"></div>
-        <section style="background: #2e8bc0; padding: 4vw;">
-            <h1>Have you ever wondered how controversial your anime taste is?</h1>  
-        </section>
-        <section>
-            <h3 style="padding: 1vw;">Find out by entering your AniList username below:</h3>
-            <form method="POST" action="/">
-                <input type="text" aria-label="username-text-input" name="username" required>
-                <input type="submit" value="Submit" onclick="loading();">
+    <body class="bg-slate-950 flex flex-col items-center justify-center min-h-screen font-dm-sans font-medium">
+        <div class="border-white h-24 w-24 animate-spin rounded-full border-[10px] border-t-blue-600 loader"
+             style="display: none"></div>
+        <div class="text-center px-4 max-w-7xl w-full mb-8 fade-in content">
+            <h1 class="text-cyan-400 text-4xl font-bold">Have you ever wondered how controversial your anime taste is?</h1>
+        </div>
+        <div class="text-center px-4 max-w-[38rem] w-full fade-in content">
+            <h3 class="text-white font-medium text-2xl pb-4">Find out by entering your AniList username below...</h3>
+            <form class="flex flex-col items-center justify-center space-y-2"
+                  method="POST"
+                  action="/">
+                <input class="text-white text-left w-full bg-slate-950 focus:bg-slate-900 border border-white rounded px-4 py-1.5"
+                       type="text"
+                       aria-label="username-text-input"
+                       name="username"
+                       required>
+                <input class="w-full bg-cyan-700 hover:bg-cyan-800 text-white font-bold py-2 px-4 rounded"
+                       type="submit"
+                       value="Submit">
             </form>
-        </section>
+        </div>
     </body>
 </html>
