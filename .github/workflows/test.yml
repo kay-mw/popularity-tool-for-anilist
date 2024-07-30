@@ -2,7 +2,14 @@ name: test
 
 on: 
   push:
-    branches: [ refactor ]
+    branches: [ dev ]
+    paths-ignore:
+      - "./docs"
+      - "./nix"
+      - "./sql"
+      - "./tf_deployment"
+  pull_request:
+    branches: [ main ]
     paths-ignore:
       - "./docs"
       - "./nix"
