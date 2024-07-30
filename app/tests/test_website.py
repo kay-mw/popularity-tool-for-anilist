@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from refactor_app.main import app
+from app.main import app
 
 client = TestClient(app)
 
@@ -14,7 +14,7 @@ def test_home():
 def test_dashboard():
     response = client.get("/dashboard")
     assert response.status_code == 403
-    assert response.json() == {"detail": "Invalid session"}
+    assert response.json() == {"detail": "Invalid session."}
 
 
 def test_main():

@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD fastapi run ./refactor_app/main.py
+CMD fastapi run ./app/main.py

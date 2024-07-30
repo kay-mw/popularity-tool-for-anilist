@@ -4,16 +4,18 @@ from datetime import datetime as dt
 
 import aiohttp
 import pandas as pd
+import plotly.graph_objects as go
 import requests
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
+from plotly.offline import plot
 
 
 def fetch_data(username: str):
     # NOTE: Define functions
 
     def load_query(file_name: str) -> str:
-        file_path = os.path.join("./app/api_request/gql/", file_name)
+        file_path = os.path.join("./app/api/gql/", file_name)
         with open(file_path, "r") as file:
             return file.read()
 
@@ -39,6 +41,7 @@ def fetch_data(username: str):
 
     query_get_id = load_query("get_id.gql")
     variables_get_id = {"name": username}
+    # variables_get_id = {"name": "keejan"}  # Local testing
     json_response, response_header = fetch_anilist_data(query_get_id, variables_get_id)
     anilist_id = json_response["data"]["User"]["id"]
 
@@ -120,6 +123,36 @@ def fetch_data(username: str):
     # NOTE: Get user insights
 
     merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
+
+    # Plots
+    def generate_plot_data(column: str, color: str, name: str):
+        plot_df = merged_dfs.value_counts(column).reset_index().sort_values(by=column)
+        return go.Scatter(
+            x=plot_df[column],
+            y=plot_df["count"],
+            mode="lines+markers",
+            name=name,
+            line=dict(color=color),
+            marker=dict(color=color),
+        )
+
+    user_score_trace = generate_plot_data("user_score", "red", "Your Scores")
+    average_score_trace = generate_plot_data("average_score", "blue", "AniList Average")
+    fig = go.Figure(data=[user_score_trace, average_score_trace])
+    fig.update_layout(
+        template="plotly_dark",
+        title="Your Scores vs. The AniList Average",
+        xaxis_title="Score",
+        yaxis_title="Count",
+        legend_title="",
+        legend=dict(yanchor="top", y=1.03, xanchor="left", x=0.01),
+        showlegend=True,
+    )
+    plt_div = plot(
+        fig, output_type="div", include_plotlyjs=False, show_link=False, link_text=""
+    )
+
+    # Scores
     merged_dfs["score_diff"] = merged_dfs["user_score"] - merged_dfs["average_score"]
 
     float_avg_score_diff = abs(merged_dfs.loc[:, "score_diff"]).mean()
@@ -153,22 +186,35 @@ def fetch_data(username: str):
 
     # NOTE: Return
 
-    insights = (
-        avg_score_diff,
-        true_score_diff,
-        score_max,
-        score_min,
-        avg_max,
-        avg_min,
-        title_max,
-        title_min,
-    )
+    def taste_message(avg_score_diff):
+        if abs(avg_score_diff) > 15:
+            return "Woah... are you trying to be controversial or something?"
+        elif abs(avg_score_diff) > 10:
+            return "You have pretty unpopular taste!"
+        elif abs(avg_score_diff) > 5:
+            return "You have kinda unpopular taste..."
+        else:
+            return "You have very popular taste!"
+
+    insights = {
+        "image1": cover_image_1,
+        "image2": cover_image_2,
+        "u_score_max": score_max,
+        "u_score_min": score_min,
+        "avg_score_max": avg_max,
+        "avg_score_min": avg_min,
+        "title_max": title_max,
+        "title_min": title_min,
+        "avg_score_diff": avg_score_diff,
+        "taste_message": taste_message(avg_score_diff),
+        "true_score_diff": true_score_diff,
+        "plot": plt_div,
+    }
 
     dfs = [anime_info, user_info, user_score]
-    return dfs, anilist_id, insights
 
+    # NOTE: Data upload
 
-def upload_data():
     load_dotenv()
     storage_connection_string = os.environ["STORAGE_CONNECTION_STRING"]
     blob_service_client = BlobServiceClient.from_connection_string(
@@ -176,11 +222,10 @@ def upload_data():
     )
     container_id = "projectanilist"
 
-    dfs, anilist_id, insights = fetch_data("keejan")  # Change this to username
     names = ["anime_info", "user_info", "user_score"]
     for i, df in enumerate(dfs):
         name = names[i]
-        file_path = os.path.join("./app/api_request/temp/", f"{name}.csv")
+        file_path = os.path.join("./app/api/", f"{name}.csv")
         df.to_csv(path_or_buf=file_path)
 
         date = dt.today().strftime("%Y-%m-%d")
@@ -192,3 +237,5 @@ def upload_data():
         with open(file_path, mode="rb") as csv:
             blob_object.upload_blob(csv, overwrite=True)
             os.remove(file_path)
+
+    return dfs, anilist_id, insights

@@ -2,7 +2,7 @@ import great_expectations as ge
 import pandas
 import pytest
 
-from refactor_app.api.main import fetch_data
+from app.api.main import fetch_data
 
 
 @pytest.fixture

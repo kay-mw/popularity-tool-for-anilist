@@ -14,11 +14,11 @@ app = FastAPI()
 
 app.mount(
     "/static",
-    StaticFiles(directory="./refactor_app/static"),
+    StaticFiles(directory="./app/static"),
     name="static",
 )
 
-templates = Jinja2Templates(directory="./refactor_app/templates")
+templates = Jinja2Templates(directory="./app/templates")
 
 DATABASE_NAME = "sessions.db"
 
@@ -54,7 +54,7 @@ async def dashboard(request: Request, session_id: Optional[str] = Cookie(None)):
     if not session_id:
         raise HTTPException(
             status_code=403,
-            detail="Invalid session. Please enter your AniList username to see your results.",
+            detail="Invalid session.",
         )
 
     conn = sqlite3.connect(DATABASE_NAME)
