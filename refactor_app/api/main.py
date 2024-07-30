@@ -225,7 +225,7 @@ def fetch_data(username: str):
     names = ["anime_info", "user_info", "user_score"]
     for i, df in enumerate(dfs):
         name = names[i]
-        file_path = os.path.join("./refactor_app/api/temp/", f"{name}.csv")
+        file_path = os.path.join("./refactor_app/api/", f"{name}.csv")
         df.to_csv(path_or_buf=file_path)
 
         date = dt.today().strftime("%Y-%m-%d")
