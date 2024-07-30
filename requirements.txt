@@ -8,4 +8,3 @@ azure-storage-blob==12.21.0
 fastapi==0.111.1
 plotly==5.23.0
 statsmodels==0.14.2
-SQLAlchemy==2.0.31
