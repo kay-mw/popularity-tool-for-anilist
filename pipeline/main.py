@@ -9,6 +9,7 @@ from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
+# NOTE: Azure Blob Storage
 load_dotenv()
 storage_connection_string = os.environ["STORAGE_CONNECTION_STRING"]
 blob_service_client = BlobServiceClient.from_connection_string(
@@ -16,6 +17,11 @@ blob_service_client = BlobServiceClient.from_connection_string(
 )
 container_id = "projectanilist"
 container_client = blob_service_client.get_container_client(container_id)
+
+# NOTE: SQLAlchemy
+connection_string = os.environ['AZURE_ODBC']
+connection_url = f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
+engine = create_engine(connection_url)
 
 blobs = container_client.list_blobs()
 for blob in blobs:
@@ -29,10 +35,6 @@ for blob in blobs:
 
     df = pd.read_csv(csv, sep=",", index_col=False)
     df.drop(labels="Unnamed: 0", axis=1, inplace=True)
-
-    connection_string = os.environ['AZURE_ODBC']
-    connection_url = f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
-    engine = create_engine(connection_url)
 
     def upload_one_to_one(primary_key: str, table_name: str, df: pd.DataFrame, column_1: str, column_2: str) -> None:
         with engine.connect() as connection:
