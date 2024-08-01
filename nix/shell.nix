@@ -16,11 +16,13 @@ let
     # this list contains packages that you want to be available at runtime and might not be able to be installed properly via pip
     numpy
     pandas
+    pyodbc
   ] ++ (with pkgs; [
     act
     nodejs
     nodePackages.tailwindcss
     google-cloud-sdk-gce
+    azure-cli
   ]);
 in
 import ./python-shell.nix {
