@@ -10,6 +10,7 @@ let
     setuptools
     virtualenvwrapper
     wheel
+    grpcio
   ]);
 
   extraBuildInputs = with pythonPackages; [

@@ -1,14 +1,14 @@
 import pandas as pd
-from sqlalchemy import engine, text
+from sqlalchemy import text
 
 
-def upload_one_to_one(
+def upload(
     df: pd.DataFrame,
     table_name: str,
     primary_key: str,
     column_1: str,
     column_2: str,
-    engine: engine.base.Engine,
+    engine,
 ) -> None:
     with engine.connect() as connection:
         df.to_sql("temp_table", con=connection, if_exists="replace")
@@ -25,6 +25,7 @@ def upload_one_to_one(
         connection.execute(text(query))
         connection.commit()
 
+
 def upload_many_to_many(
     df: pd.DataFrame,
     table_name: str,
@@ -32,7 +33,7 @@ def upload_many_to_many(
     foreign_key_2: str,
     column_1: str,
     anilist_id: int,
-    engine: engine.base.Engine,
+    engine,
 ) -> None:
     check_query = f"SELECT {foreign_key_1}, {foreign_key_2}, {column_1} FROM {table_name} WHERE {foreign_key_1} = {anilist_id};"
 
@@ -60,4 +61,6 @@ def upload_many_to_many(
                 if_exists="append",
                 index=False,
             )
+
+
 

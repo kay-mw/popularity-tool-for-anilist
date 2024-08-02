@@ -6,6 +6,7 @@ venv/Lib
 tf_deployment/terraform.tfvars
 .env
 *.pem
+*.pub
 app/plots
 *.db
 

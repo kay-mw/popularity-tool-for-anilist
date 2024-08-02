@@ -8,3 +8,5 @@ fastapi==0.111.1
 plotly==5.23.0
 statsmodels==0.14.2
 SQLAlchemy==2.0.31
+dagster==1.7.16
+dagster-webserver==1.7.16
