@@ -10,7 +10,7 @@ from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
-from pipeline.upload_funcs import upload_many_to_many, upload_one_to_one
+from pipeline.funcs import upload_many_to_many, upload_one_to_one
 
 load_dotenv()
 
