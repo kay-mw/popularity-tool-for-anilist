@@ -10,6 +10,7 @@ def load_query(file_name: str) -> str:
     with open(file_path, "r") as file:
         return file.read()
 
+
 def fetch_anilist_data(query: str, variables: dict) -> tuple[dict, pd.Series]:
     url = "https://graphql.anilist.co"
     response = requests.post(
@@ -19,6 +20,7 @@ def fetch_anilist_data(query: str, variables: dict) -> tuple[dict, pd.Series]:
     response_header = pd.Series(response.headers["Date"])
     return response.json(), response_header
 
+
 async def fetch_anilist_data_async(query: str, variables: dict) -> dict:
     url = "https://graphql.anilist.co"
     async with aiohttp.ClientSession() as session:
@@ -27,4 +29,3 @@ async def fetch_anilist_data_async(query: str, variables: dict) -> dict:
         ) as response:
             response.raise_for_status()
             return await response.json()
-
