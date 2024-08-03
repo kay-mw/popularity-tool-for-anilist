@@ -1,29 +1,17 @@
 import datetime as dt
-import os
 from io import StringIO
-from urllib.parse import quote_plus
 
 import pandas as pd
-from azure.storage.blob import BlobServiceClient
 from dagster import asset
-from dotenv import load_dotenv
-from sqlalchemy import create_engine
 
-from pipelines.funcs import upload, upload_many_to_many
+from pipelines.funcs import blob_init, sql_init, upload, upload_many_to_many
 
 
 @asset()
 def upload_data() -> None:
-    load_dotenv()
-    connection_string = os.environ["AZURE_ODBC"]
-    connection_url = f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
-    engine = create_engine(connection_url)
+    engine = sql_init()
+    blob_service_client = blob_init()
 
-
-    storage_connection_string = os.environ["STORAGE_CONNECTION_STRING"]
-    blob_service_client = BlobServiceClient.from_connection_string(
-        storage_connection_string
-    )
     container_id = "projectanilist"
     container_client = blob_service_client.get_container_client(container_id)
     today = dt.date.today()

@@ -1,5 +1,27 @@
+import os
+from urllib.parse import quote_plus
+
 import pandas as pd
-from sqlalchemy import text
+from azure.storage.blob import BlobServiceClient
+from dotenv import load_dotenv
+from sqlalchemy import Engine, create_engine, text
+
+
+def sql_init() -> Engine:
+    load_dotenv()
+    connection_string = os.environ["AZURE_ODBC"]
+    connection_url = f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
+    engine = create_engine(connection_url)
+    return engine
+
+
+def blob_init() -> BlobServiceClient:
+    load_dotenv()
+    storage_connection_string = os.environ["STORAGE_CONNECTION_STRING"]
+    blob_service_client = BlobServiceClient.from_connection_string(
+        storage_connection_string
+    )
+    return blob_service_client
 
 
 def upload(
@@ -61,6 +83,3 @@ def upload_many_to_many(
                 if_exists="append",
                 index=False,
             )
-
-
-
