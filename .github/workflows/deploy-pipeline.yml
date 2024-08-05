@@ -7,6 +7,7 @@ on:
       - dev
     paths:
       - pipelines/**
+      - .github/**
 
 jobs:
   build-and-deploy:
