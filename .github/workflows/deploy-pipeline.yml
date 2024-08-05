@@ -37,7 +37,7 @@ jobs:
           -t $username/pipelines:latest
 
       - name: Push image
-        with:
+        env:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
           docker push $username/pipelines:latest
