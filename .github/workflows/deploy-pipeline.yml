@@ -28,11 +28,10 @@ jobs:
 
       - name: Build image
         working-directory: ./pipelines
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
         env:
           AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
           docker compose build \
           -t $username/pipelines:latest
