@@ -14,7 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Buildx
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
@@ -23,12 +26,19 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
+      - name: Build image
+        working-directory: ./pipelines
         with:
-          context: "{{defaultContext}}:pipelines"
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/pipelines:latest
-          secrets: |
-            AZURE_ODBC=${{ secrets.AZURE_ODBC }}
-            STORAGE_CONNECTION_STRING=${{ secrets.STORAGE_CONNECTION_STRING }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+        env:
+          AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
+          STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
+        run: |
+          docker compose build \
+          -t $username/pipelines:latest
+
+      - name: Push image
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          docker push $username/pipelines:latest

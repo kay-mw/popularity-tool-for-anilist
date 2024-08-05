@@ -3,6 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      secrets:
+        - AZURE_ODBC
+        - STORAGE_CONNECTION_STRING
     command: ["dagster-webserver", "-h", "0.0.0.0", "-p", "3000"]
     ports:
       - "3000:3000"
@@ -15,6 +18,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      secrets:
+        - AZURE_ODBC
+        - STORAGE_CONNECTION_STRING
     command: ["dagster-daemon", "run"]
     environment:
       - DAGSTER_HOME=/opt/dagster/dagster_home
@@ -23,3 +29,9 @@ services:
 
 volumes:
   dagster_home:
+
+secrets:
+  azure_odbc:
+    environment: AZURE_ODBC
+  storage_connection_string:
+    environment: STORAGE_CONNECTION_STRING
