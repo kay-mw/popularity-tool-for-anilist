@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   dagster-webserver:
     build:
@@ -12,9 +10,6 @@ services:
       - DAGSTER_HOME=/opt/dagster/dagster_home
     volumes:
       - dagster_home:/opt/dagster/dagster_home
-    secrets:
-      - STORAGE_CONNECTION_STRING
-      - AZURE_ODBC
 
   dagster-daemon:
     build:

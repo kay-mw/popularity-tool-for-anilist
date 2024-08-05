@@ -10,4 +10,7 @@ WORKDIR ${DAGSTER_HOME}
 
 RUN pip install -e ".[dev]"
 
+RUN --mount=type=secret,id=AZURE_ODBC \
+	--mount=type=secret,id=STORAGE_CONNECTION_STRING
+
 EXPOSE 3000
