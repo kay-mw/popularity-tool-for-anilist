@@ -32,6 +32,6 @@ volumes:
 
 secrets:
   azure_odbc:
-    environment: AZURE_ODBC
+    external: true
   storage_connection_string:
-    environment: STORAGE_CONNECTION_STRING
+    external: true
