@@ -33,8 +33,7 @@ jobs:
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
-          docker compose build \
-          -t $username/pipelines:latest
+          docker compose build
 
       - name: Push image
         env:
