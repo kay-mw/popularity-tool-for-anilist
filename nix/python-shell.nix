@@ -30,7 +30,7 @@ shell = pkgs.mkShell {
       # Allow the use of wheels.
       SOURCE_DATE_EPOCH=$(date +%s)
       # Augment the dynamic linker path
-      export "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lib-path}"
+      export "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lib-path}:${pkgs.stdenv.cc.cc.lib}/lib"
       # Setup the virtual environment if it doesn't already exist.
       VENV=.venv
       if test ! -d $VENV; then

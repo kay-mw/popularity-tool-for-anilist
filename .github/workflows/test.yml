@@ -3,18 +3,24 @@ name: test
 on: 
   push:
     branches: [ dev ]
-    paths-ignore:
-      - "./docs"
-      - "./nix"
-      - "./sql"
-      - "./tf_deployment"
+    paths:
+      - "./app/"
+      - "./pipelines/"
+      - "./pyproject.toml"
+      - "./Dockerfile"
+      - "./tailwind.config.js"
+      - "./.github/workflows/test.yml"
+      - "./.github/workflows/lint.yml"
   pull_request:
     branches: [ main ]
-    paths-ignore:
-      - "./docs"
-      - "./nix"
-      - "./sql"
-      - "./tf_deployment"
+    paths:
+      - "./app/"
+      - "./pipelines/"
+      - "./pyproject.toml"
+      - "./Dockerfile"
+      - "./tailwind.config.js"
+      - "./.github/workflows/test.yml"
+      - "./.github/workflows/lint.yml"
 
 jobs:
   build:

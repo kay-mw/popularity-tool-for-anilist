@@ -1,0 +1,30 @@
+name: deploy-pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - pipelines/**
+      - .github/**/deploy-pipeline.yml
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: SSH (build and deploy)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd ~/popularity-tool-for-anilist/pipelines
+            git pull origin main
+            docker compose build
+            docker compose up -d

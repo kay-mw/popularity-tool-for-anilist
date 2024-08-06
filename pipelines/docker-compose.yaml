@@ -1,0 +1,29 @@
+services:
+  dagster-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["dagster-webserver", "-h", "0.0.0.0", "-p", "3000"]
+    ports:
+      - "3000:3000"
+    environment:
+      - DAGSTER_HOME=/opt/dagster/dagster_home
+    volumes:
+      - dagster_home:/opt/dagster/dagster_home
+    env_file:
+      - .env
+
+  dagster-daemon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["dagster-daemon", "run"]
+    environment:
+      - DAGSTER_HOME=/opt/dagster/dagster_home
+    volumes:
+      - dagster_home:/opt/dagster/dagster_home
+    env_file:
+      - .env
+
+volumes:
+  dagster_home:

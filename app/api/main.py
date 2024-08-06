@@ -2,43 +2,16 @@ import asyncio
 import os
 from datetime import datetime as dt
 
-import aiohttp
 import pandas as pd
 import plotly.graph_objects as go
-import requests
+from api.funcs import fetch_anilist_data, fetch_anilist_data_async, load_query
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 from plotly.offline import plot
 
 
 def fetch_data(username: str):
-    # NOTE: Define functions
-
-    def load_query(file_name: str) -> str:
-        file_path = os.path.join("./app/api/gql/", file_name)
-        with open(file_path, "r") as file:
-            return file.read()
-
-    url = "https://graphql.anilist.co"
-
-    def fetch_anilist_data(query: str, variables: dict) -> tuple[dict, pd.Series]:
-        response = requests.post(
-            url, json={"query": query, "variables": variables}, timeout=10
-        )
-        response.raise_for_status()
-        response_header = pd.Series(response.headers["Date"])
-        return response.json(), response_header
-
-    async def fetch_anilist_data_async(query: str, variables: dict) -> dict:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                url, json={"query": query, "variables": variables}, timeout=10
-            ) as response:
-                response.raise_for_status()
-                return await response.json()
-
     # NOTE: Fetch user ID
-
     query_get_id = load_query("get_id.gql")
     variables_get_id = {"name": username}
     # variables_get_id = {"name": "keejan"}  # Local testing
@@ -46,7 +19,6 @@ def fetch_data(username: str):
     anilist_id = json_response["data"]["User"]["id"]
 
     # NOTE: Fetch user scores
-
     query_user = load_query("user_query.gql")
     variables_user = {"page": 1, "id": anilist_id}
     json_response, response_header = fetch_anilist_data(query_user, variables_user)
@@ -74,7 +46,6 @@ def fetch_data(username: str):
         pass
 
     # NOTE: Make user info table
-
     user_info = pd.json_normalize(json_response, record_path=["data", "Page", "users"])
     user_info.drop("statistics.anime.scores", axis=1, inplace=True)
     user_info = pd.concat([user_info, response_header], axis=1)
@@ -87,7 +58,6 @@ def fetch_data(username: str):
     ).dt.tz_localize(None)
 
     # NOTE: Get anime info
-
     async def main():
         anime_info = pd.DataFrame()
 
@@ -121,7 +91,6 @@ def fetch_data(username: str):
     )
 
     # NOTE: Get user insights
-
     merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
 
     # Plots
@@ -185,7 +154,6 @@ def fetch_data(username: str):
     cover_image_2 = cover_image_2["data"]["Media"]["coverImage"]["extraLarge"]
 
     # NOTE: Return
-
     def taste_message(avg_score_diff):
         if abs(avg_score_diff) > 15:
             return "Woah... are you trying to be controversial or something?"
@@ -214,7 +182,6 @@ def fetch_data(username: str):
     dfs = [anime_info, user_info, user_score]
 
     # NOTE: Data upload
-
     load_dotenv()
     storage_connection_string = os.environ["STORAGE_CONNECTION_STRING"]
     blob_service_client = BlobServiceClient.from_connection_string(

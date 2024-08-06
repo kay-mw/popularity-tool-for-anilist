@@ -4,7 +4,6 @@ venv/Lib
 
 # project specific
 tf_deployment/terraform.tfvars
-.env
 *.pem
 *.pub
 app/plots
