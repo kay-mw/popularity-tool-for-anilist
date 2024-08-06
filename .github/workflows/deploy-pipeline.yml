@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev
     paths:
       - pipelines/**
       - .github/**/deploy-pipeline.yml
@@ -30,7 +29,7 @@ jobs:
           envs: STORAGE_CONNECTION_STRING,AZURE_ODBC
           script: |
             cd ~/popularity-tool-for-anilist/pipelines
-            git pull origin dev
+            git pull origin main
             touch .env
             echo STORAGE_CONNECTION_STRING="$STORAGE_CONNECTION_STRING" >> .env
             echo AZURE_ODBC="$AZURE_ODBC" >> .env
