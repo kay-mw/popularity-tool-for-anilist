@@ -4,8 +4,8 @@ on:
   push:
     branches: [ dev ]
     paths:
-      - "./app/**"
-      - "./pipelines/**"
+      - "./app/"
+      - "./pipelines/"
       - "./pyproject.toml"
       - "./Dockerfile"
       - "./tailwind.config.js"
@@ -14,8 +14,8 @@ on:
   pull_request:
     branches: [ main ]
     paths:
-      - "./app/**"
-      - "./pipelines/**"
+      - "./app/"
+      - "./pipelines/"
       - "./pyproject.toml"
       - "./Dockerfile"
       - "./tailwind.config.js"
