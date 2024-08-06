@@ -19,13 +19,15 @@ jobs:
 
       - name: SSH (build and deploy)
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
+          AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
         with:
           host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
-          AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
+          envs: STORAGE_CONNECTION_STRING,AZURE_ODBC
           script: |
             pwd
             cd ~/popularity-tool-for-anilist/pipelines
