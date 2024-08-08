@@ -4,41 +4,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="../static/output.css" rel="stylesheet">
+        <script src="../static/fadein.js"></script>
         <link rel="icon" type="image/x-icon" href="../static/favicon.ico">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
               rel="stylesheet">
         <title>How Popular is Your Anime Taste?</title>
-        <style>
-            .fade-in {
-                opacity: 0;
-                transition: opacity 2s ease-in-out;
-            }
-            .fade-in.visible {
-                opacity: 1;
-            }
-        </style>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                function loading() {
-                    document.querySelector(".loader").style.display = "block";
-                    document.querySelectorAll(".content").forEach(function(el) {
-                        el.style.display = "none";
-                    });
-                }
-
-                document.querySelector("form").addEventListener('submit', function() {
-                    loading();
-                });
-
-                setTimeout(function() {
-                    document.querySelectorAll('.fade-in').forEach(function(el) {
-                        el.classList.add('visible');
-                    });
-                }, 100);
-            });
-        </script>
     </head>
     <body class="bg-base-100 flex flex-col items-center justify-center min-h-screen font-dm-sans font-medium">
         <div class="loading loading-infinity loading-lg loader"
