@@ -19,7 +19,19 @@
             <div class="max-w-[60rem] space-y-6">
                 <div class="min-h-screen flex flex-col justify-center">
                     <div class="hero hero-content p-10 bg-neutral shadow-2xl rounded border border-secondary">
-                        <h1 class="text-primary text-left font-medium text-9xl">{{ taste_message }}</h1>
+                        {% if avg_score_diff >= 20 %}
+                            <h1 class="text-primary text-left font-medium text-7xl">Huh. Are you trying to be controversial or something?</h1>
+                        {% elif avg_score_diff >= 15 %}
+                            <h1 class="text-primary text-left font-medium text-7xl">You have very unpopular taste!</h1>
+                        {% elif avg_score_diff >= 10 %}
+                            <h1 class="text-primary text-left font-medium text-7xl">You have goldilocks taste! Not too popular, not too unpopular.</h1>
+                        {% elif avg_score_diff >= 5 %}
+                            <h1 class="text-primary text-left font-medium text-7xl">You have very popular taste!</h1>
+                        {% elif avg_score_diff < 5 %}
+                            <h1 class="text-primary text-left font-medium text-7xl">You ARE the Anilist average.</h1>
+                        {% else %}
+                            <h1 class="text-primary text-left font-medium text-7xl">I have no words.</h1>
+                        {% endif %}
                         <div class="divider divider-horizontal"></div>
                         <div class="grid grid-cols-2">
                             <h3 class="col-start-1 col-span-2 text-white text-center text-4xl">
@@ -43,7 +55,9 @@
                 <div class="flex flex-col w-full h-screen justify-center">
                     <div class="hero hero-content p-10 bg-neutral shadow-2xl rounded border border-secondary">
                         <div class="grid place-items-center w-full h-full">
-                            <h1 class="text-primary font-medium text-6xl">Your Scores vs. the Anilist Average</h3>
+                            <h1 class="text-primary font-medium text-6xl">
+                                Your Scores vs. the Anilist Average
+                            </h3>
                             <div class="divider w-full h-full"></div>
                             <div class="w-full h-full">
                                 {% autoescape off %}
