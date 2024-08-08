@@ -18,11 +18,11 @@ module.exports = {
 
           accent: "#c45a00",
 
-          neutral: "#1c1917",
+          neutral: "#171717",
 
           "base-100": "#141414",
 
-          info: "#111827",
+          info: "#262626",
 
           success: "#00ff81",
 

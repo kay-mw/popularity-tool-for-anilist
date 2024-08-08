@@ -105,20 +105,28 @@ def fetch_data(username: str):
             marker=dict(color=color),
         )
 
-    user_score_trace = generate_plot_data("user_score", "red", "Your Scores")
-    average_score_trace = generate_plot_data("average_score", "blue", "AniList Average")
+    user_score_trace = generate_plot_data("user_score", "#00bbbc", "Your Scores")
+    average_score_trace = generate_plot_data(
+        "average_score", "#00c79c", "AniList Average"
+    )
     fig = go.Figure(data=[user_score_trace, average_score_trace])
     fig.update_layout(
         template="plotly_dark",
-        title="Your Scores vs. The AniList Average",
+        title="",
         xaxis_title="Score",
         yaxis_title="Count",
         legend_title="",
         legend=dict(yanchor="top", y=1.03, xanchor="left", x=0.01),
         showlegend=True,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     plt_div = plot(
-        fig, output_type="div", include_plotlyjs=False, show_link=False, link_text=""
+        fig,
+        output_type="div",
+        include_plotlyjs=False,
+        show_link=False,
+        link_text="",
     )
 
     # Scores
