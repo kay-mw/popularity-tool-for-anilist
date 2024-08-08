@@ -2,25 +2,27 @@ name: lint
 
 on: 
   push:
-    branches: [ dev ]
+    branches:
+      - dev
     paths:
-      - "./app/"
-      - "./pipelines/"
-      - "./pyproject.toml"
-      - "./Dockerfile"
-      - "./tailwind.config.js"
-      - "./.github/workflows/test.yml"
-      - "./.github/workflows/lint.yml"
+      - 'app/**'
+      - 'pipelines/**'
+      - 'pyproject.toml'
+      - 'Dockerfile'
+      - 'tailwind.config.js'
+      - '.github/workflows/test.yml'
+      - '.github/workflows/lint.yml'
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
     paths:
-      - "./app/"
-      - "./pipelines/"
-      - "./pyproject.toml"
-      - "./Dockerfile"
-      - "./tailwind.config.js"
-      - "./.github/workflows/test.yml"
-      - "./.github/workflows/lint.yml"
+      - 'app/**'
+      - 'pipelines/**'
+      - 'pyproject.toml'
+      - 'Dockerfile'
+      - 'tailwind.config.js'
+      - '.github/workflows/test.yml'
+      - '.github/workflows/lint.yml'
 
 jobs:
   build:
