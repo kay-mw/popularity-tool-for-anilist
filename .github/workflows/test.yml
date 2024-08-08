@@ -2,7 +2,8 @@ name: test
 
 on: 
   push:
-    branches: [ dev ]
+    branches:
+      - dev
     paths:
       - ./app/
       - ./pipelines/
@@ -12,7 +13,8 @@ on:
       - ./.github/workflows/test.yml
       - ./.github/workflows/lint.yml
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
     paths:
       - ./app/
       - ./pipelines/
