@@ -162,16 +162,6 @@ def fetch_data(username: str):
     cover_image_2 = cover_image_2["data"]["Media"]["coverImage"]["extraLarge"]
 
     # NOTE: Return
-    def taste_message(avg_score_diff):
-        if abs(avg_score_diff) > 15:
-            return "Woah... are you trying to be controversial or something?"
-        elif abs(avg_score_diff) > 10:
-            return "You have pretty unpopular taste!"
-        elif abs(avg_score_diff) > 5:
-            return "You have kinda unpopular taste..."
-        else:
-            return "You have very popular taste!"
-
     insights = {
         "image1": cover_image_1,
         "image2": cover_image_2,
@@ -182,7 +172,6 @@ def fetch_data(username: str):
         "title_max": title_max,
         "title_min": title_min,
         "avg_score_diff": avg_score_diff,
-        "taste_message": taste_message(avg_score_diff),
         "true_score_diff": true_score_diff,
         "plot": plt_div,
     }
