@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="../static/output.css" rel="stylesheet">
         <script src="../static/fadein.js"></script>
+        <script src="../static/loader.js"></script>
         <link rel="icon" type="image/x-icon" href="../static/favicon.ico">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +17,9 @@
         <div class="loading loading-infinity loading-lg loader"
              style="display: none"></div>
         <div class="text-center w-full max-w-xl fade-in content">
-            <h1 class="text-primary text-2xl sm:text-3xl md:text-4xl font-bold mb-6">Have you ever wondered how controversial your anime taste is?</h1>
+            <h1 class="text-primary text-2xl sm:text-3xl md:text-4xl font-bold mb-6">
+                Have you ever wondered how controversial your anime taste is?
+            </h1>
             <div class="divider divider-primary mb-6"></div>
             <h3 class="text-white text-lg sm:text-xl md:text-2xl mb-6">Find out by entering your AniList username below...</h3>
             <form class="flex flex-col items-center justify-center space-y-4"
@@ -28,10 +31,7 @@
                        name="username"
                        placeholder="Your AniList username"
                        required>
-                <button class="w-full btn btn-outline btn-secondary text-lg"
-                        type="submit">
-                    Submit
-                </button>
+                <button class="w-full btn btn-outline btn-secondary text-lg" type="submit">Submit</button>
             </form>
         </div>
     </body>

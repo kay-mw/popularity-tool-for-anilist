@@ -4,13 +4,14 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="../static/output.css" rel="stylesheet">
+        <script src="../static/fadein.js"></script>
+        <script src="../static/loader.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <link rel="icon" type="image/x-icon" href="../static/favicon.ico">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
               rel="stylesheet">
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-        <script src="../static/fadein.js"></script>
         <title>How Popular is Your Anime Taste?</title>
     </head>
     <body class="bg-base-100 flex flex-col items-center justify-center min-h-screen font-dm-sans font-normal scroll-smooth fade-in">
@@ -18,20 +19,32 @@
             <!--Main-->
             <div class="w-full max-w-4xl px-4 sm:px-6 lg:px-8 space-y-8">
                 <div class="min-h-screen flex flex-col justify-center">
-                    <div class="hero p-4 sm:p-8 bg-neutral shadow-2xl rounded border border-secondary">
+                    <div class="hero p-4 sm:p-8 bg-neutral rounded border border-secondary">
                         <div class="hero-content flex-col lg:flex-row">
                             {% if avg_score_diff >= 20 %}
-                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">Huh. Are you trying to be controversial or something?</h1>
+                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">
+                                    Huh. Are you trying to be controversial or something?
+                                </h1>
                             {% elif avg_score_diff >= 15 %}
-                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">You have very unpopular taste!</h1>
+                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">
+                                    You have very unpopular taste!
+                                </h1>
                             {% elif avg_score_diff >= 10 %}
-                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">You have goldilocks taste! Not too popular, not too unpopular.</h1>
+                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">
+                                    You have goldilocks taste! Not too popular, not too unpopular.
+                                </h1>
                             {% elif avg_score_diff >= 5 %}
-                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">You have very popular taste!</h1>
+                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">
+                                    You have very popular taste!
+                                </h1>
                             {% elif avg_score_diff < 5 %}
-                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">You ARE the Anilist average.</h1>
+                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">
+                                    You ARE the Anilist average.
+                                </h1>
                             {% else %}
-                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">I have no words.</h1>
+                                <h1 class="text-primary text-center lg:text-left font-medium text-3xl sm:text-5xl lg:text-6xl mb-4">
+                                    I have no words.
+                                </h1>
                             {% endif %}
                             <div class="divider lg:divider-horizontal"></div>
                             <div class="flex flex-col space-y-4">
@@ -55,7 +68,7 @@
                 </div>
                 <!--Plot-->
                 <div class="flex flex-col w-full min-h-screen justify-center">
-                    <div class="hero p-4 sm:p-8 bg-neutral shadow-2xl rounded border border-secondary">
+                    <div class="hero p-4 sm:p-8 bg-neutral rounded border border-secondary">
                         <div class="hero-content flex-col w-full">
                             <h1 class="text-primary font-medium text-2xl sm:text-4xl lg:text-5xl mb-4 text-center">
                                 Your Scores vs. the Anilist Average
@@ -71,13 +84,15 @@
                 </div>
                 <!--Takes-->
                 <div class="flex flex-col min-h-screen justify-center">
-                    <div class="hero p-4 sm:p-8 bg-neutral shadow-2xl rounded border border-secondary">
+                    <div class="hero p-4 sm:p-8 bg-neutral rounded border border-secondary">
                         <div class="hero-content flex-col lg:flex-row">
                             <!--Most Popular-->
                             <div class="flex flex-col items-center text-center mb-8 lg:mb-0 lg:mr-8">
-                                <div class="card bg-base-100 image-full shadow-xl">
+                                <div class="card bg-base-100 image-full">
                                     <figure>
-                                        <img src="{{ image2 }}" alt="most popular take cover image" class="w-full h-auto">
+                                        <img src="{{ image2 }}"
+                                             alt="most popular take cover image"
+                                             class="w-full h-auto">
                                     </figure>
                                     <div class="card-body">
                                         <h2 class="card-title text-primary text-2xl sm:text-3xl lg:text-4xl">Your Most Popular Take...</h2>
@@ -97,7 +112,9 @@
                             <div class="flex flex-col items-center text-center">
                                 <div class="card bg-neutral image-full">
                                     <figure>
-                                        <img src="{{ image1 }}" alt="most unpopular take cover image" class="w-full h-auto">
+                                        <img src="{{ image1 }}"
+                                             alt="most unpopular take cover image"
+                                             class="w-full h-auto">
                                     </figure>
                                     <div class="card-body">
                                         <h2 class="card-title text-primary text-2xl sm:text-3xl lg:text-4xl">Your Most Unpopular Take...</h2>
@@ -116,9 +133,9 @@
                         </div>
                     </div>
                 </div>
-                <form class="flex justify-center pb-4" action="{{ url_for("home") }}">
+                <a class="flex justify-center pb-4" href="{{ url_for("home") }}">
                     <button class="btn btn-outline btn-secondary text-base">Return Home</button>
-                </form>
+                </a>
             </div>
         {% endblock content %}
     </body>
