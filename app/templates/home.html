@@ -12,26 +12,26 @@
               rel="stylesheet">
         <title>How Popular is Your Anime Taste?</title>
     </head>
-    <body class="bg-base-100 flex flex-col items-center justify-center min-h-screen font-dm-sans font-medium">
+    <body class="bg-base-100 flex flex-col items-center justify-center min-h-screen font-dm-sans font-medium p-4">
         <div class="loading loading-infinity loading-lg loader"
              style="display: none"></div>
-        <div class="text-center max-w-7xl fade-in content">
-            <h1 class="text-primary text-4xl font-bold">Have you ever wondered how controversial your anime taste is?</h1>
-            <div class="divider divider-primary"></div>
-        </div>
-        <div class="text-center px-4 max-w-[38rem] w-full fade-in content">
-            <h3 class="prose text-white text-2xl mb-3">Find out by entering your AniList username below...</h3>
-            <form class="flex flex-col items-center justify-center space-y-2"
+        <div class="text-center w-full max-w-xl fade-in content">
+            <h1 class="text-primary text-2xl sm:text-3xl md:text-4xl font-bold mb-6">Have you ever wondered how controversial your anime taste is?</h1>
+            <div class="divider divider-primary mb-6"></div>
+            <h3 class="text-white text-lg sm:text-xl md:text-2xl mb-6">Find out by entering your AniList username below...</h3>
+            <form class="flex flex-col items-center justify-center space-y-4"
                   method="POST"
                   action="/">
-                <input class="input input-secondary input-bordered w-full text-white"
+                <input class="input input-secondary input-bordered w-full text-white text-lg"
                        type="text"
                        aria-label="username-text-input"
                        name="username"
+                       placeholder="Your AniList username"
                        required>
-                <input class="w-full btn btn-outline btn-secondary text-base"
-                       type="submit"
-                       value="Submit">
+                <button class="w-full btn btn-outline btn-secondary text-lg"
+                        type="submit">
+                    Submit
+                </button>
             </form>
         </div>
     </body>
