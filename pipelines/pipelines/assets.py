@@ -14,7 +14,7 @@ def upload_data() -> None:
 
     container_id = "projectanilist"
     container_client = blob_service_client.get_container_client(container_id)
-    yesterday = dt.date.today() - dt.timedelta(days = 1)
+    yesterday = dt.date.today() - dt.timedelta(days=1)
     blobs = container_client.list_blobs(name_starts_with=f"data/{yesterday}")
     for blob in blobs:
         blob_name = blob["name"]
