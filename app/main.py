@@ -32,7 +32,11 @@ async def home(request: Request):
 
 @app.post("/")
 def data_fetcher(username: Annotated[str, Form()]):
-    dfs, anilist_id, insights = fetch_data(username)
+    try:
+        dfs, anilist_id, insights = fetch_data(username)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
     session_id = str(uuid.uuid4())
 
     conn = sqlite3.connect(DATABASE_NAME)
