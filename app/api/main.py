@@ -4,6 +4,7 @@ from datetime import datetime as dt
 
 import pandas as pd
 import plotly.graph_objects as go
+import requests
 from api.funcs import fetch_anilist_data, fetch_anilist_data_async, load_query
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
@@ -15,7 +16,18 @@ def fetch_data(username: str):
     query_get_id = load_query("get_id.gql")
     variables_get_id = {"name": username}
     # variables_get_id = {"name": "keejan"}  # Local testing
-    json_response, response_header = fetch_anilist_data(query_get_id, variables_get_id)
+    json_response = None
+    try:
+        json_response, response_header = fetch_anilist_data(
+            query_get_id, variables_get_id
+        )
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            raise ValueError(f"Username {username} not found.")
+
+    if json_response is None:
+        raise ValueError(f"Failed to fetch data for {username}.")
+
     anilist_id = json_response["data"]["User"]["id"]
 
     # NOTE: Fetch user scores
