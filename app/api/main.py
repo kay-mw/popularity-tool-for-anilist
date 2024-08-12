@@ -12,10 +12,11 @@ from plotly.offline import plot
 
 
 def fetch_data(username: str):
+
     # NOTE: Fetch user ID
     query_get_id = load_query("get_id.gql")
-    variables_get_id = {"name": username}
-    # variables_get_id = {"name": "keejan"}  # Local testing
+    # variables_get_id = {"name": username}
+    variables_get_id = {"name": "keejan"}  # Local testing
     json_response = None
     try:
         json_response, response_header = fetch_anilist_data(
@@ -101,6 +102,13 @@ def fetch_data(username: str):
         },
         inplace=True,
     )
+
+    genres = anime_info.explode(column="genres", ignore_index=False)
+    averages = genres.groupby(by="genres", as_index=False)["average_score"].mean()
+    count = genres["genres"].value_counts(sort=False)
+    genre_insights = averages.merge(count, on="genres", how="left")
+    print(genre_insights)
+    # TODO: Normalize results using count
 
     # NOTE: Get user insights
     merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
@@ -199,12 +207,12 @@ def fetch_data(username: str):
     container_id = "projectanilist"
 
     names = ["anime_info", "user_info", "user_score"]
+    date = dt.today().strftime("%Y-%m-%d")
     for i, df in enumerate(dfs):
         name = names[i]
         file_path = os.path.join("./app/api/", f"{name}.csv")
         df.to_csv(path_or_buf=file_path)
 
-        date = dt.today().strftime("%Y-%m-%d")
         blob_path = f"data/{date}/{anilist_id}/{name}.csv"
         blob_object = blob_service_client.get_blob_client(
             container=container_id, blob=blob_path
