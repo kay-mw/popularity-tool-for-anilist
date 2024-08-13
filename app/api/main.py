@@ -8,6 +8,7 @@ import requests
 from api.funcs import fetch_anilist_data, fetch_anilist_data_async, load_query
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
+from numpy._typing import _UnknownType
 from plotly.offline import plot
 
 
@@ -103,15 +104,47 @@ def fetch_data(username: str):
         inplace=True,
     )
 
-    genres = anime_info.explode(column="genres", ignore_index=False)
-    averages = genres.groupby(by="genres", as_index=False)["average_score"].mean()
-    count = genres["genres"].value_counts(sort=False)
-    genre_insights = averages.merge(count, on="genres", how="left")
-    print(genre_insights)
-    # TODO: Normalize results using count
-
     # NOTE: Get user insights
     merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
+
+    # NOTE: Genre insights
+    genres = merged_dfs.explode(column="genres", ignore_index=False)
+    averages = genres.groupby(by="genres", as_index=False).agg(
+        {
+            "average_score": "mean",
+            "user_score": "mean",
+        }
+    )
+    count = genres["genres"].value_counts(sort=False)
+    genre_insights = averages.merge(count, on="genres", how="left")
+
+    def bayesian_average(
+        weight: pd.Series | float | int,
+        default: pd.Series | float | int,
+        count: pd.Series | pd.DataFrame,
+        score: pd.Series | pd.DataFrame,
+    ) -> pd.Series | float:
+        weighted_rating = (weight * default + count * score) / (weight + count)
+        return weighted_rating
+
+
+    genre_insights["weighted_average"] = bayesian_average(
+        weight=genre_insights["count"].mean(),
+        default=genre_insights["average_score"].mean(),
+        count=genre_insights["count"],
+        score=genre_insights["average_score"],
+    )
+
+    genre_insights["weighted_user"] = bayesian_average(
+        weight=genre_insights["count"].mean(),
+        default=genre_insights["user_score"].mean(),
+        count=genre_insights["count"],
+        score=genre_insights["user_score"],
+    )
+
+    print(genre_insights.sort_values(by="weighted_user", ascending=False))
+
+    # TODO It would be nice to display their top three(?) favourite genres, and their highest scored anime from those genres.
 
     # Plots
     def generate_plot_data(column: str, color: str, name: str):
