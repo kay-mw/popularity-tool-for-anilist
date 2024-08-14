@@ -6,7 +6,7 @@ from typing import Annotated, Optional
 from api.main import fetch_data
 from database import init_db
 from fastapi import Cookie, FastAPI, Form, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -17,6 +17,7 @@ app.mount(
     StaticFiles(directory="./app/static"),
     name="static",
 )
+
 
 templates = Jinja2Templates(directory="./app/templates")
 

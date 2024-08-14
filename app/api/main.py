@@ -8,8 +8,14 @@ import requests
 from api.funcs import fetch_anilist_data, fetch_anilist_data_async, load_query
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
-from numpy._typing import _UnknownType
 from plotly.offline import plot
+
+# from app.api.funcs import (  # Local testing
+#     fetch_anilist_data,
+#     fetch_anilist_data_async,
+#     load_query,
+# )
+
 
 
 def fetch_data(username: str):
@@ -104,7 +110,6 @@ def fetch_data(username: str):
         inplace=True,
     )
 
-    # NOTE: Get user insights
     merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
 
     # NOTE: Genre insights
@@ -127,7 +132,6 @@ def fetch_data(username: str):
         weighted_rating = (weight * default + count * score) / (weight + count)
         return weighted_rating
 
-
     genre_insights["weighted_average"] = bayesian_average(
         weight=genre_insights["count"].mean(),
         default=genre_insights["average_score"].mean(),
@@ -142,11 +146,62 @@ def fetch_data(username: str):
         score=genre_insights["user_score"],
     )
 
-    print(genre_insights.sort_values(by="weighted_user", ascending=False))
+    genre_insights["weighted_diff"] = (
+        genre_insights["weighted_user"] - genre_insights["weighted_average"]
+    )
+    genre_insights = genre_insights.sort_values(by="weighted_diff", ascending=False)
 
-    # TODO It would be nice to display their top three(?) favourite genres, and their highest scored anime from those genres.
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                x=genre_insights["genres"],
+                y=genre_insights["weighted_user"],
+                marker=dict(color="#00bbbc"),
+                name="Your Scores",
+            ),
+            go.Bar(
+                x=genre_insights["genres"],
+                y=genre_insights["weighted_average"],
+                marker=dict(color="#00c79c"),
+                name="AniList Average",
+            ),
+        ],
+    )
+    ymin = min(
+        genre_insights["weighted_user"].min(),
+        genre_insights["weighted_average"].min()
+    )
+    ymax = max(
+        genre_insights["weighted_user"].max(),
+        genre_insights["weighted_average"].max()
+    )
+    fig.update_yaxes(
+        range=[
+            ymin - 10,
+            ymax + 1
+        ]
+    )
+    fig.update_layout(
+        template="plotly_dark",
+        title="",
+        xaxis_title="Genre",
+        yaxis_title="Score Diff vs. Avg User",
+        legend_title="",
+        showlegend=True,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+    )
+    plt_div_genres = plot(
+        fig,
+        output_type="div",
+        include_plotlyjs=False,
+        show_link=False,
+        link_text="",
+    )
 
-    # Plots
+    # TODO: It would be nice to display their top three(?) favourite genres, and their highest scored anime from those genres.
+
+    # NOTE: Plots
     def generate_plot_data(column: str, color: str, name: str):
         plot_df = merged_dfs.value_counts(column).reset_index().sort_values(by=column)
         return go.Scatter(
@@ -174,7 +229,7 @@ def fetch_data(username: str):
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
     )
-    plt_div = plot(
+    plt_div_main = plot(
         fig,
         output_type="div",
         include_plotlyjs=False,
@@ -182,7 +237,7 @@ def fetch_data(username: str):
         link_text="",
     )
 
-    # Scores
+    # NOTE: Scores
     merged_dfs["score_diff"] = merged_dfs["user_score"] - merged_dfs["average_score"]
 
     float_avg_score_diff = abs(merged_dfs.loc[:, "score_diff"]).mean()
@@ -226,7 +281,8 @@ def fetch_data(username: str):
         "title_min": title_min,
         "avg_score_diff": avg_score_diff,
         "true_score_diff": true_score_diff,
-        "plot": plt_div,
+        "plot_main": plt_div_main,
+        "plot_genres": plt_div_genres,
     }
 
     dfs = [anime_info, user_info, user_score]
