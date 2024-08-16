@@ -21,8 +21,8 @@ def fetch_data(username: str):
 
     # NOTE: Fetch user ID
     query_get_id = load_query("get_id.gql")
-    variables_get_id = {"name": username}
-    # variables_get_id = {"name": "keejan"}  # Local testing
+    # variables_get_id = {"name": username}
+    variables_get_id = {"name": "Kulkuljator"}  # Local testing
     json_response = None
     try:
         json_response, response_header = fetch_anilist_data(
@@ -193,15 +193,22 @@ def fetch_data(username: str):
     genre_max = round(float(max_genre_df["weighted_diff"].iloc[0]), 2)
     genre_max_name = str(max_genre_df["genres"].iloc[0])
 
-    genre_fav = genres.loc[
-        (genres["genres"] == genre_max_name)
-        & (genres["user_score"] == genres["user_score"].max())
-    ]
-    genre_fav["score_diff"] = genre_fav["user_score"] - genre_fav["average_score"]
-    genre_fav = genre_fav.sort_values(by="score_diff", ascending=False)
-    genre_fav_title = genre_fav["title_romaji"].iloc[0]
-    genre_fav_u_score = int(genre_fav["user_score"].iloc[0])
-    genre_fav_avg_score = int(genre_fav["average_score"].iloc[0])
+    if genre_max > 0:
+        genre_fav = genres.loc[genres["genres"] == genre_max_name]
+        genre_fav = genre_fav.loc[genre_fav["user_score"] == genre_fav["user_score"].max()]
+        genre_fav["score_diff"] = genre_fav["user_score"] - genre_fav["average_score"]
+        genre_fav = genre_fav.sort_values(by="score_diff", ascending=False)
+        genre_fav_title = genre_fav["title_romaji"].iloc[0]
+        genre_fav_u_score = int(genre_fav["user_score"].iloc[0])
+        genre_fav_avg_score = int(genre_fav["average_score"].iloc[0])
+    else:
+        genre_fav = genres.loc[genres["genres"] == genre_max_name]
+        genre_fav = genre_fav.loc[genre_fav["user_score"] == genre_fav["user_score"].min()]
+        genre_fav["score_diff"] = genre_fav["user_score"] - genre_fav["average_score"]
+        genre_fav = genre_fav.sort_values(by="score_diff", ascending=True)
+        genre_fav_title = genre_fav["title_romaji"].iloc[0]
+        genre_fav_u_score = int(genre_fav["user_score"].iloc[0])
+        genre_fav_avg_score = int(genre_fav["average_score"].iloc[0])
 
     fig = go.Figure(
         data=[

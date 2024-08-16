@@ -50,7 +50,7 @@
         </div>
     </div>
 {% endmacro %}
-{% macro img_genre(image3, genre_fav_title, genre_fav_u_score, genre_fav_avg_score, genre_max_name, font_base, font_small, font_large, sub_base, sub_small, sub_large) %}
+{% macro img_genre(image3, genre_fav_title, genre_fav_u_score, genre_fav_avg_score, genre_max, genre_max_name, font_base, font_small, font_large, sub_base, sub_small, sub_large) %}
     <div class="flex flex-col min-h-screen justify-center">
         <div class="hero p-4 sm:p-8 bg-neutral rounded border border-secondary">
             <div class="hero-content flex-col lg:flex-row">
@@ -63,9 +63,15 @@
                                  class="w-full h-auto">
                         </figure>
                         <div class="card-body">
+                            {% if genre_max >= 0 %}
                             <h2 class="card-title text-primary justify-center {{ font_base }} {{ font_small }} {{ font_large }}">
                                 Your most controversial {{ genre_max_name }} favourite...
                             </h2>
+                            {% else %}
+                            <h2 class="card-title text-primary justify-center {{ font_base }} {{ font_small }} {{ font_large }}">
+                                Your most controversial {{ genre_max_name }} take...
+                            </h2>
+                            {% endif %}
                             <div class="divider"></div>
                             <p class="text-primary font-medium {{ font_base }} {{ font_small }} {{ font_large }}">{{ genre_fav_title }}</p>
                             <div class="card-actions justify-end">
