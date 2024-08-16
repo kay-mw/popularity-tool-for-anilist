@@ -1,0 +1,48 @@
+{% macro hero(avg_score_diff, true_score_diff, font_base, font_small, font_large, sub_base, sub_small, sub_large) %}
+    <div class="hero p-4 sm:p-8 bg-neutral rounded border border-secondary">
+        <div class="hero-content flex-col lg:flex-row">
+            {% if avg_score_diff >= 20 %}
+                <h1 class="text-primary text-center lg:text-left font-medium {{ font_base }} {{ font_small }} {{ font_large }} mb-4">
+                    Huh. Are you trying to be controversial or something?
+                </h1>
+            {% elif avg_score_diff >= 15 %}
+                <h1 class="text-primary text-center lg:text-left font-medium {{ font_base }} {{ font_small }} {{ font_large }} mb-4">
+                    You have very unpopular taste!
+                </h1>
+            {% elif avg_score_diff >= 10 %}
+                <h1 class="text-primary text-center lg:text-left font-medium {{ font_base }} {{ font_small }} {{ font_large }} mb-4">
+                    You have goldilocks taste! Not too popular, not too unpopular.
+                </h1>
+            {% elif avg_score_diff >= 5 %}
+                <h1 class="text-primary text-center lg:text-left font-medium {{ font_base }} {{ font_small }} {{ font_large }} mb-4">
+                    You have very popular taste!
+                </h1>
+            {% elif avg_score_diff < 5 %}
+                <h1 class="text-primary text-center lg:text-left font-medium {{ font_base }} {{ font_small }} {{ font_large }} mb-4">
+                    You ARE the Anilist average.
+                </h1>
+            {% else %}
+                <h1 class="text-primary text-center lg:text-left font-medium {{ font_base }} {{ font_small }} {{ font_large }} mb-4">
+                    I have no words.
+                </h1>
+            {% endif %}
+            <div class="divider lg:divider-horizontal"></div>
+            <div class="flex flex-col space-y-4">
+                <h3 class="text-white text-center lg:text-left {{ sub_base }} {{ sub_small }} {{ sub_large }}">
+                    Your scores differ by <span class="text-primary font-medium">{{ avg_score_diff }}</span> points compared to the average AniList user!
+                </h3>
+                <div class="divider"></div>
+                {% if true_score_diff >= 0 %}
+                    <h3 class="text-white text-center lg:text-left {{ sub_base }} {{ sub_small }} {{ sub_large }}">
+                        Specifically, you tend to be more positive,
+                        scoring anime <span class="text-primary">{{ true_score_diff }}</span> points higher on average!
+                    </h3>
+                {% else %}
+                    <h3 class="text-white text-center lg:text-left {{ sub_base }} {{ sub_small }} {{ sub_large }}">
+                        Specifically, you tend to be more negative, scoring anime <span class="text-primary font-medium">{{ true_score_diff }}</span> points lower on average!
+                    </h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}

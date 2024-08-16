@@ -527,7 +527,7 @@ html {
   --nc: 84.0925% 0 0;
   --inc: 85.3724% 0 0;
   --suc: 17.5044% 0.046723 151.34776;
-  --wac: 17.4992% 0.035818 92.679838;
+  --wac: 12.9006% 0.043081 16.4393;
   --erc: 15.1857% 0.03046 4.334987;
   --rounded-box: 1rem;
   --rounded-btn: 0.5rem;
@@ -544,7 +544,7 @@ html {
   --b1: 19.1251% 0 0;
   --in: 26.8618% 0 0;
   --su: 87.522% 0.233616 151.34776;
-  --wa: 87.496% 0.179089 92.679838;
+  --wa: 64.5032% 0.215403 16.4393;
   --er: 75.9286% 0.152301 4.334987;
 }
 
@@ -1642,6 +1642,14 @@ html {
   max-width: 36rem;
 }
 
+.max-w-5xl {
+  max-width: 64rem;
+}
+
+.max-w-6xl {
+  max-width: 72rem;
+}
+
 .flex-col {
   flex-direction: column;
 }
@@ -1748,6 +1756,21 @@ html {
   line-height: 1.75rem;
 }
 
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -1767,6 +1790,11 @@ html {
 .text-primary {
   --tw-text-opacity: 1;
   color: var(--fallback-p,oklch(var(--p)/var(--tw-text-opacity)));
+}
+
+.text-warning {
+  --tw-text-opacity: 1;
+  color: var(--fallback-wa,oklch(var(--wa)/var(--tw-text-opacity)));
 }
 
 .text-white {
@@ -1847,6 +1875,16 @@ html {
     font-size: 1.25rem;
     line-height: 1.75rem;
   }
+
+  .sm\:text-6xl {
+    font-size: 3.75rem;
+    line-height: 1;
+  }
+
+  .sm\:text-7xl {
+    font-size: 4.5rem;
+    line-height: 1;
+  }
 }
 
 @media (min-width: 768px) {
@@ -1900,6 +1938,16 @@ html {
 
   .lg\:text-6xl {
     font-size: 3.75rem;
+    line-height: 1;
+  }
+
+  .lg\:text-7xl {
+    font-size: 4.5rem;
+    line-height: 1;
+  }
+
+  .lg\:text-8xl {
+    font-size: 6rem;
     line-height: 1;
   }
 }
