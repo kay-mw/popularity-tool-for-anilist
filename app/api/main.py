@@ -195,7 +195,9 @@ def fetch_data(username: str):
 
     if genre_max > 0:
         genre_fav = genres.loc[genres["genres"] == genre_max_name]
-        genre_fav = genre_fav.loc[genre_fav["user_score"] == genre_fav["user_score"].max()]
+        genre_fav = genre_fav.loc[
+            genre_fav["user_score"] == genre_fav["user_score"].max()
+        ]
         genre_fav["score_diff"] = genre_fav["user_score"] - genre_fav["average_score"]
         genre_fav = genre_fav.sort_values(by="score_diff", ascending=False)
         genre_fav_title = genre_fav["title_romaji"].iloc[0]
@@ -203,7 +205,9 @@ def fetch_data(username: str):
         genre_fav_avg_score = int(genre_fav["average_score"].iloc[0])
     else:
         genre_fav = genres.loc[genres["genres"] == genre_max_name]
-        genre_fav = genre_fav.loc[genre_fav["user_score"] == genre_fav["user_score"].min()]
+        genre_fav = genre_fav.loc[
+            genre_fav["user_score"] == genre_fav["user_score"].min()
+        ]
         genre_fav["score_diff"] = genre_fav["user_score"] - genre_fav["average_score"]
         genre_fav = genre_fav.sort_values(by="score_diff", ascending=True)
         genre_fav_title = genre_fav["title_romaji"].iloc[0]
