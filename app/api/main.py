@@ -148,7 +148,8 @@ def fetch_data(username: str):
     )
 
     # NOTE: Genre insights
-    # TODO: Make legend part of plot so that it doesn't take up a bunch of width on website.
+    # TODO Make legend part of plot so that it doesn't take up a bunch of width on website.
+    # TODO Show the highest scored anime from the user's most contoversial genre.
     genres = merged_dfs.explode(column="genres", ignore_index=False)
     averages = genres.groupby(by="genres", as_index=False).agg(
         {
