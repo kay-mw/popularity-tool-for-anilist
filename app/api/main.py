@@ -148,8 +148,6 @@ def fetch_data(username: str):
     )
 
     # NOTE: Genre insights
-    # TODO Make legend part of plot so that it doesn't take up a bunch of width on website.
-    # TODO Show the highest scored anime from the user's most contoversial genre.
     genres = merged_dfs.explode(column="genres", ignore_index=False)
     averages = genres.groupby(by="genres", as_index=False).agg(
         {
@@ -189,10 +187,21 @@ def fetch_data(username: str):
     genre_insights = genre_insights.sort_values(by="weighted_diff", ascending=False)
 
     max_genre_df = genre_insights.loc[
-        genre_insights["weighted_diff"].abs() == max(genre_insights["weighted_diff"].abs())
+        genre_insights["weighted_diff"].abs()
+        == max(genre_insights["weighted_diff"].abs())
     ]
     genre_max = round(float(max_genre_df["weighted_diff"].iloc[0]), 2)
     genre_max_name = str(max_genre_df["genres"].iloc[0])
+
+    genre_fav = genres.loc[
+        (genres["genres"] == genre_max_name)
+        & (genres["user_score"] == genres["user_score"].max())
+    ]
+    genre_fav["score_diff"] = genre_fav["user_score"] - genre_fav["average_score"]
+    genre_fav = genre_fav.sort_values(by="score_diff", ascending=False)
+    genre_fav_title = genre_fav["title_romaji"].iloc[0]
+    genre_fav_u_score = int(genre_fav["user_score"].iloc[0])
+    genre_fav_avg_score = int(genre_fav["average_score"].iloc[0])
 
     fig = go.Figure(
         data=[
@@ -226,6 +235,7 @@ def fetch_data(username: str):
         showlegend=True,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        legend=dict(yanchor="top", y=1, xanchor="right", x=1),
     )
     plt_div_genres = plot(
         fig,
@@ -259,18 +269,23 @@ def fetch_data(username: str):
 
     image_id_1 = int(max_diff["anime_id"].iloc[0])
     image_id_2 = int(min_diff["anime_id"].iloc[0])
+    image_id_3 = int(genre_fav["anime_id"].iloc[0])
     query_image = load_query("image_query.gql")
     variables_image_1 = {"id": image_id_1}
     variables_image_2 = {"id": image_id_2}
+    variables_image_3 = {"id": image_id_3}
     cover_image_1, response_header = fetch_anilist_data(query_image, variables_image_1)
     cover_image_2, response_header = fetch_anilist_data(query_image, variables_image_2)
+    cover_image_3, response_header = fetch_anilist_data(query_image, variables_image_3)
     cover_image_1 = cover_image_1["data"]["Media"]["coverImage"]["extraLarge"]
     cover_image_2 = cover_image_2["data"]["Media"]["coverImage"]["extraLarge"]
+    cover_image_3 = cover_image_3["data"]["Media"]["coverImage"]["extraLarge"]
 
     # NOTE: Return
     insights = {
         "image1": cover_image_1,
         "image2": cover_image_2,
+        "image3": cover_image_3,
         "u_score_max": score_max,
         "u_score_min": score_min,
         "avg_score_max": avg_max,
@@ -283,6 +298,9 @@ def fetch_data(username: str):
         "plot_genres": plt_div_genres,
         "genre_max": genre_max,
         "genre_max_name": genre_max_name,
+        "genre_fav_title": genre_fav_title,
+        "genre_fav_u_score": genre_fav_u_score,
+        "genre_fav_avg_score": genre_fav_avg_score,
     }
 
     dfs = [anime_info, user_info, user_score]

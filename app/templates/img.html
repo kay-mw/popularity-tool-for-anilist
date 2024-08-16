@@ -1,0 +1,84 @@
+{% macro img_main(image1, image2, title_min, u_score_min, avg_score_min, title_max, u_score_max, avg_score_max) %}
+    <div class="flex flex-col min-h-screen justify-center">
+        <div class="hero p-4 sm:p-8 bg-neutral rounded border border-secondary">
+            <div class="hero-content flex-col lg:flex-row">
+                <!--Most Popular-->
+                <div class="flex flex-col items-center text-center mb-8 lg:mb-0 lg:mr-8">
+                    <div class="card bg-base-100 image-full">
+                        <figure>
+                            <img src="{{ image2 }}"
+                                 alt="most popular take cover image"
+                                 class="w-full h-auto">
+                        </figure>
+                        <div class="card-body">
+                            <h2 class="card-title text-primary text-2xl sm:text-3xl lg:text-4xl">Your Most Popular Take...</h2>
+                            <div class="divider"></div>
+                            <p class="text-primary text-lg sm:text-xl">{{ title_min }}</p>
+                            <div class="card-actions justify-end">
+                                <p class="text-sm sm:text-base">
+                                    Your Score: <span class="text-primary">{{ u_score_min }}</span>
+                                    <br>
+                                    AniList Average: <span class="text-primary">{{ avg_score_min }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--Least Popular-->
+                <div class="flex flex-col items-center text-center">
+                    <div class="card bg-neutral image-full">
+                        <figure>
+                            <img src="{{ image1 }}"
+                                 alt="most unpopular take cover image"
+                                 class="w-full h-auto">
+                        </figure>
+                        <div class="card-body">
+                            <h2 class="card-title text-primary text-2xl sm:text-3xl lg:text-4xl">Your Most Unpopular Take...</h2>
+                            <div class="divider"></div>
+                            <p class="text-primary text-lg sm:text-xl">{{ title_max }}</p>
+                            <div class="card-actions justify-end">
+                                <p class="text-sm sm:text-base">
+                                    Your Score: <span class="text-primary">{{ u_score_max }}</span>
+                                    <br>
+                                    AniList Average: <span class="text-primary">{{ avg_score_max }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+{% macro img_genre(image3, genre_fav_title, genre_fav_u_score, genre_fav_avg_score, genre_max_name, font_base, font_small, font_large, sub_base, sub_small, sub_large) %}
+    <div class="flex flex-col min-h-screen justify-center">
+        <div class="hero p-4 sm:p-8 bg-neutral rounded border border-secondary">
+            <div class="hero-content flex-col lg:flex-row">
+                <!--Most Popular-->
+                <div class="flex flex-col items-center text-center mb-8 lg:mb-0 lg:mr-8">
+                    <div class="card bg-base-100 image-full">
+                        <figure>
+                            <img src="{{ image3 }}"
+                                 alt="most popular take cover image"
+                                 class="w-full h-auto">
+                        </figure>
+                        <div class="card-body">
+                            <h2 class="card-title text-primary {{ font_base }} {{ font_small }} {{ font_large }}">
+                                Your most controversial {{ genre_max_name }} favourite...
+                            </h2>
+                            <div class="divider"></div>
+                            <p class="text-primary font-medium {{ font_base }} {{ font_small }} {{ font_large }}">{{ genre_fav_title }}</p>
+                            <div class="card-actions justify-end">
+                            <p class="text-sm sm:text-base font-medium {{ sub_base }} {{ sub_small }} {{ sub_large }}">
+                                Your Score: <span class="text-primary">{{ genre_fav_u_score }}</span>
+                                    <br>
+                                AniList Average: <span class="text-primary">{{ genre_fav_avg_score }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
