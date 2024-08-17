@@ -3,19 +3,25 @@ import os
 from datetime import datetime as dt
 
 import pandas as pd
-import plotly.graph_objects as go
 import requests
 from api.funcs import fetch_anilist_data, fetch_anilist_data_async, load_query
+from api.plots import plot_genres, plot_main
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
-from plotly.offline import plot
+
+# from app.api.funcs import (  # Local testing
+#     fetch_anilist_data,
+#     fetch_anilist_data_async,
+#     load_query,
+# )
 
 
 def fetch_data(username: str):
+
     # NOTE: Fetch user ID
     query_get_id = load_query("get_id.gql")
     variables_get_id = {"name": username}
-    # variables_get_id = {"name": "keejan"}  # Local testing
+    # variables_get_id = {"name": "Kulkuljator"}  # Local testing
     json_response = None
     try:
         json_response, response_header = fetch_anilist_data(
@@ -102,46 +108,81 @@ def fetch_data(username: str):
         inplace=True,
     )
 
-    # NOTE: Get user insights
     merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
 
-    # Plots
-    def generate_plot_data(column: str, color: str, name: str):
-        plot_df = merged_dfs.value_counts(column).reset_index().sort_values(by=column)
-        return go.Scatter(
-            x=plot_df[column],
-            y=plot_df["count"],
-            mode="lines+markers",
-            name=name,
-            line=dict(color=color),
-            marker=dict(color=color),
-        )
+    # NOTE: Plots (main/scores)
+    plt_div_main = plot_main(merged_dfs=merged_dfs)
 
-    user_score_trace = generate_plot_data("user_score", "#00bbbc", "Your Scores")
-    average_score_trace = generate_plot_data(
-        "average_score", "#00c79c", "AniList Average"
+    # NOTE: Genre insights
+    genres = merged_dfs.explode(column="genres", ignore_index=False)
+    averages = genres.groupby(by="genres", as_index=False).agg(
+        {
+            "average_score": "mean",
+            "user_score": "mean",
+        }
     )
-    fig = go.Figure(data=[user_score_trace, average_score_trace])
-    fig.update_layout(
-        template="plotly_dark",
-        title="",
-        xaxis_title="Score",
-        yaxis_title="Count",
-        legend_title="",
-        legend=dict(yanchor="top", y=1.03, xanchor="left", x=0.01),
-        showlegend=True,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-    )
-    plt_div = plot(
-        fig,
-        output_type="div",
-        include_plotlyjs=False,
-        show_link=False,
-        link_text="",
+    count = genres["genres"].value_counts(sort=False)
+    genre_insights = averages.merge(count, on="genres", how="left")
+
+    def bayesian_average(
+        weight: pd.Series | float | int,
+        default: pd.Series | float | int,
+        count: pd.Series | pd.DataFrame,
+        score: pd.Series | pd.DataFrame,
+    ) -> pd.Series | float:
+        weighted_rating = (weight * default + count * score) / (weight + count)
+        return weighted_rating
+
+    genre_insights["weighted_average"] = bayesian_average(
+        weight=genre_insights["count"].mean(),
+        default=genre_insights["average_score"].mean(),
+        count=genre_insights["count"],
+        score=genre_insights["average_score"],
     )
 
-    # Scores
+    genre_insights["weighted_user"] = bayesian_average(
+        weight=genre_insights["count"].mean(),
+        default=genre_insights["user_score"].mean(),
+        count=genre_insights["count"],
+        score=genre_insights["user_score"],
+    )
+
+    genre_insights["weighted_diff"] = (
+        genre_insights["weighted_user"] - genre_insights["weighted_average"]
+    )
+    genre_insights = genre_insights.sort_values(by="weighted_diff", ascending=False)
+
+    max_genre_df = genre_insights.loc[
+        genre_insights["weighted_diff"].abs()
+        == max(genre_insights["weighted_diff"].abs())
+    ]
+    genre_max = round(float(max_genre_df["weighted_diff"].iloc[0]), 2)
+    genre_max_name = str(max_genre_df["genres"].iloc[0])
+
+    if genre_max > 0:
+        genre_fav = genres.loc[genres["genres"] == genre_max_name]
+        genre_fav = genre_fav.loc[
+            genre_fav["user_score"] == genre_fav["user_score"].max()
+        ]
+        genre_fav["score_diff"] = genre_fav["user_score"] - genre_fav["average_score"]
+        genre_fav = genre_fav.sort_values(by="score_diff", ascending=False)
+        genre_fav_title = genre_fav["title_romaji"].iloc[0]
+        genre_fav_u_score = int(genre_fav["user_score"].iloc[0])
+        genre_fav_avg_score = int(genre_fav["average_score"].iloc[0])
+    else:
+        genre_fav = genres.loc[genres["genres"] == genre_max_name]
+        genre_fav = genre_fav.loc[
+            genre_fav["user_score"] == genre_fav["user_score"].min()
+        ]
+        genre_fav["score_diff"] = genre_fav["user_score"] - genre_fav["average_score"]
+        genre_fav = genre_fav.sort_values(by="score_diff", ascending=True)
+        genre_fav_title = genre_fav["title_romaji"].iloc[0]
+        genre_fav_u_score = int(genre_fav["user_score"].iloc[0])
+        genre_fav_avg_score = int(genre_fav["average_score"].iloc[0])
+
+    plt_div_genres = plot_genres(genre_insights=genre_insights)
+
+    # NOTE: Scores
     merged_dfs["score_diff"] = merged_dfs["user_score"] - merged_dfs["average_score"]
 
     float_avg_score_diff = abs(merged_dfs.loc[:, "score_diff"]).mean()
@@ -165,18 +206,23 @@ def fetch_data(username: str):
 
     image_id_1 = int(max_diff["anime_id"].iloc[0])
     image_id_2 = int(min_diff["anime_id"].iloc[0])
+    image_id_3 = int(genre_fav["anime_id"].iloc[0])
     query_image = load_query("image_query.gql")
     variables_image_1 = {"id": image_id_1}
     variables_image_2 = {"id": image_id_2}
+    variables_image_3 = {"id": image_id_3}
     cover_image_1, response_header = fetch_anilist_data(query_image, variables_image_1)
     cover_image_2, response_header = fetch_anilist_data(query_image, variables_image_2)
+    cover_image_3, response_header = fetch_anilist_data(query_image, variables_image_3)
     cover_image_1 = cover_image_1["data"]["Media"]["coverImage"]["extraLarge"]
     cover_image_2 = cover_image_2["data"]["Media"]["coverImage"]["extraLarge"]
+    cover_image_3 = cover_image_3["data"]["Media"]["coverImage"]["extraLarge"]
 
     # NOTE: Return
     insights = {
         "image1": cover_image_1,
         "image2": cover_image_2,
+        "image3": cover_image_3,
         "u_score_max": score_max,
         "u_score_min": score_min,
         "avg_score_max": avg_max,
@@ -185,7 +231,13 @@ def fetch_data(username: str):
         "title_min": title_min,
         "avg_score_diff": avg_score_diff,
         "true_score_diff": true_score_diff,
-        "plot": plt_div,
+        "plot_main": plt_div_main,
+        "plot_genres": plt_div_genres,
+        "genre_max": genre_max,
+        "genre_max_name": genre_max_name,
+        "genre_fav_title": genre_fav_title,
+        "genre_fav_u_score": genre_fav_u_score,
+        "genre_fav_avg_score": genre_fav_avg_score,
     }
 
     dfs = [anime_info, user_info, user_score]
@@ -199,12 +251,12 @@ def fetch_data(username: str):
     container_id = "projectanilist"
 
     names = ["anime_info", "user_info", "user_score"]
+    date = dt.today().strftime("%Y-%m-%d")
     for i, df in enumerate(dfs):
         name = names[i]
         file_path = os.path.join("./app/api/", f"{name}.csv")
         df.to_csv(path_or_buf=file_path)
 
-        date = dt.today().strftime("%Y-%m-%d")
         blob_path = f"data/{date}/{anilist_id}/{name}.csv"
         blob_object = blob_service_client.get_blob_client(
             container=container_id, blob=blob_path

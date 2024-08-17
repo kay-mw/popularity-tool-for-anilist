@@ -13,6 +13,7 @@ query ($page: Int, $id_in: [Int]) {
       title {
         romaji
       }
+      genres
     }
   }
 }
