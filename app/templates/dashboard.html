@@ -1,5 +1,3 @@
-<!--TODO: Change font size on img_main-->
-
 {% from "hero.html" import hero_main, hero_genre %}
 {% from "plot.html" import plot %}
 {% from "img.html" import img_main, img_genre %}
@@ -26,7 +24,7 @@
                     {{ hero_main(avg_score_diff=avg_score_diff, true_score_diff=true_score_diff, font_base="text-6xl", font_small="sm:text-7xl", font_large="lg:text-8xl", sub_base="text-3xl", sub_small="sm:text-4xl", sub_large="lg:text-5xl") }}
                 </div>
                 {{ plot(title="Your Scores vs. the AniList Average", plot=plot_main) }}
-                {{ img_main(image1=image1, image2=image2, title_min=title_min, u_score_min=u_score_min, avg_score_min=avg_score_min, title_max=title_max, u_score_max=u_score_max, avg_score_max=avg_score_max) }}
+                {{ img_main(image1=image1, image2=image2, title_min=title_min, u_score_min=u_score_min, avg_score_min=avg_score_min, title_max=title_max, u_score_max=u_score_max, avg_score_max=avg_score_max, font_base="text-3xl", font_small="sm:text-4xl", font_large="lg:font-5xl", sub_base="text-xl", sub_small="sm:text-2xl", sub_large="lg:text-3xl") }}
                 {{ hero_genre(genre_max_name=genre_max_name, genre_max=genre_max, font_base="text-5xl", font_small="sm:text-6xl", font_large="lg:text-7xl", sub_base="text-4xl", sub_small="sm:text-5xl", sub_large="lg:text-6xl") }}
                 {{ img_genre(image3=image3, genre_fav_title=genre_fav_title, genre_fav_u_score=genre_fav_u_score, genre_fav_avg_score=genre_fav_avg_score, genre_max=genre_max, genre_max_name=genre_max_name, font_base="text-2xl", font_small="sm:text-3xl", font_large="lg:text-4xl", sub_base="text-xl", sub_small="sm:text-2xl", sub_large="lg:text-3xl") }}
                 {{ plot(title="Your Genre Scores vs. the AniList Average", plot=plot_genres) }}
