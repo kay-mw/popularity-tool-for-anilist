@@ -28,6 +28,19 @@
                 {{ hero_genre(genre_max_name=genre_max_name, genre_max=genre_max, font_base="text-5xl", font_small="sm:text-6xl", font_large="lg:text-7xl", sub_base="text-4xl", sub_small="sm:text-5xl", sub_large="lg:text-6xl") }}
                 {{ img_genre(image3=image3, genre_fav_title=genre_fav_title, genre_fav_u_score=genre_fav_u_score, genre_fav_avg_score=genre_fav_avg_score, genre_max=genre_max, genre_max_name=genre_max_name, font_base="text-2xl", font_small="sm:text-3xl", font_large="lg:text-4xl", sub_base="text-xl", sub_small="sm:text-2xl", sub_large="lg:text-3xl") }}
                 {{ plot(title="Your Genre Scores vs. the AniList Average", plot=plot_genres) }}
+                <div class="flex flex-col justify-center">
+                    <div class="collapse collapse-arrow bg-neutral border border-secondary">
+                        <input type="checkbox" name="accordion" />
+                        <div class="collapse-title text-center text-2xl sm:text-3xl lg:text-4xl font-medium text-primary">
+                            All your scores, ordered from most to least controversial.
+                        </div>
+                        <div class="collapse-content">
+                            {% autoescape off %}
+                                {{ score_table }}
+                            {% endautoescape %}
+                        </div>
+                    </div>
+                </div>
                 <a class="flex justify-center pb-4" href="{{ url_for("home") }}">
                     <button class="btn btn-outline btn-secondary text-base">Return Home</button>
                 </a>

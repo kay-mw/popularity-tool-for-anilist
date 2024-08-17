@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 #     fetch_anilist_data_async,
 #     load_query,
 # )
+# from app.api.plots import plot_genres, plot_main  # Local testing
 
 
 def fetch_data(username: str):
@@ -21,7 +22,7 @@ def fetch_data(username: str):
     # NOTE: Fetch user ID
     query_get_id = load_query("get_id.gql")
     variables_get_id = {"name": username}
-    # variables_get_id = {"name": "Kulkuljator"}  # Local testing
+    # variables_get_id = {"name": "keejan"}  # Local testing
     json_response = None
     try:
         json_response, response_header = fetch_anilist_data(
@@ -218,6 +219,34 @@ def fetch_data(username: str):
     cover_image_2 = cover_image_2["data"]["Media"]["coverImage"]["extraLarge"]
     cover_image_3 = cover_image_3["data"]["Media"]["coverImage"]["extraLarge"]
 
+    score_table = merged_dfs.loc[:, "title_romaji":"score_diff"]
+    score_table["abs_score_diff"] = abs(score_table.loc[:, "score_diff"])
+    score_table = score_table.sort_values(by="abs_score_diff", ascending=False)
+    score_table = score_table.reset_index(drop=True)
+    score_table = score_table.drop(labels="abs_score_diff", axis=1)
+
+    score_table_html = """
+    <table class="dataframe table table-sm sm:table-md lg:table-lg">
+        <thead>
+            <tr>
+                <th class="text-lg sm:text-xl lg:text-2xl">Title</th>
+                <th class="text-lg sm:text-xl lg:text-2xl">Score Difference</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+    for index, row in score_table.iterrows():
+        score_table_html += f"""
+        <tr>
+            <td class="text-primary text-lg sm:text-xl lg:text-2xl">{row['title_romaji']}</td>
+            <td class="text-secondary text-lg sm:text-xl lg:text-2xl">{row['score_diff']}</td>
+        </tr>
+        """
+    score_table_html += """
+        </tbody>
+    </table>
+    """
+
     # NOTE: Return
     insights = {
         "image1": cover_image_1,
@@ -238,6 +267,7 @@ def fetch_data(username: str):
         "genre_fav_title": genre_fav_title,
         "genre_fav_u_score": genre_fav_u_score,
         "genre_fav_avg_score": genre_fav_avg_score,
+        "score_table": score_table_html,
     }
 
     dfs = [anime_info, user_info, user_score]
