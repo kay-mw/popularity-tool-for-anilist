@@ -9,7 +9,7 @@ services:
     environment:
       - DAGSTER_HOME=/opt/dagster/dagster_home
     volumes:
-      - dagster_home:/opt/dagster/dagster_home
+      - .:/opt/dagster/dagster_home
     env_file:
       - .env
 
@@ -21,7 +21,7 @@ services:
     environment:
       - DAGSTER_HOME=/opt/dagster/dagster_home
     volumes:
-      - dagster_home:/opt/dagster/dagster_home
+      - .:/opt/dagster/dagster_home
     env_file:
       - .env
 

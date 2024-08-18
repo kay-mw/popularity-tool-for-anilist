@@ -6,7 +6,6 @@ on:
       - dev
     paths:
       - 'app/**'
-      - 'pipelines/**'
       - 'pyproject.toml'
       - 'Dockerfile'
       - 'tailwind.config.js'
@@ -17,7 +16,6 @@ on:
       - main
     paths:
       - 'app/**'
-      - 'pipelines/**'
       - 'pyproject.toml'
       - 'Dockerfile'
       - 'tailwind.config.js'

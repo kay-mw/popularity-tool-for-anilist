@@ -26,5 +26,4 @@ jobs:
           script: |
             cd ~/popularity-tool-for-anilist/pipelines
             git pull origin main
-            docker compose build
-            docker compose up -d
+            docker compose up --build -d
