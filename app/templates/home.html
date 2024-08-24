@@ -22,6 +22,9 @@
             </h1>
             <div class="divider divider-primary mb-6"></div>
             <h3 class="text-white text-lg sm:text-xl md:text-2xl mb-6">Find out by entering your AniList username below...</h3>
+            <div class="mb-1 text-secondary text-left text-sm">
+                Hint: If you don't have an AniList profile, just type in "bob" instead!
+            </div>
             <form class="flex flex-col items-center justify-center space-y-4"
                   method="POST"
                   action="/">
@@ -33,11 +36,11 @@
                        required>
                 <button class="w-full btn btn-outline btn-secondary text-lg" type="submit">Submit</button>
             </form>
-        </div>
-        <div class="relative w-full h-full pt-[5rem] lg:w-[36rem]">
-            <div class="absolute inset-x-0 bottom-0 text-center text-primary text-lg sm:text-xl md:text-2xl">
-                Join the <span class="text-accent">{{ user_count }}</span> users who have already seen their hottest anime takes!
-            </div>
+            <!--<div class="relative w-full h-full pt-[5rem] lg:w-[36rem]">-->
+            <!--    <div class="absolute inset-x-0 bottom-0 text-center text-primary text-lg sm:text-xl md:text-2xl">-->
+            <!--        Join the <span class="text-warning">{{ user_count }}</span> users who have already seen their hottest anime takes!-->
+            <!--    </div>-->
+            <!--</div>-->
         </div>
     </body>
 </html>
