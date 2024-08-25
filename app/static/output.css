@@ -662,20 +662,6 @@ html {
   justify-content: center;
 }
 
-@media (hover:hover) {
-  .table tr.hover:hover,
-  .table tr.hover:nth-child(even):hover {
-    --tw-bg-opacity: 1;
-    background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity)));
-  }
-
-  .table-zebra tr.hover:hover,
-  .table-zebra tr.hover:nth-child(even):hover {
-    --tw-bg-opacity: 1;
-    background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity)));
-  }
-}
-
 .btn {
   display: inline-flex;
   height: 3rem;
@@ -1159,44 +1145,6 @@ html {
 .swap-active .swap-on,
 .swap input:indeterminate ~ .swap-indeterminate {
   opacity: 1;
-}
-
-.table {
-  position: relative;
-  width: 100%;
-  border-radius: var(--rounded-box, 1rem);
-  text-align: left;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.table :where(.table-pin-rows thead tr) {
-  position: sticky;
-  top: 0px;
-  z-index: 1;
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
-}
-
-.table :where(.table-pin-rows tfoot tr) {
-  position: sticky;
-  bottom: 0px;
-  z-index: 1;
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
-}
-
-.table :where(.table-pin-cols tr th) {
-  position: sticky;
-  left: 0px;
-  right: 0px;
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
-}
-
-.table-zebra tbody tr:nth-child(even) :where(.table-pin-cols tr th) {
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity)));
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1903,52 +1851,6 @@ details.collapse summary::-webkit-details-marker {
   }
 }
 
-.table:where([dir="rtl"], [dir="rtl"] *) {
-  text-align: right;
-}
-
-.table :where(th, td) {
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-  vertical-align: middle;
-}
-
-.table tr.active,
-  .table tr.active:nth-child(even),
-  .table-zebra tbody tr:nth-child(even) {
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity)));
-}
-
-.table-zebra tr.active,
-    .table-zebra tr.active:nth-child(even),
-    .table-zebra-zebra tbody tr:nth-child(even) {
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity)));
-}
-
-.table :where(thead tr, tbody tr:not(:last-child), tbody tr:first-child:last-child) {
-  border-bottom-width: 1px;
-  --tw-border-opacity: 1;
-  border-bottom-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-border-opacity)));
-}
-
-.table :where(thead, tfoot) {
-  white-space: nowrap;
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 700;
-  color: var(--fallback-bc,oklch(var(--bc)/0.6));
-}
-
-.table :where(tfoot) {
-  border-top-width: 1px;
-  --tw-border-opacity: 1;
-  border-top-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-border-opacity)));
-}
-
 @keyframes toast-pop {
   0% {
     transform: scale(0.9);
@@ -1989,24 +1891,29 @@ details.collapse summary::-webkit-details-marker {
   margin-inline-start: calc(var(--border-btn) * -1);
 }
 
-.table-sm :not(thead):not(tfoot) tr {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.table-sm :where(th, td) {
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
 .visible {
   visibility: visible;
 }
 
 .collapse {
   visibility: collapse;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.inset-x-0 {
+  left: 0px;
+  right: 0px;
+}
+
+.bottom-0 {
+  bottom: 0px;
 }
 
 .mb-4 {
@@ -2021,6 +1928,14 @@ details.collapse summary::-webkit-details-marker {
   margin-bottom: 2rem;
 }
 
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
 .block {
   display: block;
 }
@@ -2029,12 +1944,12 @@ details.collapse summary::-webkit-details-marker {
   display: flex;
 }
 
-.table {
-  display: table;
-}
-
 .h-auto {
   height: auto;
+}
+
+.h-full {
+  height: 100%;
 }
 
 .min-h-screen {
@@ -2059,6 +1974,18 @@ details.collapse summary::-webkit-details-marker {
 
 .items-center {
   align-items: center;
+}
+
+.items-baseline {
+  align-items: baseline;
+}
+
+.justify-normal {
+  justify-content: normal;
+}
+
+.justify-start {
+  justify-content: flex-start;
 }
 
 .justify-end {
@@ -2108,6 +2035,11 @@ details.collapse summary::-webkit-details-marker {
   background-color: var(--fallback-n,oklch(var(--n)/var(--tw-bg-opacity)));
 }
 
+.bg-base-200 {
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity)));
+}
+
 .p-4 {
   padding: 1rem;
 }
@@ -2119,6 +2051,14 @@ details.collapse summary::-webkit-details-marker {
 
 .pb-4 {
   padding-bottom: 1rem;
+}
+
+.pt-\[5rem\] {
+  padding-top: 5rem;
+}
+
+.text-left {
+  text-align: left;
 }
 
 .text-center {
@@ -2174,6 +2114,11 @@ details.collapse summary::-webkit-details-marker {
   line-height: 1.75rem;
 }
 
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -2184,6 +2129,11 @@ details.collapse summary::-webkit-details-marker {
 
 .font-normal {
   font-weight: 400;
+}
+
+.text-accent {
+  --tw-text-opacity: 1;
+  color: var(--fallback-a,oklch(var(--a)/var(--tw-text-opacity)));
 }
 
 .text-primary {
@@ -2201,6 +2151,11 @@ details.collapse summary::-webkit-details-marker {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.text-error {
+  --tw-text-opacity: 1;
+  color: var(--fallback-er,oklch(var(--er)/var(--tw-text-opacity)));
+}
+
 .text-secondary {
   --tw-text-opacity: 1;
   color: var(--fallback-s,oklch(var(--s)/var(--tw-text-opacity)));
@@ -2213,20 +2168,6 @@ details.collapse summary::-webkit-details-marker {
 
 .fade-in.visible {
   opacity: 1;
-}
-
-@media (min-width: 640px) {
-  .sm\:table-md :not(thead):not(tfoot) tr {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-
-  .sm\:table-md :where(th, td) {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-  }
 }
 
 @media (min-width: 1024px) {
@@ -2251,18 +2192,6 @@ details.collapse summary::-webkit-details-marker {
     margin-bottom: 0px;
     height: auto;
     width: 1rem;
-  }
-
-  .lg\:table-lg :not(thead):not(tfoot) tr {
-    font-size: 1rem;
-    line-height: 1.5rem;
-  }
-
-  .lg\:table-lg :where(th, td) {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
   }
 }
 
@@ -2336,6 +2265,10 @@ details.collapse summary::-webkit-details-marker {
 
   .lg\:mr-8 {
     margin-right: 2rem;
+  }
+
+  .lg\:w-\[36rem\] {
+    width: 36rem;
   }
 
   .lg\:flex-row {
