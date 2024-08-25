@@ -239,7 +239,7 @@ def fetch_data(username: str):
         score_table_html += f"""
         <tr>
             <td class="text-primary text-lg sm:text-xl lg:text-2xl">{row['title_romaji']}</td>
-            <td class="text-secondary text-lg sm:text-xl lg:text-2xl">{row['score_diff']}</td>
+            <td class="text-secondary text-center text-lg sm:text-xl lg:text-2xl">{row['score_diff']}</td>
         </tr>
         """
     score_table_html += """
