@@ -1,0 +1,5 @@
+2024-08-25 20:15:40 +0000 - dagster - DEBUG - __ASSET_JOB - 32dd5af1-d6db-4758-9ef9-275cd9b73331 - 188 - LOGS_CAPTURED - Started capturing logs in process (pid: 188).
+2024-08-25 20:15:40 +0000 - dagster - DEBUG - __ASSET_JOB - 32dd5af1-d6db-4758-9ef9-275cd9b73331 - 188 - upload_data - STEP_START - Started execution of step "upload_data".
+2024-08-25 20:15:47 +0000 - dagster - DEBUG - __ASSET_JOB - 32dd5af1-d6db-4758-9ef9-275cd9b73331 - 188 - upload_data - STEP_OUTPUT - Yielded output "result" of type "Nothing". (Type check passed).
+2024-08-25 20:15:47 +0000 - dagster - DEBUG - __ASSET_JOB - 32dd5af1-d6db-4758-9ef9-275cd9b73331 - 188 - upload_data - ASSET_MATERIALIZATION - Materialized value upload_data.
+2024-08-25 20:15:47 +0000 - dagster - DEBUG - __ASSET_JOB - 32dd5af1-d6db-4758-9ef9-275cd9b73331 - 188 - upload_data - STEP_SUCCESS - Finished execution of step "upload_data" in 6.68s.
