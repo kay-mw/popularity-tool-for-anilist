@@ -9,7 +9,6 @@ from fastapi import Cookie, FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from user_count import get_user_count
 
 app = FastAPI()
 
@@ -29,11 +28,7 @@ init_db(DATABASE_NAME)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    user_count = get_user_count()
-    context = {"user_count": user_count}
-    return templates.TemplateResponse(
-        request=request, name="home.html", context=context
-    )
+    return templates.TemplateResponse(request=request, name="home.html")
 
 
 @app.post("/")

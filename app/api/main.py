@@ -1,7 +1,6 @@
 import asyncio
 import os
 from datetime import datetime as dt
-from urllib.parse import quote_plus
 
 import pandas as pd
 import requests
@@ -9,7 +8,6 @@ from api.funcs import fetch_anilist_data, fetch_anilist_data_async, load_query
 from api.plots import plot_genres, plot_main
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
-from sqlalchemy import Engine, create_engine
 
 # from app.api.funcs import (  # Local testing
 #     fetch_anilist_data,
