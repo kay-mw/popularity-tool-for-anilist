@@ -112,7 +112,7 @@ def fetch_data(username: str):
     merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
 
     # NOTE: Plots (main/scores)
-    plt_div_main = plot_main(merged_dfs=merged_dfs)
+    plt_div_main = plot_main(merged_dfs=merged_dfs, username=username)
 
     # NOTE: Genre insights
     genres = merged_dfs.explode(column="genres", ignore_index=False)
@@ -181,7 +181,7 @@ def fetch_data(username: str):
         genre_fav_u_score = int(genre_fav["user_score"].iloc[0])
         genre_fav_avg_score = int(genre_fav["average_score"].iloc[0])
 
-    plt_div_genres = plot_genres(genre_insights=genre_insights)
+    plt_div_genres = plot_genres(genre_insights=genre_insights, username=username)
 
     # NOTE: Scores
     merged_dfs["score_diff"] = merged_dfs["user_score"] - merged_dfs["average_score"]

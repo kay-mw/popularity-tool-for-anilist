@@ -56,7 +56,7 @@
                             <div class="collapse-title text-center text-2xl sm:text-3xl lg:text-4xl font-medium text-primary">
                                 All your scores, ordered from most to least controversial.
                             </div>
-                            <div class="collapse-content">
+                            <div class="flex flex-col justify-center w-full h-full collapse-content">
                                 {% autoescape off %}
                                     {{ score_table }}
                                 {% endautoescape %}
