@@ -32,9 +32,9 @@ async def home(request: Request):
 
 
 @app.post("/")
-def data_fetcher(username: Annotated[str, Form()]):
+def data_fetcher(username: Annotated[str, Form()], manga: bool = Form(False)):
     try:
-        dfs, anilist_id, insights = fetch_data(username)
+        dfs, anilist_id, insights = fetch_data(username, manga)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 

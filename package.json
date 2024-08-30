@@ -2,5 +2,8 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.14",
     "daisyui": "^4.12.10"
+  },
+  "dependencies": {
+    "html2canvas": "^1.4.1"
   }
 }

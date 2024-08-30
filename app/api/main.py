@@ -17,12 +17,15 @@ from dotenv import load_dotenv
 # from app.api.plots import plot_genres, plot_main  # Local testing
 
 
-def fetch_data(username: str):
+def fetch_data(username: str, manga: bool):
+
+    # Local testing
+    # username = "BlessedBaka"
+    # manga = True
 
     # NOTE: Fetch user ID
     query_get_id = load_query("get_id.gql")
     variables_get_id = {"name": username}
-    # variables_get_id = {"name": "keejan"}  # Local testing
     json_response = None
     try:
         json_response, response_header = fetch_anilist_data(
@@ -38,15 +41,26 @@ def fetch_data(username: str):
     anilist_id = json_response["data"]["User"]["id"]
 
     # NOTE: Fetch user scores
-    query_user = load_query("user_query.gql")
+    if manga == True:
+        query_user = load_query("manga_user.gql")
+    else:
+        query_user = load_query("anime_user.gql")
+
     variables_user = {"page": 1, "id": anilist_id}
     json_response, response_header = fetch_anilist_data(query_user, variables_user)
 
-    user_score = pd.json_normalize(
-        json_response,
-        record_path=["data", "Page", "users", "statistics", "anime", "scores"],
-        meta=[["data", "Page", "users", "id"]],
-    )
+    if manga == True:
+        user_score = pd.json_normalize(
+            json_response,
+            record_path=["data", "Page", "users", "statistics", "manga", "scores"],
+            meta=[["data", "Page", "users", "id"]],
+        )
+    else:
+        user_score = pd.json_normalize(
+            json_response,
+            record_path=["data", "Page", "users", "statistics", "anime", "scores"],
+            meta=[["data", "Page", "users", "id"]],
+        )
     user_score = user_score.explode("mediaIds", ignore_index=True)
     user_score["mediaIds"] = user_score["mediaIds"].astype(int)
     user_score.rename(
@@ -66,7 +80,11 @@ def fetch_data(username: str):
 
     # NOTE: Make user info table
     user_info = pd.json_normalize(json_response, record_path=["data", "Page", "users"])
-    user_info.drop("statistics.anime.scores", axis=1, inplace=True)
+    if manga == True:
+        user_info.drop("statistics.manga.scores", axis=1, inplace=True)
+    else:
+        user_info.drop("statistics.anime.scores", axis=1, inplace=True)
+
     user_info = pd.concat([user_info, response_header], axis=1)
     user_info.rename(
         columns={0: "request_date", "id": "user_id", "name": "user_name"},
@@ -81,8 +99,8 @@ def fetch_data(username: str):
         anime_info = pd.DataFrame()
 
         id_list = user_score["anime_id"].values.tolist()
-        variables_anime = {"page": 1, "id_in": id_list}
-        query_anime = load_query("anime_query.gql")
+        variables_anime = {"page": 1, "id_in": id_list, "type": "ANIME"}
+        query_anime = load_query("media.gql")
 
         while True:
             response_ids = await fetch_anilist_data_async(query_anime, variables_anime)
@@ -208,7 +226,7 @@ def fetch_data(username: str):
     image_id_1 = int(max_diff["anime_id"].iloc[0])
     image_id_2 = int(min_diff["anime_id"].iloc[0])
     image_id_3 = int(genre_fav["anime_id"].iloc[0])
-    query_image = load_query("image_query.gql")
+    query_image = load_query("image.gql")
     variables_image_1 = {"id": image_id_1}
     variables_image_2 = {"id": image_id_2}
     variables_image_3 = {"id": image_id_3}
@@ -226,26 +244,21 @@ def fetch_data(username: str):
     score_table = score_table.drop(labels="abs_score_diff", axis=1)
 
     score_table_html = """
-    <table class="dataframe table table-sm sm:table-md lg:table-lg">
-        <thead>
-            <tr>
-                <th class="text-lg sm:text-xl lg:text-2xl">Title</th>
-                <th class="text-lg sm:text-xl lg:text-2xl">Score Difference</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
-    for index, row in score_table.iterrows():
-        score_table_html += f"""
+    <thead>
         <tr>
-            <td class="text-primary text-lg sm:text-xl lg:text-2xl">{row['title_romaji']}</td>
-            <td class="text-secondary text-center text-lg sm:text-xl lg:text-2xl">{row['score_diff']}</td>
+            <th>Title</th>
+            <th>Score Difference</th>
         </tr>
-        """
-    score_table_html += """
-        </tbody>
-    </table>
-    """
+    </thead>
+    <tbody>"""
+
+    for index, row in score_table.iterrows():
+        score_table_html += f"""<tr>
+            <td class="text-primary">{row['title_romaji']}</td>
+            <td class="text-secondary">{row['score_diff']}</td>
+        </tr>"""
+
+    score_table_html += """</tbody>"""
 
     # NOTE: Return
     insights = {
@@ -268,6 +281,7 @@ def fetch_data(username: str):
         "genre_fav_u_score": genre_fav_u_score,
         "genre_fav_avg_score": genre_fav_avg_score,
         "score_table": score_table_html,
+        "manga": manga,
     }
 
     dfs = [anime_info, user_info, user_score]

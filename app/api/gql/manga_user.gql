@@ -1,0 +1,23 @@
+query ($page: Int, $id: Int!) {
+  Page (page: $page) {
+    pageInfo {
+      total
+      currentPage
+      lastPage
+      hasNextPage
+      perPage
+    }
+    users (id: $id) {
+      id
+      name
+      statistics {
+        manga {
+          scores {
+            mediaIds
+            score
+          }
+        }
+      }
+    }
+  }
+}
