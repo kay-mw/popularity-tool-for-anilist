@@ -2,12 +2,12 @@ import great_expectations as ge
 import pandas
 import pytest
 
-from app.api.main import fetch_data
+from app.api.manga import fetch_manga
 
 
 @pytest.fixture
 def dfs():
-    dfs, anilist_id, insights = fetch_data(username="keejan", manga=False)
+    dfs, anilist_id, insights = fetch_manga(username="keejan")
     return dfs
 
 

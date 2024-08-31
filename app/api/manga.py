@@ -17,10 +17,10 @@ from dotenv import load_dotenv
 # from app.api.plots import plot_genres, plot_main  # Local testing
 
 
-def fetch_anime(username: str):
+def fetch_manga(username: str):
 
     # Local testing
-    # username = "BlessedBaka"
+    # username = "keejan"
 
     # NOTE: Fetch user ID
     query_get_id = load_query("get_id.gql")
@@ -45,7 +45,7 @@ def fetch_anime(username: str):
     anilist_id = json_response["data"]["User"]["id"]
 
     # NOTE: Fetch user scores
-    query_user = load_query("anime_user.gql")
+    query_user = load_query("manga_user.gql")
 
     variables_user = {"page": 1, "id": anilist_id}
     try: 
@@ -59,18 +59,18 @@ def fetch_anime(username: str):
     if response_header is None:
         raise ValueError(f"Failed to fetch data for {username}.")
 
+
     user_score = pd.json_normalize(
         json_response,
-        record_path=["data", "Page", "users", "statistics", "anime", "scores"],
+        record_path=["data", "Page", "users", "statistics", "manga", "scores"],
         meta=[["data", "Page", "users", "id"]],
     )
     user_score = user_score.explode("mediaIds", ignore_index=True)
     user_score["mediaIds"] = user_score["mediaIds"].astype(int)
     user_score.rename(
         columns={
-            "mediaIds": "anime_id",
+            "mediaIds": "manga_id",
             "data.Page.users.id": "user_id",
-            "id": "anime_id",
             "score": "user_score",
         },
         inplace=True,
@@ -83,7 +83,7 @@ def fetch_anime(username: str):
 
     # NOTE: Make user info table
     user_info = pd.json_normalize(json_response, record_path=["data", "Page", "users"])
-    user_info.drop("statistics.anime.scores", axis=1, inplace=True)
+    user_info.drop("statistics.manga.scores", axis=1, inplace=True)
 
     user_info = pd.concat([user_info, response_header], axis=1)
     user_info.rename(
@@ -94,18 +94,18 @@ def fetch_anime(username: str):
         user_info["request_date"], format="%a, %d %b %Y %H:%M:%S %Z"
     ).dt.tz_localize(None)
 
-    # NOTE: Get anime info
+    # NOTE: Get manga info
     async def main():
-        anime_info = pd.DataFrame()
+        manga_info = pd.DataFrame()
 
-        id_list = user_score["anime_id"].values.tolist()
-        variables_anime = {"page": 1, "id_in": id_list}
-        query_anime = load_query("media.gql")
+        id_list = user_score["manga_id"].values.tolist()
+        variables_manga = {"page": 1, "id_in": id_list}
+        query_manga = load_query("media.gql")
         response_ids = None
 
         while True:
             try:
-                response_ids = await fetch_anilist_data_async(query_anime, variables_anime)
+                response_ids = await fetch_anilist_data_async(query_manga, variables_manga)
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == 429:
                     raise ValueError(
@@ -118,27 +118,27 @@ def fetch_anime(username: str):
             page_df = pd.json_normalize(
                 response_ids, record_path=["data", "Page", "media"]
             )
-            anime_info = pd.concat([anime_info, page_df], ignore_index=True)
+            manga_info = pd.concat([manga_info, page_df], ignore_index=True)
 
             if not response_ids["data"]["Page"]["pageInfo"]["hasNextPage"]:
                 break
 
-            variables_anime["page"] += 1
+            variables_manga["page"] += 1
 
-        return anime_info
+        return manga_info
 
-    anime_info = asyncio.run(main())
+    manga_info = asyncio.run(main())
 
-    anime_info.rename(
+    manga_info.rename(
         columns={
             "averageScore": "average_score",
             "title.romaji": "title_romaji",
-            "id": "anime_id",
+            "id": "manga_id",
         },
         inplace=True,
     )
 
-    merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
+    merged_dfs = user_score.merge(manga_info, on="manga_id", how="left")
 
     # NOTE: Plots (main/scores)
     plt_div_main = plot_main(merged_dfs=merged_dfs, username=username)
@@ -234,9 +234,9 @@ def fetch_anime(username: str):
     title_max = max_diff["title_romaji"].iloc[0]
     title_min = min_diff["title_romaji"].iloc[0]
 
-    image_id_1 = int(max_diff["anime_id"].iloc[0])
-    image_id_2 = int(min_diff["anime_id"].iloc[0])
-    image_id_3 = int(genre_fav["anime_id"].iloc[0])
+    image_id_1 = int(max_diff["manga_id"].iloc[0])
+    image_id_2 = int(min_diff["manga_id"].iloc[0])
+    image_id_3 = int(genre_fav["manga_id"].iloc[0])
     query_image = load_query("image.gql")
     variables_image_1 = {"id": image_id_1}
     variables_image_2 = {"id": image_id_2}
@@ -294,7 +294,7 @@ def fetch_anime(username: str):
         "score_table": score_table_html,
     }
 
-    dfs = [anime_info, user_info, user_score]
+    dfs = [manga_info, user_info, user_score]
 
     # NOTE: Data upload
     load_dotenv()
@@ -304,7 +304,7 @@ def fetch_anime(username: str):
     )
     container_id = "projectanilist"
 
-    names = ["anime_info", "user_info", "user_anime_score"]
+    names = ["manga_info", "user_info", "user_manga_score"]
     date = dt.today().strftime("%Y-%m-%d")
     for i, df in enumerate(dfs):
         name = names[i]

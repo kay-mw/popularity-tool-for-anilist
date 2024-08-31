@@ -16,7 +16,6 @@ def fetch_anilist_data(query: str, variables: dict) -> tuple[dict, pd.Series]:
     response = requests.post(
         url, json={"query": query, "variables": variables}, timeout=10
     )
-    response.raise_for_status()
     response_header = pd.Series(response.headers["Date"])
     return response.json(), response_header
 
@@ -27,5 +26,4 @@ async def fetch_anilist_data_async(query: str, variables: dict) -> dict:
         async with session.post(
             url, json={"query": query, "variables": variables}, timeout=10
         ) as response:
-            response.raise_for_status()
             return await response.json()
