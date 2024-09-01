@@ -48,7 +48,7 @@ def fetch_anime(username: str):
     query_user = load_query("anime_user.gql")
 
     variables_user = {"page": 1, "id": anilist_id}
-    try: 
+    try:
         json_response, response_header = fetch_anilist_data(query_user, variables_user)
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 429:
@@ -105,7 +105,9 @@ def fetch_anime(username: str):
 
         while True:
             try:
-                response_ids = await fetch_anilist_data_async(query_anime, variables_anime)
+                response_ids = await fetch_anilist_data_async(
+                    query_anime, variables_anime
+                )
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == 429:
                     raise ValueError(
