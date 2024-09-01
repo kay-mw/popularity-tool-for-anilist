@@ -3,7 +3,7 @@ from pandas import DataFrame
 from plotly.offline import plot
 
 
-def plot_main(merged_dfs: DataFrame) -> str:
+def plot_main(merged_dfs: DataFrame, username: str) -> str:
     # NOTE: Plots (main/scores)
     def generate_plot_data(column: str, color: str, name: str):
         plot_df = merged_dfs.value_counts(column).reset_index().sort_values(by=column)
@@ -16,11 +16,10 @@ def plot_main(merged_dfs: DataFrame) -> str:
             marker=dict(color=color),
         )
 
-    user_score_trace = generate_plot_data("user_score", "#00bbbc", "Your Scores")
-    average_score_trace = generate_plot_data(
-        "average_score", "#00c79c", "AniList Average"
-    )
+    user_score_trace = generate_plot_data("user_score", "#00bbbc", username)
+    average_score_trace = generate_plot_data("average_score", "#00c79c", "AniList")
     fig = go.Figure(data=[user_score_trace, average_score_trace])
+
     fig.update_layout(
         template="plotly_dark",
         title="",
@@ -31,7 +30,10 @@ def plot_main(merged_dfs: DataFrame) -> str:
         showlegend=True,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        hoverlabel=dict(bgcolor="#141414"),
+        hovermode="x unified",
     )
+
     plt_div_main = plot(
         fig,
         output_type="div",
@@ -43,20 +45,20 @@ def plot_main(merged_dfs: DataFrame) -> str:
     return plt_div_main
 
 
-def plot_genres(genre_insights: DataFrame) -> str:
+def plot_genres(genre_insights: DataFrame, username: str) -> str:
     fig = go.Figure(
         data=[
             go.Bar(
                 x=genre_insights["genres"],
                 y=genre_insights["weighted_user"],
                 marker=dict(color="#00bbbc"),
-                name="Your Scores",
+                name=username,
             ),
             go.Bar(
                 x=genre_insights["genres"],
                 y=genre_insights["weighted_average"],
                 marker=dict(color="#00c79c"),
-                name="AniList Average",
+                name="AniList",
             ),
         ],
     )
@@ -77,6 +79,8 @@ def plot_genres(genre_insights: DataFrame) -> str:
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         legend=dict(yanchor="top", y=1, xanchor="right", x=1),
+        hoverlabel=dict(bgcolor="#141414"),
+        hovermode="x unified",
     )
     plt_div_genres = plot(
         fig,

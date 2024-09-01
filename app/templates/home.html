@@ -25,7 +25,7 @@
             <div class="mb-1 text-secondary text-left text-sm">
                 Hint: If you don't have an AniList profile, just type in "bob" instead!
             </div>
-            <form class="flex flex-col items-center justify-center space-y-4"
+            <form class="flex flex-col justify-center items-center space-y-4"
                   method="POST"
                   action="/">
                 <input class="input input-secondary input-bordered w-full text-white text-lg"
@@ -35,6 +35,14 @@
                        placeholder="Your AniList username"
                        required>
                 <button class="w-full btn btn-outline btn-secondary text-lg" type="submit">Submit</button>
+                <div class="w-full flex justify-end items-center space-x-2">
+                    <input class="checkbox checkbox-info checked:checkbox-secondary peer"
+                           type="checkbox"
+                           id="manga"
+                           name="manga"
+                           value="True">
+                    <label for="manga" class="text-info transition peer-checked:text-secondary">I want manga insights instead.</label>
+                </div>
             </form>
         </div>
     </body>

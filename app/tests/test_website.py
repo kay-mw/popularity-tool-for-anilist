@@ -18,7 +18,7 @@ def test_dashboard():
 
 
 def test_main():
-    response = client.post("/", data={"username": "keejan"})
+    response = client.post("/", data={"username": "keejan", "manga": "on"})
     assert response.status_code == 200
     response = client.get("/dashboard")
     assert response.status_code == 200

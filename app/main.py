@@ -3,12 +3,14 @@ import sqlite3
 import uuid
 from typing import Annotated, Optional
 
-from api.main import fetch_data
+from api.main import fetch_anime
+from api.manga import fetch_manga
 from database import init_db
 from fastapi import Cookie, FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from requests import exceptions
 
 app = FastAPI()
 
@@ -32,11 +34,18 @@ async def home(request: Request):
 
 
 @app.post("/")
-def data_fetcher(username: Annotated[str, Form()]):
-    try:
-        dfs, anilist_id, insights = fetch_data(username)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+def data_fetcher(username: Annotated[str, Form()], manga: bool = Form(False)):
+    if not manga:
+        try:
+            dfs, anilist_id, insights = fetch_anime(username)
+        except ValueError as e:
+            raise HTTPException(status_code=404, detail=str(e))
+    else:
+        try:
+            dfs, anilist_id, insights = fetch_manga(username)
+            insights["manga"] = manga
+        except ValueError as e:
+            raise HTTPException(status_code=404, detail=str(e))
 
     session_id = str(uuid.uuid4())
 
