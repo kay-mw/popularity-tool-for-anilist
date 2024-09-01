@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 def fetch_manga(username: str):
 
     # Local testing
-    # username = "keejan"
+    # username = "ZNote"
 
     # NOTE: Fetch user ID
     query_get_id = load_query("get_id.gql")
@@ -48,7 +48,7 @@ def fetch_manga(username: str):
     query_user = load_query("manga_user.gql")
 
     variables_user = {"page": 1, "id": anilist_id}
-    try: 
+    try:
         json_response, response_header = fetch_anilist_data(query_user, variables_user)
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 429:
@@ -58,7 +58,6 @@ def fetch_manga(username: str):
 
     if response_header is None:
         raise ValueError(f"Failed to fetch data for {username}.")
-
 
     user_score = pd.json_normalize(
         json_response,
@@ -105,7 +104,9 @@ def fetch_manga(username: str):
 
         while True:
             try:
-                response_ids = await fetch_anilist_data_async(query_manga, variables_manga)
+                response_ids = await fetch_anilist_data_async(
+                    query_manga, variables_manga
+                )
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == 429:
                     raise ValueError(
@@ -137,6 +138,12 @@ def fetch_manga(username: str):
         },
         inplace=True,
     )
+
+    null_ids = list(manga_info.loc[manga_info.isna().any(axis=1)]["manga_id"])
+    if len(null_ids) > 0:
+        manga_info.dropna(axis=0, inplace=True)
+        user_score = user_score[~user_score["manga_id"].isin(null_ids)]
+    manga_info = manga_info.astype({"average_score": int})
 
     merged_dfs = user_score.merge(manga_info, on="manga_id", how="left")
 

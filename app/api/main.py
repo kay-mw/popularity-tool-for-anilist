@@ -137,6 +137,11 @@ def fetch_anime(username: str):
         },
         inplace=True,
     )
+    null_ids = list(anime_info.loc[anime_info.isna().any(axis=1)]["anime_id"])
+    if len(null_ids) > 0:
+        anime_info.dropna(axis=0, inplace=True)
+        user_score = user_score[~user_score["anime_id"].isin(null_ids)]
+    anime_info = anime_info.astype({"average_score": int})
 
     merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
 
