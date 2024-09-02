@@ -1,6 +1,6 @@
-from api.insights import general_insights, genre_insights, table_insights
+from api.anime.insights import general_insights, genre_insights, table_insights
+from api.anime.processing import check_nulls, get_anime_info, get_id, get_user_data
 from api.plots import plot_genres, plot_main
-from api.processing import check_nulls, get_anime_info, get_id, get_user_data
 from api.upload import blob_upload
 
 

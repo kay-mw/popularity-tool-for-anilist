@@ -3,8 +3,8 @@ import sqlite3
 import uuid
 from typing import Annotated, Optional
 
-from api.main import fetch_anime
-from api.manga import fetch_manga
+from api.anime.main import fetch_anime
+from api.manga.main import fetch_manga
 from database import init_db
 from fastapi import Cookie, FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
