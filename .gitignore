@@ -3,6 +3,7 @@ venv/Lib
 .bashrc
 
 # project specific
+'server exited unexpectedly'
 tf_deployment/terraform.tfvars
 .env
 *.pem
