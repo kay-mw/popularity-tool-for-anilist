@@ -1,4 +1,4 @@
-aiohttp==3.9.5
+aiohttp==3.10.2
 great_expectations==0.18.19
 pandas==2.2.2
 pytest==8.3.1
