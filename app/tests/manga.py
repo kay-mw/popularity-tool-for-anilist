@@ -2,7 +2,7 @@ import great_expectations as ge
 import pandas
 import pytest
 
-from app.api.manga import fetch_manga
+from app.api.manga.main import fetch_manga
 
 
 @pytest.fixture

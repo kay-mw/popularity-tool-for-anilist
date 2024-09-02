@@ -2,7 +2,7 @@ import great_expectations as ge
 import pandas
 import pytest
 
-from app.api.main import fetch_anime
+from app.api.anime.main import fetch_anime
 
 
 @pytest.fixture
