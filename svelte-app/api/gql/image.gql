@@ -1,0 +1,7 @@
+query ($id: Int) {
+    Media (id: $id) {
+        coverImage {
+            extraLarge
+        }
+    }
+}

@@ -2,6 +2,33 @@
 venv/Lib
 .bashrc
 
+# Dependency directories
+node_modules/
+
+# IDE related
+.idea
+
+# Test coverage
+coverage
+*.lcov
+
+# Optional eslint cache
+.eslintcache
+
+# dotenv environment variables file
+.env
+.env.test
+
+# build output
+.vercel
+
+# OS-specific
+.DS_Store
+
+tmp
+
+benchmarking/compare/.results
+
 # project specific
 'server exited unexpectedly'
 tf_deployment/terraform.tfvars
