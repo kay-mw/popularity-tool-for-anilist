@@ -1,5 +1,6 @@
 <script>
   import "../app.css";
+  import { ModeWatcher } from "mode-watcher";
 </script>
 
 <svelte:head>
@@ -10,6 +11,7 @@
   <title>How Popular is Your Anime Taste?</title>
 </svelte:head>
 
+<ModeWatcher />
 <slot />
 
 <style>

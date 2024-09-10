@@ -1,5 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { Button } from "$lib/components/ui/button";
+  import { toggleMode } from "mode-watcher";
 
   let isChecked = false;
   let username = "";
@@ -35,51 +37,14 @@
   }
 </script>
 
-<div
-  class="bg-base-100 flex items-center justify-center h-screen font-dm-sans font-medium"
->
-  {#if isLoading}
-    <div class="loading loading-infinity loading-lg"></div>
-  {:else}
-    <div class="text-center w-full max-w-xl fade-in content">
-      <h1 class="text-primary text-2xl sm:text-3xl md:text-4xl font-bold mb-6">
-        Have you ever wondered how controversial your anime taste is?
-      </h1>
-      <div class="divider divider-primary mb-6"></div>
-      <h3 class="text-white text-lg sm:text-xl md:text-2xl mb-6">
-        Find out by entering your AniList username below...
-      </h3>
-      <div class="mb-1 text-secondary text-left text-sm">
-        Hint: If you don't have an AniList profile, just type in "bob" instead!
-      </div>
-      <form
-        class="flex flex-col justify-center items-center space-y-4"
-        on:submit={handleSubmit}
-      >
-        <input
-          class="input input-secondary input-bordered w-full text-white text-lg"
-          type="text"
-          bind:value={username}
-          placeholder="Your AniList username"
-          required
-        />
-        <button
-          class="w-full btn btn-outline btn-secondary text-lg"
-          type="submit">Submit</button
-        >
-        <div class="flex items-end w-full form-control">
-          <label class="label cursor-pointer">
-            <input
-              class="checkbox checkbox-info checked:checkbox-secondary peer"
-              type="checkbox"
-              bind:checked={isChecked}
-            />
-            <span class="px-2 transition peer-checked:text-secondary"
-              >I want manga insights instead.</span
-            >
-          </label>
-        </div>
-      </form>
-    </div>
-  {/if}
+<div class="flex items-start justify-end p-1">
+  <Button on:click={toggleMode} variant="outline" size="sm">
+    <span class="hidden dark:block">Dark</span>
+    <span class="dark:hidden">Light</span>
+  </Button>
+</div>
+<div class="container">
+  <h1 class="scroll-m-20 font-extrabold tracking-tight text-4xl lg:text-5xl">
+    Have you ever wondered how controversial your anime taste is?
+  </h1>
 </div>
