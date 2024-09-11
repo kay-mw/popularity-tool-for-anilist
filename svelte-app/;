@@ -1,0 +1,25 @@
+<script>
+ import * as Card from "$lib/components/ui/card";
+ import H2 from "$lib/components/H2.svelte";
+</script>
+
+<Card.Root>
+	<Card.Header>
+		<Card.Title>Your Coldest Take</Card.Title>
+		<Card.Description
+			>The most "popular" score you've given.</Card.Description
+		>
+	</Card.Header>
+	<Card.Content class="flex flex-col justify-center max-w-lg space-y-4">
+		<H2>{insights.titleMin}</H2>
+		<img
+			class="border-solid border-2 border-border rounded-xl"
+			src={insights.imageMin}
+			alt="coldest take anime"
+		/>
+	</Card.Content>
+	<Card.Footer class="flex flex-col items-start justify-start">
+		<p>Your Score: {insights.userMinScore}</p>
+		<p>AniList Average: {insights.avgMinScore}</p>
+	</Card.Footer>
+</Card.Root>

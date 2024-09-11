@@ -6,7 +6,7 @@ from api.plots import plot_genres, plot_main
 def fetch_anime(username: str):
 
     # Local testing
-    # username = "BlessedBaka"
+    username = "keejan"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)
@@ -52,6 +52,8 @@ def fetch_anime(username: str):
     # names = ["anime_info", "user_info", "user_anime_score"]
     # blob_upload(dfs=dfs, names=names, anilist_id=anilist_id)
 
+    user_json = user_score.to_dict(orient="records")
+
     # NOTE: Return
     insights = {
         "imageMax": cover_image_1,
@@ -65,6 +67,7 @@ def fetch_anime(username: str):
         "titleMin": title_min,
         "avgScoreDiff": avg_score_diff,
         "absScoreDiff": true_score_diff,
+        "userData": user_json,
         # "plotMain": plt_div_main,
         # "plot_genres": plt_div_genres,
         "genreMax": genre_max,
