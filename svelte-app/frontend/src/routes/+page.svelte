@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
 
+  import { enhance, applyAction } from "$app/forms";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Checkbox } from "$lib/components/ui/checkbox";
@@ -36,7 +37,7 @@
 
       const data = await response.json();
 
-      sessionStorage.setItem("insights", JSON.stringify(data.insights))
+      sessionStorage.setItem("insights", JSON.stringify(data.insights));
       sessionStorage.setItem("username", username);
       goto("/dashboard");
     } catch (error) {
@@ -52,28 +53,32 @@
     />
   </Container>
 {:else}
-  <div class="flex items-start justify-end p-4">
-    <Button on:click={toggleMode} variant="outline" size="sm">
-      <span class="hidden dark:flex">Dark</span>
-      <span class="dark:hidden">Light</span>
-    </Button>
-  </div>
   <Container>
     <H1>Have you ever wondered how controversial your anime taste is?</H1>
     <div class="space-y-4">
       <H3>Find out by entering your AniList username below...</H3>
-      <form class="flex flex-col w-full" on:submit={handleSubmit}>
+      <form
+        class="flex flex-col w-full"
+        action="/dashboard"
+        method="POST"
+        use:enhance={() => {
+          isLoading = true;
+          return async ({ result, update }) => {
+            update();
+          };
+        }}
+      >
         <div class="flex space-x-2">
-          <Input placeholder="username" bind:value={username} required />
+          <Input placeholder="username" name="username" required />
           <Button type="submit">Submit</Button>
         </div>
         <div class="flex items-center space-x-2 mt-2">
-          <Checkbox
-            class="peer"
-            id="manga"
-            bind:checked={isChecked}
-            aria-labelledby="manga-label"
-          />
+          <input type="checkbox" id="manga" name="manga" />
+          <!--<Checkbox-->
+          <!--  class="peer"-->
+          <!--  id="manga"-->
+          <!--  name="manga"-->
+          <!--/>-->
           <Label
             class="transition text-base {labelClass}"
             id="manga-label"

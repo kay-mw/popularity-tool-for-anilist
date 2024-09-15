@@ -59,7 +59,7 @@
 			selection.call(axis);
 			selection.selectAll("path").attr("class", "stroke-border");
 			selection.selectAll("line").attr("class", "stroke-border");
-			selection.selectAll("text").attr("class", "fill-current text-sm");
+			selection.selectAll("text").attr("class", "fill-current font-bold text-sm");
 		}
 	}
 </script>

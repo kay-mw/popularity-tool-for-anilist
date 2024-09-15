@@ -2,8 +2,6 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
 
-  import { toggleMode } from "mode-watcher";
-
   //import * as Card from "$lib/components/ui/card";
   import { Button } from "$lib/components/ui/button";
 
@@ -52,16 +50,7 @@
 
   let username = "" as string | null;
 
-  onMount(() => {
-    const storedInsights = sessionStorage.getItem("insights");
-    username = sessionStorage.getItem("username");
-
-    if (storedInsights) {
-      insights = JSON.parse(storedInsights);
-      data = insights.userData;
-      console.log(data);
-    }
-  });
+  export let form: ActionData;
 
   //type DataPoint = {
   //  user_score: number;
@@ -113,13 +102,7 @@
   }
 </script>
 
-<div class="flex items-start justify-end p-4">
-  <Button on:click={toggleMode} variant="outline" size="sm">
-    <span class="hidden dark:flex">Dark</span>
-    <span class="dark:hidden">Light</span>
-  </Button>
-</div>
-<Scatter {data} />
+<Scatter data={form.data.insights.userData} />
 
 <!--- Add legend.-->
 <!--Add animations to tooltip (preferably with tailwind).-->

@@ -1,4 +1,6 @@
 <script>
+  import { Button } from "$lib/components/ui/button";
+  import { toggleMode } from "mode-watcher";
   import "../app.css";
   import { ModeWatcher } from "mode-watcher";
 </script>
@@ -12,6 +14,12 @@
 </svelte:head>
 
 <ModeWatcher />
+<div class="absolute p-4">
+  <Button on:click={toggleMode} variant="outline" size="sm">
+    <span class="hidden dark:flex">Dark</span>
+    <span class="dark:hidden">Light</span>
+  </Button>
+</div>
 <slot />
 
 <style>

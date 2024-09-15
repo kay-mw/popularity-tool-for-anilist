@@ -10,7 +10,7 @@
 	<g class="labels-x-y text-sm">
 		{#if labelforx}
 			<text
-				class="fill-current text-base"
+				class="fill-current font-bold text-base"
 				x={+margin.left + width - 66 + xoffset}
 				y={+height + margin.top - 40 + yoffset}
 				text-anchor={textanchor}>{label}</text
@@ -18,7 +18,7 @@
 		{/if}
 		{#if labelfory}
 			<text
-				class="fill-current text-base"
+				class="fill-current font-bold text-base"
 				x={+margin.left + xoffset}
 				y={-margin.top + 80 + yoffset}
 				text-anchor={textanchor}>{label}</text
