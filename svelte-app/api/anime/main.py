@@ -1,3 +1,4 @@
+import pandas as pd
 from api.anime.insights import general_insights, genre_insights, table_insights
 from api.anime.processing import check_nulls, get_anime_info, get_id, get_user_data
 from api.plots import plot_genres, plot_main
@@ -6,7 +7,7 @@ from api.plots import plot_genres, plot_main
 def fetch_anime(username: str):
 
     # Local testing
-    username = "keejan"
+    # username = "keejan"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)
@@ -28,7 +29,7 @@ def fetch_anime(username: str):
         genre_fav_u_score,
         genre_fav_avg_score,
     ) = genre_insights(merged_dfs=merged_dfs)
-    plt_div_genres = plot_genres(genre_insights=genre_info, username=username)
+    # plt_div_genres = plot_genres(genre_insights=genre_info, username=username)
 
     (
         avg_score_diff,
@@ -43,16 +44,28 @@ def fetch_anime(username: str):
         cover_image_2,
         cover_image_3,
     ) = general_insights(merged_dfs=merged_dfs, genre_fav=genre_fav)
-    plt_div_main = plot_main(merged_dfs=merged_dfs, username=username)
+    # plt_div_main = plot_main(merged_dfs=merged_dfs, username=username)
 
-    score_table_html = table_insights(merged_dfs=merged_dfs)
+    # score_table_html = table_insights(merged_dfs=merged_dfs)
 
     # NOTE: Upload
     dfs = [anime_info, user_info, user_score]
     # names = ["anime_info", "user_info", "user_anime_score"]
     # blob_upload(dfs=dfs, names=names, anilist_id=anilist_id)
 
-    user_json = user_score.to_dict(orient="records")
+    merged_dfs["average_score"] = 5 * round(merged_dfs["average_score"] / 5)
+    user_count = merged_dfs.value_counts("user_score").reset_index()
+    average_count = merged_dfs.value_counts("average_score").reset_index()
+    user_count = user_count.rename(columns={"count": "user_count"})
+    average_count = average_count.rename(columns={"count": "average_count"})
+    plot_data = user_count.merge(
+        right=average_count, how="outer", left_on="user_score", right_on="average_score"
+    )
+    plot_data = plot_data.fillna(0.0).astype(
+        {"average_score": int, "average_count": int}
+    )
+    assert plot_data["average_count"].sum() == plot_data["user_count"].sum()
+    plot_json = plot_data.to_dict(orient="records")
 
     # NOTE: Return
     insights = {
@@ -67,7 +80,7 @@ def fetch_anime(username: str):
         "titleMin": title_min,
         "avgScoreDiff": avg_score_diff,
         "absScoreDiff": true_score_diff,
-        "userData": user_json,
+        "userData": plot_json,
         # "plotMain": plt_div_main,
         # "plot_genres": plt_div_genres,
         "genreMax": genre_max,

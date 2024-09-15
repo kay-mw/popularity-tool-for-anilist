@@ -36,7 +36,8 @@
 
       const data = await response.json();
 
-      sessionStorage.setItem("insights", JSON.stringify(data.insights));
+      sessionStorage.setItem("insights", JSON.stringify(data.insights))
+      sessionStorage.setItem("username", username);
       goto("/dashboard");
     } catch (error) {
       console.error("Error:", error);
@@ -58,7 +59,7 @@
     </Button>
   </div>
   <Container>
-    <H1>Have you ever wondered how controversial your anime taste is?"</H1>
+    <H1>Have you ever wondered how controversial your anime taste is?</H1>
     <div class="space-y-4">
       <H3>Find out by entering your AniList username below...</H3>
       <form class="flex flex-col w-full" on:submit={handleSubmit}>
