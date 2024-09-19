@@ -1,10 +1,21 @@
+from contextlib import asynccontextmanager
+
 from api.anime.main import fetch_anime
 from api.manga.main import fetch_manga
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.inmemory import InMemoryBackend
+from fastapi_cache.decorator import cache
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    FastAPICache.init(InMemoryBackend())
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,19 +26,13 @@ app.add_middleware(
 )
 
 
-class UserPreferences(BaseModel):
-    manga_checked: bool
-    username: str
-
-
-@app.post("/api/home")
-def process_preferences(prefs: UserPreferences):
-    try:
-        if prefs.manga_checked:
-            _, _, insights = fetch_manga(prefs.username)
+@app.get("/api/home")
+@cache(expire=86400)
+def process_preferences(username: str, manga: bool):
+    if 2 < len(username) < 20:
+        if manga:
+            _, _, insights = fetch_manga(username)
             return {"insights": insights}
         else:
-            _, _, insights = fetch_anime(prefs.username)
+            _, _, insights = fetch_anime(username)
             return {"insights": insights}
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))

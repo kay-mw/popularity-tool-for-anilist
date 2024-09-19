@@ -1,7 +1,4 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
-
-  import { enhance, applyAction } from "$app/forms";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Checkbox } from "$lib/components/ui/checkbox";
@@ -11,81 +8,44 @@
   import H1 from "$lib/components/H1.svelte";
   import H3 from "$lib/components/H3.svelte";
 
-  import { toggleMode } from "mode-watcher";
-
-  let isChecked = false;
+  let manga = false;
   let username = "";
-  let isLoading = false;
 
-  $: labelClass = isChecked ? "text-primary" : "text-current";
-
-  async function handleSubmit(event: SubmitEvent) {
-    event.preventDefault();
-    isLoading = true;
-    try {
-      const response = await fetch("http://localhost:8000/api/home", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ manga_checked: isChecked, username: username }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-
-      sessionStorage.setItem("insights", JSON.stringify(data.insights));
-      sessionStorage.setItem("username", username);
-      goto("/dashboard");
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
+  $: labelClass = manga ? "text-primary" : "text-current";
 </script>
 
-{#if isLoading}
-  <Container>
-    <div
-      class="border-border h-20 w-20 animate-spin rounded-full border-[12px] border-t-primary"
-    />
-  </Container>
-{:else}
-  <Container>
-    <H1>Have you ever wondered how controversial your anime taste is?</H1>
-    <div class="space-y-4">
-      <H3>Find out by entering your AniList username below...</H3>
-      <form
-        class="flex flex-col w-full"
-        action="/dashboard"
-        method="POST"
-        use:enhance={() => {
-          isLoading = true;
-          return async ({ result, update }) => {
-            update();
-          };
-        }}
-      >
-        <div class="flex space-x-2">
-          <Input placeholder="username" name="username" required />
-          <Button type="submit">Submit</Button>
-        </div>
-        <div class="flex items-center space-x-2 mt-2">
-          <input type="checkbox" id="manga" name="manga" />
-          <!--<Checkbox-->
-          <!--  class="peer"-->
-          <!--  id="manga"-->
-          <!--  name="manga"-->
-          <!--/>-->
-          <Label
-            class="transition text-base {labelClass}"
-            id="manga-label"
-            for="manga">I want manga insights instead!</Label
-          >
-        </div>
-      </form>
-    </div>
-  </Container>
-{/if}
+<Container>
+  <H1>Have you ever wondered how controversial your anime taste is?</H1>
+  <div class="space-y-4">
+    <H3>Find out by entering your AniList username below...</H3>
+    <form action="/dashboard" class="flex flex-col w-full">
+      <div class="flex space-x-2">
+        <Input
+          placeholder="username"
+          name="username"
+          bind:value={username}
+          required
+        />
+        <Button type="submit">Submit</Button>
+      </div>
+      <div class="flex items-center space-x-2 mt-2">
+        <input type="checkbox" id="manga" name="manga" bind:checked={manga} />
+        <!--<Checkbox class="peer" id="manga" name="manga" bind:checked={manga} />-->
+        <Label
+          class="transition text-base {labelClass}"
+          id="manga-label"
+          for="manga">I want manga insights instead!</Label
+        >
+      </div>
+    </form>
+  </div>
+</Container>
+<!--<Container>-->
+<!--  <div-->
+<!--    class="border-border h-20 w-20 animate-spin rounded-full border-[12px] border-t-primary"-->
+<!--  />-->
+<!--</Container>-->
+<!--Redirect with URL params.-->
+<!--Run page load function on dashboard that gets data with URL params.-->
+<!--Show loader while awaiting.-->
+<!--Display data!-->

@@ -1,8 +1,10 @@
 <script>
   import { Button } from "$lib/components/ui/button";
+  import Container from "$lib/components/Container.svelte";
   import { toggleMode } from "mode-watcher";
   import "../app.css";
   import { ModeWatcher } from "mode-watcher";
+  import { navigating } from "$app/stores";
 </script>
 
 <svelte:head>
@@ -14,12 +16,20 @@
 </svelte:head>
 
 <ModeWatcher />
-<div class="absolute p-4">
+<div class="absolute top-0 right-0 p-4">
   <Button on:click={toggleMode} variant="outline" size="sm">
     <span class="hidden dark:flex">Dark</span>
     <span class="dark:hidden">Light</span>
   </Button>
 </div>
+
+{#if $navigating}
+  <Container>
+    <div
+      class="border-border h-20 w-20 animate-spin rounded-full border-[12px] border-t-primary"
+    />
+  </Container>
+{/if}
 <slot />
 
 <style>
