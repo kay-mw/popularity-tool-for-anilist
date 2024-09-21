@@ -20,7 +20,7 @@
 			<text
 				class="fill-current font-bold text-base"
 				x={+margin.left + xoffset}
-				y={-margin.top + 80 + yoffset}
+				y={-margin.top + yoffset}
 				text-anchor={textanchor}>{label}</text
 			>
 		{/if}

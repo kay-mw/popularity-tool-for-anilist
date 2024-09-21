@@ -67,6 +67,13 @@ def fetch_anime(username: str):
     assert plot_data["average_count"].sum() == plot_data["user_count"].sum()
     plot_json = plot_data.to_dict(orient="records")
 
+    score_table = merged_dfs.loc[:, "title_romaji":"score_diff"]
+    score_table["abs_score_diff"] = abs(score_table.loc[:, "score_diff"])
+    score_table = score_table.sort_values(by="abs_score_diff", ascending=False)
+    score_table = score_table.reset_index(drop=True)
+    score_table = score_table.drop(labels="abs_score_diff", axis=1)
+    table_dict = score_table.to_dict(orient="records")
+
     # NOTE: Return
     insights = {
         "imageMax": cover_image_1,
@@ -88,6 +95,7 @@ def fetch_anime(username: str):
         "genreDiffTitle": genre_fav_title,
         "genreDiffUser": genre_fav_u_score,
         "genreDiffAvg": genre_fav_avg_score,
+        "tableData": table_dict,
         # "scoreTable": score_table_html,
     }
 
