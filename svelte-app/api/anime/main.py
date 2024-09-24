@@ -74,6 +74,18 @@ def fetch_anime(username: str):
     score_table = score_table.drop(labels="abs_score_diff", axis=1)
     table_dict = score_table.to_dict(orient="records")
 
+    genre_info = (
+        genre_info.round(
+            {"weighted_average": 1, "weighted_user": 1, "weighted_diff": 2}
+        )
+        .reset_index(drop=True)
+        .drop(
+            labels=["average_score", "user_score", "count"],
+            axis=1,
+        )
+    )
+    genre_dict = genre_info.to_dict(orient="records")
+
     # NOTE: Return
     insights = {
         "imageMax": cover_image_1,
@@ -96,6 +108,7 @@ def fetch_anime(username: str):
         "genreDiffUser": genre_fav_u_score,
         "genreDiffAvg": genre_fav_avg_score,
         "tableData": table_dict,
+        "genreData": genre_dict,
         # "scoreTable": score_table_html,
     }
 

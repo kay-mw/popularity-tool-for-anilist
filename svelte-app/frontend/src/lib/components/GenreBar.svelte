@@ -1,40 +1,54 @@
 <script lang="ts">
+	import { min, max } from "d3-array";
 	import { scaleLinear } from "d3-scale";
-	import { max } from "d3-array";
 	import { spring } from "svelte/motion";
 	import { page } from "$app/stores";
 
-	import Labels from "$lib/components/Labels.svelte";
-
 	export let data;
+	$: console.log(data.insights.genreData);
 
 	const username = $page.url.searchParams.get("username");
 
-	$: yMax = Math.max(
-		max(data.insights.userData, (d) => +d.user_count),
-		max(data.insights.userData, (d) => +d.average_count),
+	$: yMin =
+		Math.ceil(
+			Math.min(
+				min(data.insights.genreData, (d) => +d.weighted_average),
+				min(data.insights.genreData, (d) => +d.weighted_user),
+			),
+		) - 5;
+
+	$: yMax = Math.ceil(
+		Math.max(
+			max(data.insights.genreData, (d) => +d.weighted_average),
+			max(data.insights.genreData, (d) => +d.weighted_user),
+		),
 	);
 
-	$: yTicks = Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5);
-	const padding = { top: 20, right: 15, bottom: 20, left: 25 };
+	function range(low: number, hi: number, increment: number) {
+		function rangeRec(low: number, hi: number, vals: Array<number>) {
+			if (low > hi) return vals;
+			vals.push(low);
+			return rangeRec(low + increment, hi, vals);
+		}
+		return rangeRec(low, hi, []);
+	}
+	$: yTicks = range(yMin, yMax, 1);
+
+	const padding = { top: 15, right: 0, bottom: 20, left: 35 };
 
 	let width = 913;
 	let height = 525;
 
 	$: xScale = scaleLinear()
-		.domain([0, data.insights.userData.length])
+		.domain([0, data.insights.genreData.length])
 		.range([padding.left, width - padding.right]);
 
 	$: yScale = scaleLinear()
-		.domain([0, Math.max.apply(null, yTicks)])
+		.domain([Math.min.apply(null, yTicks), Math.max.apply(null, yTicks)])
 		.range([height - padding.bottom, padding.top]);
 
 	$: innerWidth = width - (padding.left + padding.right);
-	$: barWidth = innerWidth / data.insights.userData.length;
-
-	function formatMobile(tick: number) {
-		return "'" + tick.toString().slice(-2);
-	}
+	$: barWidth = innerWidth / data.insights.genreData.length;
 
 	let tooltipVisible = false;
 	const tooltipPosition = spring(
@@ -46,22 +60,21 @@
 	);
 	let toolUser = "";
 	let toolAvg = "";
-	//let toolDiff = "";
+	let toolDiff = "";
 	let hoveredIndex = -1;
 
 	function handleMouseMove(event) {
 		const svgRect = event.currentTarget.getBoundingClientRect();
 		const mouseX = event.clientX - svgRect.left;
-		const mouseY = event.clientY - svgRect.top;
 		const index = Math.floor((mouseX - padding.left) / barWidth);
 
-		if (index >= 0 && index < data.insights.userData.length) {
-			const point = data.insights.userData[index];
+		if (index >= 0 && index < data.insights.genreData.length) {
+			const point = data.insights.genreData[index];
 			tooltipVisible = true;
-			tooltipPosition.set({ x: mouseX + 20, y: mouseY - 90});
-			toolUser = `${point.user_count}`;
-			toolAvg = `${point.average_count}`;
-			//toolDiff = `${point.weighted_diff}`;
+			tooltipPosition.set({ x: event.clientX + 10, y: event.clientY + 10 });
+			toolUser = `${point.weighted_user}`;
+			toolAvg = `${point.weighted_average}`;
+			toolDiff = `${point.weighted_diff}`;
 			hoveredIndex = index;
 		} else {
 			hideTooltip();
@@ -78,10 +91,10 @@
 	<svg
 		{width}
 		{height}
+		viewBox="0 0 {width} {height}"
 		on:mousemove={handleMouseMove}
 		on:mouseleave={hideTooltip}
 		role="tooltip"
-		viewBox="0 0 {width} {height}"
 	>
 		<g class="axis y-axis">
 			{#each yTicks as tick}
@@ -92,81 +105,86 @@
 			{/each}
 		</g>
 		<g class="bars">
-			{#each data.insights.userData as point, i}
+			{#each data.insights.genreData as point, i}
 				<g
 					class:hovered={hoveredIndex === i}
 					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
 				>
-					{#if point.average_count > 0 && point.user_count > 0}
+					{#if point.weighted_average > point.weighted_user}
 						<rect
 							class="fill-plot-accent"
-							x={xScale(i) + barWidth / 2}
-							y={yScale(point.average_count)}
+							x={xScale(i) + 4.3}
+							y={yScale(point.weighted_average)}
 							width={barWidth * 0.4}
-							height={yScale(0) - yScale(point.average_count)}
+							height={yScale(yMin) - yScale(point.weighted_average)}
 						/>
 						<rect
 							class="fill-primary"
-							x={xScale(i) + 7.5}
-							y={yScale(point.user_count)}
+							x={xScale(i) - 4.3 + barWidth / 2}
+							y={yScale(point.weighted_user)}
 							width={barWidth * 0.4}
-							height={yScale(0) - yScale(point.user_count)}
-						/>
-					{:else if point.average_count > 0 && point.user_count == 0}
-						<rect
-							class="fill-plot-accent"
-							x={xScale(i) + 2}
-							y={yScale(point.average_count)}
-							width={barWidth * 0.9}
-							height={yScale(0) - yScale(point.average_count)}
+							height={yScale(yMin) - yScale(point.weighted_user)}
 						/>
 					{:else}
 						<rect
 							class="fill-primary"
-							x={xScale(i) + 2}
-							y={yScale(point.user_count)}
-							width={barWidth * 0.9}
-							height={yScale(0) - yScale(point.user_count)}
+							x={xScale(i) + 4.3}
+							y={yScale(point.weighted_user)}
+							width={barWidth * 0.40}
+							height={yScale(yMin) - yScale(point.weighted_user)}
+						/>
+						<rect
+							class="fill-plot-accent"
+							x={xScale(i) - 4.3 + barWidth / 2}
+							y={yScale(point.weighted_average)}
+							width={barWidth * 0.40}
+							height={yScale(yMin) - yScale(point.weighted_average)}
 						/>
 					{/if}
 				</g>
 			{/each}
 		</g>
 		<g class="axis x-axis">
-			{#each data.insights.userData as point, i}
+			{#each data.insights.genreData as point, i}
 				<g
 					class:hovered={hoveredIndex === i}
 					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
 				>
 					<g class="tick" transform="translate({xScale(i)}, {height})">
 						<text x={barWidth / 2} y="-4">
-							{point.user_score}
+							{point.genres}
 						</text>
 					</g>
 				</g>
 			{/each}
 		</g>
+		<rect
+			x={padding.left}
+			y={padding.top}
+			width={width - padding.left - padding.right}
+			height={height - padding.top - padding.bottom}
+			fill="transparent"
+		/>
 	</svg>
 	{#if tooltipVisible}
-		<div
-			class="tooltip"
-			style="left: {$tooltipPosition.x}px; top: {$tooltipPosition.y}px"
-		>
-			<span class="text-primary">{username}: {toolUser}</span><br /><span
-				class="text-plot-accent">AniList: {toolAvg}</span
+		<div class="tooltip">
+			<span class="text-primary">{username}: {toolUser}</span><br
+			/><span class="text-plot-accent">AniList: {toolAvg}</span
+			><br /><span class="text-destructive"
+				>Difference: {toolDiff}</span
 			>
-			<!--><br /><span class="text-destructive">Difference: {toolDiff}</span>-->
 		</div>
 	{/if}
 </div>
 
 <style lang="postcss">
 	.x-axis .tick text {
-		@apply text-center text-current;
+		@apply text-current;
 		text-anchor: middle;
 	}
 
 	.bars rect {
+		@apply stroke-1 stroke-secondary;
 		transition: opacity 0.2s ease-in-out;
 	}
 
@@ -191,7 +209,7 @@
 	}
 
 	.tick {
-		@apply text-sm text-current;
+		@apply text-current text-sm shadow-lg;
 	}
 
 	.tick text {
@@ -200,7 +218,7 @@
 	}
 
 	.tick line {
-		@apply stroke-secondary opacity-100;
+		@apply stroke-secondary stroke-2 opacity-100;
 	}
 
 	.tick.tick-0 line {
@@ -208,7 +226,7 @@
 	}
 
 	.tooltip {
-		@apply absolute bg-background border border-secondary font-semibold p-2 rounded shadow-lg text-base;
+		@apply absolute bg-background border border-secondary font-semibold p-2 rounded shadow-lg text-base top-0 right-1;
 		pointer-events: none;
 		z-index: 100;
 		transition: opacity 0.2s ease-in-out;

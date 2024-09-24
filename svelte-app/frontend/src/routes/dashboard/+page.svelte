@@ -15,24 +15,22 @@
   import H2 from "$lib/components/H2.svelte";
 
   import Bar from "$lib/components/Bar.svelte";
+  import HorizontalBar from "$lib/components/HorizontalBar.svelte";
 
   export let data: PageData;
-
-  console.log(data.insights.tableData);
 
   let valueAbs = 0;
   let valueAvg = 0;
   onMount(() => {
     valueAbs = data.insights.absScoreDiff;
     valueAvg = data.insights.avgScoreDiff;
-    console.log(valueAbs, valueAvg);
   });
 </script>
 
 <DashboardContainer>
   <Card.Root>
     <Card.Header>
-      <Card.Title>Absolute Score Difference</Card.Title>
+      <Card.Title class="title">Absolute Score Difference</Card.Title>
       <Card.Description
         >How far your scores are from the average, regardless of whether you
         rate higher or lower.
@@ -44,7 +42,7 @@
   </Card.Root>
   <Card.Root>
     <Card.Header>
-      <Card.Title>Average Score Difference</Card.Title>
+      <Card.Title class="title">Average Score Difference</Card.Title>
       <Card.Description>
         Whether you tend to rate anime higher or lower than average.
       </Card.Description>
@@ -116,7 +114,7 @@
     </Card.Content>
   </Card.Root>
   <ImageCard
-    title="Your Wackiest {data.insights.genreMaxTitle} Take"
+    title="Your Hottest {data.insights.genreMaxTitle} Take"
     description=""
     animeTitle={data.insights.genreDiffTitle}
     image={data.insights.imageGenre}
@@ -126,60 +124,72 @@
   ></ImageCard>
 </DashboardContainer>
 
-<div class="items-center justify-center m-auto w-full max-w-[60rem]">
+<div class="items-center justify-center m-auto min-w-[30rem] max-w-[60rem]">
   <Card.Root>
     <Card.Header>
       <Card.Title class="text-2xl text-center">
-        <span class="text-primary">Your Scores</span> vs.
+        <span class="text-primary">Your Genre Scores</span> vs.
         <span class="text-plot-accent">the AniList Average</span>
       </Card.Title>
     </Card.Header>
     <Card.Content class="pl-6 pr-6 pb-6">
-      <Bar {data} />
+  <HorizontalBar {data} />
     </Card.Content>
   </Card.Root>
 </div>
 
 <DashboardContainer>
   <Dialog.Root>
-    <Dialog.Trigger>Open</Dialog.Trigger>
-    <Dialog.Content class="relative max-h-[75vh] overflow-auto">
+    <Dialog.Trigger>
+      <Button>All Scores</Button>
+    </Dialog.Trigger>
+    <Dialog.Content
+      class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-2xl max-h-[80vh] rounded-lg shadow-xl flex flex-col"
+    >
       <Dialog.Header>
-        <Dialog.Description class="w-full p-6">
-          <Table.Root class="w-full overflow-x-auto">
-            <Table.Caption>
-              All your scores, ordered from most to least controversial.
-            </Table.Caption>
-            <Table.Header>
-              <Table.Row>
-                <Table.Head class="w-full">Title</Table.Head>
-                <Table.Head class="text-right">Score Difference</Table.Head>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {#each data.insights.tableData as row}
-                <Table.Row class="font-medium text-base">
-                  <Table.Cell class="text-primary">
-                    {row.title_romaji}
-                  </Table.Cell>
-                  <Table.Cell class="text-right text-plot-accent">
-                    {row.score_diff}
-                  </Table.Cell>
-                </Table.Row>
-              {/each}
-            </Table.Body>
-          </Table.Root>
+        <Dialog.Title class="text-lg font-semibold">Scores</Dialog.Title>
+        <Dialog.Description class="mt-2 text-sm text-gray-500">
+          All your scores, ordered from most to least controversial.
         </Dialog.Description>
       </Dialog.Header>
+      <div class="flex-grow overflow-auto p-6 pt-4">
+        <Table.Root class="w-full">
+          <Table.Header>
+            <Table.Row>
+              <Table.Head class="w-full">Title</Table.Head>
+              <Table.Head class="text-right">Score Difference</Table.Head>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {#each data.insights.tableData as row}
+              <Table.Row>
+                <Table.Cell class="text-primary">{row.title_romaji}</Table.Cell>
+                <Table.Cell class="text-right text-plot-accent"
+                  >{row.score_diff}</Table.Cell
+                >
+              </Table.Row>
+            {/each}
+          </Table.Body>
+        </Table.Root>
+      </div>
       <Dialog.Footer>
-        <Dialog.Close>Close</Dialog.Close>
+        <Dialog.Close>
+          <Button>Close</Button>
+        </Dialog.Close>
       </Dialog.Footer>
     </Dialog.Content>
   </Dialog.Root>
 </DashboardContainer>
+
 
 <DashboardContainer>
   <div class="flex flex-col">
     <Button href="/">Return Home</Button>
   </div>
 </DashboardContainer>
+
+<style lang="postcss">
+.title {
+  @apply text-5xl
+}
+</style>

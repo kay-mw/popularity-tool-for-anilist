@@ -1,6 +1,7 @@
 <script>
 	import * as Card from "$lib/components/ui/card";
 	import H2 from "$lib/components/H2.svelte";
+	import { Separator } from "$lib/components/ui/separator";
 
 	export let title = "";
 	export let description = "";
@@ -13,19 +14,20 @@
 
 <Card.Root>
 	<Card.Header>
-		<Card.Title class="{titleColour}">{title}</Card.Title>
+		<Card.Title class={titleColour}>{title}</Card.Title>
 		<Card.Description>{description}</Card.Description>
 	</Card.Header>
 	<Card.Content class="flex flex-col justify-center space-y-4">
-		<H2 class="{titleColour}">{animeTitle}</H2>
+		<H2 class={titleColour}>{animeTitle}</H2>
 		<img
 			class="flex border-solid border-2 border-border rounded-xl w-full"
 			src={image}
 			alt="coldest take anime"
 		/>
 	</Card.Content>
-	<Card.Footer class="flex flex-col items-start justify-start">
-		<p>Your Score: {userScore}</p>
-		<p>AniList Average: {avgScore}</p>
+	<Separator />
+	<Card.Footer class="flex flex-col mt-5 items-center justify-center font-semibold">
+		<p class="text-primary">Your Score: {userScore}</p>
+		<p class="text-plot-accent">AniList Average: {avgScore}</p>
 	</Card.Footer>
 </Card.Root>
