@@ -6,13 +6,16 @@
   import * as Table from "$lib/components/ui/table";
   import * as Dialog from "$lib/components/ui/dialog";
   import { Button } from "$lib/components/ui/button";
-  import { Progress } from "$lib/components/ui/progress";
+  import { ProgressAbs, ProgressMid } from "$lib/components/ui/progress";
   import { Separator } from "$lib/components/ui/separator";
   import { ScrollArea } from "$lib/components/ui/scroll-area";
 
   import DashboardContainer from "$lib/components/DashboardContainer.svelte";
   import ImageCard from "$lib/components/ImageCard.svelte";
   import H2 from "$lib/components/H2.svelte";
+  import H1 from "$lib/components/H1.svelte";
+  import AvgCard from "$lib/components/AvgCard.svelte";
+  import AbsCard from "$lib/components/AbsCard.svelte";
 
   import Bar from "$lib/components/Bar.svelte";
   import HorizontalBar from "$lib/components/HorizontalBar.svelte";
@@ -23,35 +26,88 @@
   let valueAvg = 0;
   onMount(() => {
     valueAbs = data.insights.absScoreDiff;
-    valueAvg = data.insights.avgScoreDiff;
+    //valueAbs = 7;
+    //valueAvg = data.insights.avgScoreDiff;
+    valueAvg = -10.03;
   });
 </script>
 
-<DashboardContainer>
-  <Card.Root>
+<DashboardContainer class="h-screen justify-center">
+  <Card.Root class="max-w-xl">
     <Card.Header>
       <Card.Title class="title">Absolute Score Difference</Card.Title>
       <Card.Description
         >How far your scores are from the average, regardless of whether you
-        rate higher or lower.
+        rate higher/lower.
       </Card.Description>
     </Card.Header>
-    <Card.Content>
-      <Progress value={valueAbs} max={10} />
+    <Card.Content class="space-y-4">
+      {#if valueAbs <= 4}
+        <ProgressAbs value={valueAbs * 3} max={50} />
+        <AbsCard
+          {valueAbs}
+          colour="primary"
+          image="https://media1.tenor.com/m/YjiuFd-KUVQAAAAC/one-piece-one-piece-movie-9.gif"
+          alt="chopper lying in snow"
+          descriptor="CHILLED"
+          emphasis="only"
+        />
+      {:else if valueAbs == 5 || valueAbs == 6}
+        <ProgressAbs value={valueAbs * 5} max={50} />
+        <AbsCard
+          {valueAbs}
+          colour="red-400"
+          image="https://cdn.midjourney.com/b5d8c3da-776d-4a6e-a40b-381eac63862c/0_1.png"
+          alt="roy mustang snapping fingers"
+          descriptor="HEATING UP..."
+          emphasis="a solid"
+        />
+      {:else}
+        <ProgressAbs value={valueAbs * 5} max={50} />
+        <AbsCard
+          {valueAbs}
+          colour="destructive"
+          image="https://cdn.midjourney.com/9b38ea28-7568-4ebd-8959-db2e1a0e472a/0_0.png"
+          alt="rengoku conjuring fire"
+          descriptor="SCALDING"
+          emphasis="a whopping"
+        />
+      {/if}
     </Card.Content>
   </Card.Root>
-  <Card.Root>
+</DashboardContainer>
+<DashboardContainer class="h-screen justify-center">
+  <Card.Root class="max-w-xl">
     <Card.Header>
       <Card.Title class="title">Average Score Difference</Card.Title>
       <Card.Description>
-        Whether you tend to rate anime higher or lower than average.
+        Whether you tend to rate anime higher or lower on average.
       </Card.Description>
     </Card.Header>
     <Card.Content>
-      <Progress value={valueAvg} max={50} />
+      {#if valueAvg > 0}
+        <AvgCard
+          {valueAvg}
+          accentColour="text-plot-accent"
+          valueDirection="higher"
+          image="https://media.tenor.com/q27KhS9kKmwAAAAi/dazai-liar-dancer.gif"
+          alt="dazai dancing"
+        />
+      {:else}
+        <AvgCard
+          {valueAvg}
+          accentColour="text-destructive"
+          valueDirection="lower"
+          image="https://media1.tenor.com/m/sDja8j6SFggAAAAC/bungou-stray-dogs-dazai.gif"
+          alt="dazai dancing"
+        />
+      {/if}
     </Card.Content>
   </Card.Root>
-  <div class="grid grid-cols-2 grid-rows-1 max-w-xl gap-6">
+</DashboardContainer>
+
+<DashboardContainer class="h-screen justify-center">
+  <div class="grid grid-cols-2 grid-rows-1 gap-3">
     <ImageCard
       title="Your Hottest Take"
       description="Your most 'unpopular' score."
@@ -73,19 +129,21 @@
   </div>
 </DashboardContainer>
 
-<div class="items-center justify-center m-auto w-full max-w-[60rem]">
-  <Card.Root>
-    <Card.Header>
-      <Card.Title class="text-2xl text-center">
-        <span class="text-primary">Your Scores</span> vs.
-        <span class="text-plot-accent">the AniList Average</span>
-      </Card.Title>
-    </Card.Header>
-    <Card.Content class="pl-6 pr-6 pb-6">
-      <Bar {data} />
-    </Card.Content>
-  </Card.Root>
-</div>
+<DashboardContainer>
+  <div class="items-center justify-center m-auto w-full max-w-[60rem]">
+    <Card.Root>
+      <Card.Header>
+        <Card.Title class="text-2xl text-center">
+          <span class="text-primary">Your Scores</span> vs.
+          <span class="text-plot-accent">the AniList Average</span>
+        </Card.Title>
+      </Card.Header>
+      <Card.Content class="pl-6 pr-6 pb-6">
+        <Bar {data} />
+      </Card.Content>
+    </Card.Root>
+  </div>
+</DashboardContainer>
 
 <DashboardContainer>
   <Separator class="mb-4" />
@@ -124,21 +182,25 @@
   ></ImageCard>
 </DashboardContainer>
 
-<div class="items-center justify-center m-auto min-w-[30rem] max-w-[60rem]">
-  <Card.Root>
-    <Card.Header>
-      <Card.Title class="text-2xl text-center">
-        <span class="text-primary">Your Genre Scores</span> vs.
-        <span class="text-plot-accent">the AniList Average</span>
-      </Card.Title>
-    </Card.Header>
-    <Card.Content class="pl-6 pr-6 pb-6">
-  <HorizontalBar {data} />
-    </Card.Content>
-  </Card.Root>
+<div
+  class="flex flex-col items-center m-auto w-full mt-36 max-w-screen-lg h-auto justify-center"
+>
+  <div class="items-center justify-center m-auto min-w-[30rem] max-w-[60rem]">
+    <Card.Root>
+      <Card.Header>
+        <Card.Title class="text-2xl text-center">
+          <span class="text-primary">Your Genre Scores</span> vs.
+          <span class="text-plot-accent">the AniList Average</span>
+        </Card.Title>
+      </Card.Header>
+      <Card.Content class="pl-6 pr-6 pb-6">
+        <HorizontalBar {data} />
+      </Card.Content>
+    </Card.Root>
+  </div>
 </div>
 
-<DashboardContainer>
+<div class="flex flex-col items-center m-auto w-full gap-4 p-8 max-w-screen-lg">
   <Dialog.Root>
     <Dialog.Trigger>
       <Button>All Scores</Button>
@@ -179,17 +241,14 @@
       </Dialog.Footer>
     </Dialog.Content>
   </Dialog.Root>
-</DashboardContainer>
 
-
-<DashboardContainer>
   <div class="flex flex-col">
     <Button href="/">Return Home</Button>
   </div>
-</DashboardContainer>
+</div>
 
 <style lang="postcss">
-.title {
-  @apply text-5xl
-}
+  :global(.title) {
+    @apply text-4xl;
+  }
 </style>

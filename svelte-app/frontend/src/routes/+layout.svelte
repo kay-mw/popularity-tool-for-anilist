@@ -32,8 +32,11 @@
 {/if}
 <slot />
 
-<style>
+<style lang="postcss">
   :global(body) {
     font-family: "DM Sans", sans-serif;
+  }
+  :global(body) {
+    @apply scroll-smooth;
   }
 </style>

@@ -15,7 +15,7 @@
 </script>
 
 <Container>
-  <H1>Have you ever wondered how controversial your anime taste is?</H1>
+  <H1 class="text-primary">Have you ever wondered how controversial your anime taste is?</H1>
   <div class="space-y-4">
     <H3>Find out by entering your AniList username below...</H3>
     <form action="/dashboard" class="flex flex-col w-full">

@@ -12,12 +12,12 @@
 	export let titleColour = "";
 </script>
 
-<Card.Root>
+<Card.Root class="max-w-xl">
 	<Card.Header>
-		<Card.Title class={titleColour}>{title}</Card.Title>
+		<Card.Title class="text-4xl font-bold {titleColour}">{title}</Card.Title>
 		<Card.Description>{description}</Card.Description>
 	</Card.Header>
-	<Card.Content class="flex flex-col justify-center space-y-4">
+	<Card.Content class="flex flex-col justify-center space-y-4 text-3xl font-semibold">
 		<H2 class={titleColour}>{animeTitle}</H2>
 		<img
 			class="flex border-solid border-2 border-border rounded-xl w-full"
@@ -26,7 +26,9 @@
 		/>
 	</Card.Content>
 	<Separator />
-	<Card.Footer class="flex flex-col mt-5 items-center justify-center font-semibold">
+	<Card.Footer
+		class="flex flex-col mt-5 font-semibold text-xl"
+	>
 		<p class="text-primary">Your Score: {userScore}</p>
 		<p class="text-plot-accent">AniList Average: {avgScore}</p>
 	</Card.Footer>
