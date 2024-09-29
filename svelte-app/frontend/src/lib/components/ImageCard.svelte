@@ -9,16 +9,16 @@
 	export let animeTitle = "";
 	export let userScore = 0;
 	export let avgScore = 0;
-	export let titleColour = "";
+	export let textColour = "";
 </script>
 
 <Card.Root class="max-w-xl">
 	<Card.Header>
-		<Card.Title class="text-4xl font-bold {titleColour}">{title}</Card.Title>
+		<Card.Title class="text-4xl font-bold {textColour}">{title}</Card.Title>
 		<Card.Description>{description}</Card.Description>
 	</Card.Header>
 	<Card.Content class="flex flex-col justify-center space-y-4 text-3xl font-semibold">
-		<H2 class={titleColour}>{animeTitle}</H2>
+		<H2 class={textColour}>{animeTitle}</H2>
 		<img
 			class="flex border-solid border-2 border-border rounded-xl w-full"
 			src={image}
@@ -27,9 +27,9 @@
 	</Card.Content>
 	<Separator />
 	<Card.Footer
-		class="flex flex-col mt-5 font-semibold text-xl"
+		class="flex flex-col mt-5 font-semibold text-xl items-start"
 	>
-		<p class="text-primary">Your Score: {userScore}</p>
+		<p class={textColour}>Your Score: {userScore}</p>
 		<p class="text-plot-accent">AniList Average: {avgScore}</p>
 	</Card.Footer>
 </Card.Root>

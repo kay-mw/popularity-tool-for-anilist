@@ -7,7 +7,7 @@ from api.plots import plot_genres, plot_main
 def fetch_anime(username: str):
 
     # Local testing
-    # username = "keejan"
+    username = "oofdere"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)
@@ -32,8 +32,8 @@ def fetch_anime(username: str):
     # plt_div_genres = plot_genres(genre_insights=genre_info, username=username)
 
     (
+        abs_score_diff,
         avg_score_diff,
-        true_score_diff,
         score_max,
         score_min,
         avg_max,
@@ -44,27 +44,37 @@ def fetch_anime(username: str):
         cover_image_2,
         cover_image_3,
     ) = general_insights(merged_dfs=merged_dfs, genre_fav=genre_fav)
-    # plt_div_main = plot_main(merged_dfs=merged_dfs, username=username)
-
-    # score_table_html = table_insights(merged_dfs=merged_dfs)
 
     # NOTE: Upload
     dfs = [anime_info, user_info, user_score]
     # names = ["anime_info", "user_info", "user_anime_score"]
     # blob_upload(dfs=dfs, names=names, anilist_id=anilist_id)
 
-    merged_dfs["average_score"] = 5 * round(merged_dfs["average_score"] / 5)
+    if (merged_dfs["user_score"] % 10 == 0).all():
+        merged_dfs["average_score"] = 10 * round(merged_dfs["average_score"] / 10)
+    else:
+        merged_dfs["average_score"] = 5 * round(merged_dfs["average_score"] / 5)
+
     user_count = merged_dfs.value_counts("user_score").reset_index()
     average_count = merged_dfs.value_counts("average_score").reset_index()
     user_count = user_count.rename(columns={"count": "user_count"})
     average_count = average_count.rename(columns={"count": "average_count"})
+    average_count["average_score"] = average_count["average_score"].astype(int)
     plot_data = user_count.merge(
-        right=average_count, how="outer", left_on="user_score", right_on="average_score"
+        right=average_count, how="left", left_on="user_score", right_on="average_score"
     )
     plot_data = plot_data.fillna(0.0).astype(
         {"average_score": int, "average_count": int}
     )
+
     assert plot_data["average_count"].sum() == plot_data["user_count"].sum()
+
+    plot_data
+
+    user_count
+    average_count
+    plot_data
+
     plot_json = plot_data.to_dict(orient="records")
 
     score_table = merged_dfs.loc[:, "title_romaji":"score_diff"]
@@ -83,6 +93,7 @@ def fetch_anime(username: str):
             labels=["average_score", "user_score", "count"],
             axis=1,
         )
+        .sort_values("weighted_diff")
     )
     genre_dict = genre_info.to_dict(orient="records")
 
@@ -98,10 +109,8 @@ def fetch_anime(username: str):
         "titleMax": title_max,
         "titleMin": title_min,
         "avgScoreDiff": avg_score_diff,
-        "absScoreDiff": true_score_diff,
+        "absScoreDiff": abs_score_diff,
         "userData": plot_json,
-        # "plotMain": plt_div_main,
-        # "plot_genres": plt_div_genres,
         "genreMax": genre_max,
         "genreMaxTitle": genre_max_name,
         "genreDiffTitle": genre_fav_title,
@@ -109,7 +118,6 @@ def fetch_anime(username: str):
         "genreDiffAvg": genre_fav_avg_score,
         "tableData": table_dict,
         "genreData": genre_dict,
-        # "scoreTable": score_table_html,
     }
 
     return dfs, anilist_id, insights

@@ -26,7 +26,7 @@
 	></div>
 	<div
 		class={cn(
-			"h-full transition-all duration-700 absolute top-0 bottom-0 from-primary from-35%",
+			"h-full transition-all duration-700 absolute top-0 bottom-0 from-primary from-25%",
 			isPositive
 				? "to-plot-accent left-1/2 rounded-e-lg bg-gradient-to-r"
 				: "to-destructive right-1/2 rounded-s-lg bg-gradient-to-l",

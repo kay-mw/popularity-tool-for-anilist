@@ -3,6 +3,7 @@ import os
 import aiohttp
 import pandas as pd
 import requests
+import yarl
 
 
 def load_query(file_name: str) -> str:
@@ -24,6 +25,6 @@ async def fetch_anilist_data_async(query: str, variables: dict) -> dict:
     url = "https://graphql.anilist.co"
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            url, json={"query": query, "variables": variables}, timeout=10
+            url, json={"query": query, "variables": variables}
         ) as response:
             return await response.json()

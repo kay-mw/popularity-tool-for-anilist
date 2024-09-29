@@ -86,10 +86,10 @@ def general_insights(
 ) -> tuple[float, float, int, int, int, int, str, str, str, str, str]:
     merged_dfs["score_diff"] = merged_dfs["user_score"] - merged_dfs["average_score"]
 
-    float_avg_score_diff = abs(merged_dfs.loc[:, "score_diff"]).mean()
+    float_abs_score_diff = abs(merged_dfs.loc[:, "score_diff"]).mean()
+    abs_score_diff = round(float_abs_score_diff, 2)
+    float_avg_score_diff = merged_dfs.loc[:, "score_diff"].mean()
     avg_score_diff = round(float_avg_score_diff, 2)
-    float_true_score_diff = merged_dfs.loc[:, "score_diff"].mean()
-    true_score_diff = round(float_true_score_diff, 2)
 
     max_diff = merged_dfs.loc[
         merged_dfs["score_diff"].abs() == max(merged_dfs["score_diff"].abs())
@@ -120,8 +120,8 @@ def general_insights(
     cover_image_3 = cover_image_3["data"]["Media"]["coverImage"]["extraLarge"]
 
     return (
+        abs_score_diff,
         avg_score_diff,
-        true_score_diff,
         score_max,
         score_min,
         avg_max,

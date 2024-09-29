@@ -58,7 +58,7 @@
 		if (index >= 0 && index < data.insights.userData.length) {
 			const point = data.insights.userData[index];
 			tooltipVisible = true;
-			tooltipPosition.set({ x: mouseX + 20, y: mouseY - 90});
+			tooltipPosition.set({ x: mouseX + 20, y: mouseY - 90 });
 			toolUser = `${point.user_count}`;
 			toolAvg = `${point.average_count}`;
 			//toolDiff = `${point.weighted_diff}`;
@@ -72,6 +72,8 @@
 		tooltipVisible = false;
 		hoveredIndex = -1;
 	}
+
+	$: console.log(data.insights)
 </script>
 
 <div class="chart" bind:clientWidth={width} bind:clientHeight={height}>

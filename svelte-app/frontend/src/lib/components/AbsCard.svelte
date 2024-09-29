@@ -15,7 +15,7 @@
 	{alt}
 />
 <h3
-	class="text-5xl text-center text-{colour} font-bold tracking-widest scroll-m-20"
+	class="text-5xl text-center text-{colour} font-bold tracking-wider scroll-m-20"
 >
 	{descriptor}
 </h3>

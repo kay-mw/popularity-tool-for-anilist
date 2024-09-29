@@ -9,7 +9,7 @@
 	const padding = { top: 40, right: 40, bottom: 0, left: 150 };
 	const username = $page.url.searchParams.get("username");
 
-	let width = 800;
+	let width = 913;
 	let height = 1000;
 
 	$: xMin =
