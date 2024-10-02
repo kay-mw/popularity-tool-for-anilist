@@ -5,8 +5,6 @@
 	import { page } from "$app/stores";
 
 	export let data;
-	$: console.log(data.insights.genreData);
-
 	const username = $page.url.searchParams.get("username");
 
 	$: yMin =

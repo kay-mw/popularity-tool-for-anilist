@@ -7,7 +7,7 @@ from api.plots import plot_genres, plot_main
 def fetch_anime(username: str):
 
     # Local testing
-    username = "oofdere"
+    # username = "oofdere"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)
@@ -61,20 +61,12 @@ def fetch_anime(username: str):
     average_count = average_count.rename(columns={"count": "average_count"})
     average_count["average_score"] = average_count["average_score"].astype(int)
     plot_data = user_count.merge(
-        right=average_count, how="left", left_on="user_score", right_on="average_score"
+        right=average_count, how="outer", left_on="user_score", right_on="average_score"
     )
     plot_data = plot_data.fillna(0.0).astype(
         {"average_score": int, "average_count": int}
     )
-
     assert plot_data["average_count"].sum() == plot_data["user_count"].sum()
-
-    plot_data
-
-    user_count
-    average_count
-    plot_data
-
     plot_json = plot_data.to_dict(orient="records")
 
     score_table = merged_dfs.loc[:, "title_romaji":"score_diff"]
@@ -93,7 +85,7 @@ def fetch_anime(username: str):
             labels=["average_score", "user_score", "count"],
             axis=1,
         )
-        .sort_values("weighted_diff")
+        .sort_values("weighted_diff", ascending=False, key=abs)
     )
     genre_dict = genre_info.to_dict(orient="records")
 

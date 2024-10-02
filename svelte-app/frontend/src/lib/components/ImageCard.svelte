@@ -14,10 +14,10 @@
 
 <Card.Root class="max-w-xl">
 	<Card.Header>
-		<Card.Title class="text-4xl font-bold {textColour}">{title}</Card.Title>
+		<Card.Title class="{textColour}">{title}</Card.Title>
 		<Card.Description>{description}</Card.Description>
 	</Card.Header>
-	<Card.Content class="flex flex-col justify-center space-y-4 text-3xl font-semibold">
+	<Card.Content class="flex flex-col justify-center space-y-4 text-2xl font-semibold">
 		<H2 class={textColour}>{animeTitle}</H2>
 		<img
 			class="flex border-solid border-2 border-border rounded-xl w-full"

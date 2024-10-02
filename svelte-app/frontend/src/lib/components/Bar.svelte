@@ -72,8 +72,6 @@
 		tooltipVisible = false;
 		hoveredIndex = -1;
 	}
-
-	$: console.log(data.insights)
 </script>
 
 <div class="chart" bind:clientWidth={width} bind:clientHeight={height}>
@@ -109,7 +107,7 @@
 						/>
 						<rect
 							class="fill-primary"
-							x={xScale(i) + 7.5}
+							x={xScale(i) + 6.5}
 							y={yScale(point.user_count)}
 							width={barWidth * 0.4}
 							height={yScale(0) - yScale(point.user_count)}
@@ -142,7 +140,7 @@
 				>
 					<g class="tick" transform="translate({xScale(i)}, {height})">
 						<text x={barWidth / 2} y="-4">
-							{point.user_score}
+							{point.user_score > 0 ? point.user_score : point.average_score}
 						</text>
 					</g>
 				</g>

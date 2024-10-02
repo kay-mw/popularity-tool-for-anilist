@@ -4,5 +4,4 @@
 	export let header = "";
 </script>
 
-<H1 class="tracking-normal {$$restProps.class}">{header}</H1>
-<Separator />
+<H1 class="tracking-normal text-primary {$$restProps.class}">{header}</H1>
