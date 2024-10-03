@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from "./$types";
   import { onMount } from "svelte";
-  import { fly } from "svelte/transition";
+  import { page } from "$app/stores";
 
   import * as Card from "$lib/components/ui/card";
   import * as Table from "$lib/components/ui/table";
@@ -9,25 +9,21 @@
   import { Button } from "$lib/components/ui/button";
   import { Toaster } from "$lib/components/ui/sonner";
   import { toast } from "svelte-sonner";
-  import { ProgressAbs, ProgressMid } from "$lib/components/ui/progress";
   import { Separator } from "$lib/components/ui/separator";
-  import { ScrollArea } from "$lib/components/ui/scroll-area";
 
   import DashboardContainer from "$lib/components/DashboardContainer.svelte";
   import ImageCard from "$lib/components/ImageCard.svelte";
   import H2 from "$lib/components/H2.svelte";
-  import H1 from "$lib/components/H1.svelte";
   import AvgCard from "$lib/components/AvgCard.svelte";
   import AbsCard from "$lib/components/AbsCard.svelte";
-  import SectionHeader from "$lib/components/SectionHeader.svelte";
-  import GridDiv from "$lib/components/GridDiv.svelte";
-  import FadeDiv from "$lib/components/FadeDiv.svelte";
   import AnimatedScroll from "$lib/components/AnimatedScroll.svelte";
 
   import Bar from "$lib/components/Bar.svelte";
   import HorizontalBar from "$lib/components/HorizontalBar.svelte";
 
   export let data: PageData;
+
+  const username = $page.url.searchParams.get("username");
 
   function copyURL() {
     const currentURL = window.location.href;
@@ -36,35 +32,21 @@
     });
   }
 
+  function getRandom(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+  }
+
   let valueAbs = 0;
   let valueAvg = 0;
   onMount(() => {
     valueAbs = data.insights.absScoreDiff;
     valueAvg = data.insights.avgScoreDiff;
-    //valueAbs = 7;
-    //valueAvg = -10.03;
+    //valueAbs = getRandom(0, 25);
+    //valueAvg = getRandom(-25, 25);
   });
 </script>
 
-<section class="space-y-[100vw]">
-  <!--<DashboardContainer class="space-y-6">-->
-  <!--  <H1>scroll down to reveal your taste...</H1>-->
-  <!--  <svg-->
-  <!--    xmlns="http://www.w3.org/2000/svg"-->
-  <!--    fill="none"-->
-  <!--    viewBox="0 0 24 24"-->
-  <!--    stroke-width="1.5"-->
-  <!--    stroke="currentColor"-->
-  <!--    class="animate-pulse duration-[2000ms] size-16"-->
-  <!--  >-->
-  <!--    <path-->
-  <!--      stroke-linecap="round"-->
-  <!--      stroke-linejoin="round"-->
-  <!--      d="m9 12.75 3 3m0 0 3-3m-3 3v-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"-->
-  <!--    />-->
-  <!--  </svg>-->
-  <!--</DashboardContainer>-->
-
+<section class="space-y-[50vw]">
   <AnimatedScroll>
     <DashboardContainer>
       {#if Math.floor(valueAbs) < 5}
@@ -92,7 +74,7 @@
           image="https://media1.tenor.com/m/862gCSNfYggAAAAd/kyojuro-rengoku-9th-form-rengoku.gif"
           alt="rengoku conjuring fire"
           descriptor="SCALDING"
-          emphasis="a whopping"
+          emphasis="a WHOPPING"
         />
       {:else}
         <AbsCard
@@ -133,11 +115,11 @@
 
   <AnimatedScroll>
     <DashboardContainer>
-      <section class="m-auto min-w-[60rem]">
+      <section class="m-auto min-w-[50rem]">
         <Card.Root>
           <Card.Header>
             <Card.Title class="text-4xl">
-              <span class="text-primary">Your Scores</span> vs.
+              <span class="text-primary">{username}</span> vs.
               <span class="text-plot-accent">the AniList Average</span>
             </Card.Title>
             <Card.Description>
@@ -164,6 +146,7 @@
           userScore={data.insights.userMaxScore}
           avgScore={data.insights.avgMaxScore}
           textColour="text-destructive"
+          {username}
         ></ImageCard>
         <ImageCard
           title="Your Coldest Take"
@@ -173,6 +156,7 @@
           userScore={data.insights.userMinScore}
           avgScore={data.insights.avgMinScore}
           textColour="text-primary"
+          {username}
         ></ImageCard>
       </section>
     </DashboardContainer>
@@ -180,7 +164,7 @@
 
   <AnimatedScroll>
     <DashboardContainer>
-      <div class="m-auto min-w-[60rem]">
+      <div class="m-auto min-w-[50rem]">
         <Card.Root>
           <Card.Header>
             <Card.Title
@@ -224,8 +208,8 @@
             <h1
               class="text-2xl font-semibold leading-none tracking-tight text-center"
             >
-              <span class="text-primary">Your Genre Scores</span> vs.
-              <span class="text-plot-accent">the AniList Average</span>
+              <span class="text-primary">{username}</span> vs.
+              <span class="text-plot-accent">the AniList Average</span> (by genre)
             </h1>
             <HorizontalBar {data} />
           </Card.Content>
@@ -247,6 +231,7 @@
         textColour={data.insights.genreDiffUser > data.insights.genreDiffAvg
           ? "text-primary"
           : "text-destructive"}
+        {username}
       ></ImageCard>
     </DashboardContainer>
   </AnimatedScroll>
@@ -276,17 +261,25 @@
             <Table.Root class="w-full">
               <Table.Header>
                 <Table.Row>
-                  <Table.Head class="w-full">Title</Table.Head>
-                  <Table.Head class="text-right">Score Difference</Table.Head>
+                  <Table.Head>Title</Table.Head>
+                  <Table.Head>{username}</Table.Head>
+                  <Table.Head>AniList</Table.Head>
+                  <Table.Head>Difference</Table.Head>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
                 {#each data.insights.tableData as row}
                   <Table.Row>
-                    <Table.Cell class="text-primary"
+                    <Table.Cell class="text-current"
                       >{row.title_romaji}</Table.Cell
                     >
-                    <Table.Cell class="text-right text-plot-accent"
+                    <Table.Cell class="text-primary"
+                      >{row.user_score}</Table.Cell
+                    >
+                    <Table.Cell class="text-plot-accent"
+                      >{row.average_score}</Table.Cell
+                    >
+                    <Table.Cell class="text-destructive"
                       >{row.score_diff}</Table.Cell
                     >
                   </Table.Row>

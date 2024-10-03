@@ -15,7 +15,9 @@
 </script>
 
 <Container>
-  <H1 class="text-primary">Have you ever wondered how controversial your anime taste is?</H1>
+  <H1 class="text-primary"
+    >Have you ever wondered how controversial your anime taste is?</H1
+  >
   <div class="space-y-4">
     <H3>Find out by entering your AniList username below...</H3>
     <form action="/dashboard" class="flex flex-col w-full">
@@ -29,8 +31,8 @@
         <Button type="submit">Submit</Button>
       </div>
       <div class="flex items-center space-x-2 mt-2">
-        <input type="checkbox" id="manga" name="manga" bind:checked={manga} />
-        <!--<Checkbox class="peer" id="manga" name="manga" bind:checked={manga} />-->
+        <Checkbox id="manga" bind:checked={manga} />
+        <input type="hidden" name="manga" value={manga ? "on" : "off"} />
         <Label
           class="transition text-base {labelClass}"
           id="manga-label"
@@ -40,12 +42,3 @@
     </form>
   </div>
 </Container>
-<!--<Container>-->
-<!--  <div-->
-<!--    class="border-border h-20 w-20 animate-spin rounded-full border-[12px] border-t-primary"-->
-<!--  />-->
-<!--</Container>-->
-<!--Redirect with URL params.-->
-<!--Run page load function on dashboard that gets data with URL params.-->
-<!--Show loader while awaiting.-->
-<!--Display data!-->

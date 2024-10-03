@@ -7,7 +7,7 @@ from api.plots import plot_genres, plot_main
 def fetch_anime(username: str):
 
     # Local testing
-    # username = "oofdere"
+    # username = "keejan"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)
@@ -29,7 +29,6 @@ def fetch_anime(username: str):
         genre_fav_u_score,
         genre_fav_avg_score,
     ) = genre_insights(merged_dfs=merged_dfs)
-    # plt_div_genres = plot_genres(genre_insights=genre_info, username=username)
 
     (
         abs_score_diff,
@@ -44,11 +43,6 @@ def fetch_anime(username: str):
         cover_image_2,
         cover_image_3,
     ) = general_insights(merged_dfs=merged_dfs, genre_fav=genre_fav)
-
-    # NOTE: Upload
-    dfs = [anime_info, user_info, user_score]
-    # names = ["anime_info", "user_info", "user_anime_score"]
-    # blob_upload(dfs=dfs, names=names, anilist_id=anilist_id)
 
     if (merged_dfs["user_score"] % 10 == 0).all():
         merged_dfs["average_score"] = 10 * round(merged_dfs["average_score"] / 10)
@@ -69,8 +63,11 @@ def fetch_anime(username: str):
     assert plot_data["average_count"].sum() == plot_data["user_count"].sum()
     plot_json = plot_data.to_dict(orient="records")
 
-    score_table = merged_dfs.loc[:, "title_romaji":"score_diff"]
+    score_table = merged_dfs[
+        ["title_romaji", "score_diff", "user_score", "average_score"]
+    ].copy()
     score_table["abs_score_diff"] = abs(score_table.loc[:, "score_diff"])
+    score_table["average_score"] = score_table["average_score"].astype(int)
     score_table = score_table.sort_values(by="abs_score_diff", ascending=False)
     score_table = score_table.reset_index(drop=True)
     score_table = score_table.drop(labels="abs_score_diff", axis=1)
@@ -88,6 +85,11 @@ def fetch_anime(username: str):
         .sort_values("weighted_diff", ascending=False, key=abs)
     )
     genre_dict = genre_info.to_dict(orient="records")
+
+    # NOTE: Upload
+    dfs = [anime_info, user_info, user_score]
+    # names = ["anime_info", "user_info", "user_anime_score"]
+    # blob_upload(dfs=dfs, names=names, anilist_id=anilist_id)
 
     # NOTE: Return
     insights = {

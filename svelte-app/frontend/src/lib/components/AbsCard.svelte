@@ -3,7 +3,7 @@
 	import { ProgressAbs } from "$lib/components/ui/progress";
 	import * as Card from "$lib/components/ui/card";
 
-	export let valueAbs;
+	export let valueAbs = 0;
 	export let colour;
 	export let image;
 	export let descriptor;

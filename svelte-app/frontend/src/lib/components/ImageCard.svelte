@@ -1,7 +1,6 @@
 <script>
 	import * as Card from "$lib/components/ui/card";
 	import H2 from "$lib/components/H2.svelte";
-	import { Separator } from "$lib/components/ui/separator";
 
 	export let title = "";
 	export let description = "";
@@ -10,26 +9,31 @@
 	export let userScore = 0;
 	export let avgScore = 0;
 	export let textColour = "";
+	export let username;
 </script>
 
 <Card.Root class="max-w-xl">
 	<Card.Header>
-		<Card.Title class="{textColour}">{title}</Card.Title>
+		<Card.Title class={textColour}>{title}</Card.Title>
 		<Card.Description>{description}</Card.Description>
 	</Card.Header>
-	<Card.Content class="flex flex-col justify-center space-y-4 text-2xl font-semibold">
-		<H2 class={textColour}>{animeTitle}</H2>
-		<img
-			class="flex border-solid border-2 border-border rounded-xl w-full"
-			src={image}
-			alt="coldest take anime"
-		/>
+	<Card.Content class="flex flex-col justify-center space-y-4 font-semibold">
+		<H2 class="{textColour} text-2xl">{animeTitle}</H2>
+		<figure class="relative">
+			<img
+				class="flex border-solid border-2 border-border rounded-xl w-full"
+				src={image}
+				alt="coldest take anime"
+			/>
+			<div
+				class="absolute bottom-8 pt-2 pl-3 h-[4.5rem] bg-secondary w-full drop-shadow-lg"
+				style="--tw-bg-opacity: 0.80; background-color: hsl(var(--secondary) / var(--tw-bg-opacity));"
+			>
+				<div class="font-semibold text-lg">
+					<p class={textColour}>{username}: {userScore}</p>
+					<p class="text-plot-accent">AniList: {avgScore}</p>
+				</div>
+			</div>
+		</figure>
 	</Card.Content>
-	<Separator />
-	<Card.Footer
-		class="flex flex-col mt-5 font-semibold text-xl items-start"
-	>
-		<p class={textColour}>Your Score: {userScore}</p>
-		<p class="text-plot-accent">AniList Average: {avgScore}</p>
-	</Card.Footer>
 </Card.Root>

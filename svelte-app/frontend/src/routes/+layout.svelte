@@ -16,7 +16,7 @@
 </svelte:head>
 
 <ModeWatcher />
-<div class="absolute top-0 right-0 p-4">
+<div class="absolute z-50 top-0 right-0 p-4">
   <Button on:click={toggleMode} variant="outline" size="sm">
     <span class="hidden dark:flex">Dark</span>
     <span class="dark:hidden">Light</span>
