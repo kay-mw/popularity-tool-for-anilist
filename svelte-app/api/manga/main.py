@@ -1,9 +1,9 @@
-from api.manga.insights import general_insights, genre_insights, table_insights
+from api.manga.insights import general_insights, genre_insights
 from api.manga.processing import check_nulls, get_id, get_manga_info, get_user_data
-from api.plots import plot_genres, plot_main
 
 
 def fetch_manga(username: str):
+
     # Local testing
     # username = "ZNote"
 

@@ -1,7 +1,5 @@
-import pandas as pd
-from api.anime.insights import general_insights, genre_insights, table_insights
+from api.anime.insights import general_insights, genre_insights
 from api.anime.processing import check_nulls, get_anime_info, get_id, get_user_data
-from api.plots import plot_genres, plot_main
 
 
 def fetch_anime(username: str):

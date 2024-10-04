@@ -112,9 +112,9 @@ def general_insights(
     variables_image_1 = {"id": image_id_1}
     variables_image_2 = {"id": image_id_2}
     variables_image_3 = {"id": image_id_3}
-    cover_image_1, response_header = fetch_anilist_data(query_image, variables_image_1)
-    cover_image_2, response_header = fetch_anilist_data(query_image, variables_image_2)
-    cover_image_3, response_header = fetch_anilist_data(query_image, variables_image_3)
+    cover_image_1, _ = fetch_anilist_data(query_image, variables_image_1)
+    cover_image_2, _ = fetch_anilist_data(query_image, variables_image_2)
+    cover_image_3, _ = fetch_anilist_data(query_image, variables_image_3)
     cover_image_1 = cover_image_1["data"]["Media"]["coverImage"]["extraLarge"]
     cover_image_2 = cover_image_2["data"]["Media"]["coverImage"]["extraLarge"]
     cover_image_3 = cover_image_3["data"]["Media"]["coverImage"]["extraLarge"]
@@ -132,30 +132,3 @@ def general_insights(
         cover_image_2,
         cover_image_3,
     )
-
-
-def table_insights(merged_dfs: pd.DataFrame) -> str:
-    score_table = merged_dfs.loc[:, "title_romaji":"score_diff"]
-    score_table["abs_score_diff"] = abs(score_table.loc[:, "score_diff"])
-    score_table = score_table.sort_values(by="abs_score_diff", ascending=False)
-    score_table = score_table.reset_index(drop=True)
-    score_table = score_table.drop(labels="abs_score_diff", axis=1)
-
-    score_table_html = """
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Score Difference</th>
-        </tr>
-    </thead>
-    <tbody>"""
-
-    for index, row in score_table.iterrows():
-        score_table_html += f"""<tr>
-            <td class="text-primary">{row['title_romaji']}</td>
-            <td class="text-secondary">{row['score_diff']}</td>
-        </tr>"""
-
-    score_table_html += """</tbody>"""
-
-    return score_table_html

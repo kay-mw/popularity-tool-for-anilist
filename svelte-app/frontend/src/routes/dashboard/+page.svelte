@@ -13,7 +13,9 @@
 
   import DashboardContainer from "$lib/components/DashboardContainer.svelte";
   import ImageCard from "$lib/components/ImageCard.svelte";
+  import H1 from "$lib/components/H1.svelte";
   import H2 from "$lib/components/H2.svelte";
+  import SectionHeader from "$lib/components/SectionHeader.svelte";
   import AvgCard from "$lib/components/AvgCard.svelte";
   import AbsCard from "$lib/components/AbsCard.svelte";
   import AnimatedScroll from "$lib/components/AnimatedScroll.svelte";
@@ -32,21 +34,20 @@
     });
   }
 
-  function getRandom(min: number, max: number) {
-    return Math.random() * (max - min) + min;
-  }
-
   let valueAbs = 0;
   let valueAvg = 0;
   onMount(() => {
     valueAbs = data.insights.absScoreDiff;
     valueAvg = data.insights.avgScoreDiff;
-    //valueAbs = getRandom(0, 25);
-    //valueAvg = getRandom(-25, 25);
   });
 </script>
 
 <section class="space-y-[50vw]">
+  <AnimatedScroll>
+    <DashboardContainer>
+      <SectionHeader header="your overall taste" />
+    </DashboardContainer>
+  </AnimatedScroll>
   <AnimatedScroll>
     <DashboardContainer>
       {#if Math.floor(valueAbs) < 5}
@@ -159,6 +160,12 @@
           {username}
         ></ImageCard>
       </section>
+    </DashboardContainer>
+  </AnimatedScroll>
+
+  <AnimatedScroll>
+    <DashboardContainer>
+      <SectionHeader header="your genre opinions" arrow={false} />
     </DashboardContainer>
   </AnimatedScroll>
 

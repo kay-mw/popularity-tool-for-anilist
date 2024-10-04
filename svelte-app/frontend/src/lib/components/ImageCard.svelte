@@ -26,10 +26,10 @@
 				alt="coldest take anime"
 			/>
 			<div
-				class="absolute bottom-8 pt-2 pl-3 h-[4.5rem] bg-secondary w-full drop-shadow-lg"
-				style="--tw-bg-opacity: 0.80; background-color: hsl(var(--secondary) / var(--tw-bg-opacity));"
+				class="absolute bottom-6 md:bottom-8 pt-1 md:pt-2 pl-3 h-[3rem] md:h-[4.5rem] bg-secondary w-full drop-shadow-lg"
+				style="--tw-bg-opacity: 0.85; background-color: hsl(var(--secondary) / var(--tw-bg-opacity));"
 			>
-				<div class="font-semibold text-lg">
+				<div class="font-semibold text-sm md:text-lg">
 					<p class={textColour}>{username}: {userScore}</p>
 					<p class="text-plot-accent">AniList: {avgScore}</p>
 				</div>

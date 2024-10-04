@@ -2,7 +2,6 @@
 	import { onMount } from "svelte";
 
 	export let threshold = 0.1;
-	export let animationClass = "visible";
 
 	let element;
 	let intersecting;
