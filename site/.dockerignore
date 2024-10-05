@@ -1,0 +1,7 @@
+*
+
+!Dockerfile
+!docker-compose.yaml
+!api/
+!main.py
+!requirements.txt
