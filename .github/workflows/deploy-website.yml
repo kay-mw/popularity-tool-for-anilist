@@ -26,4 +26,5 @@ jobs:
           script: |
             cd ~/popularity-tool-for-anilist/site
             git pull origin main
+            export STORAGE_CONNECTION_STRING=${{ secrets.STORAGE_CONNECTION_STRING }}
             docker compose up --build -d
