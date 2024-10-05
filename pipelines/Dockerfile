@@ -14,4 +14,4 @@ RUN apt install -y unixodbc-dev
 
 RUN pip install -e ".[dev]"
 
-EXPOSE 3000
+EXPOSE 3001
