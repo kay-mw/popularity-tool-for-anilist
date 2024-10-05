@@ -1,14 +1,12 @@
 # Anime Taste Tool (using AniList)
 
 <p float="left">
-  <img src="./media/example_dash_msg.png" width="266" />
-  <img src="./media/example_dash_plot.png" width="266" /> 
-  <img src="./media/example_dash_anime.png" width="266" />
+  <img src="./media/plot.png" width="400" />
+  <img src="./media/abs.gif" width="400" />
 </p>
 
 This is a basic web app that takes your AniList username and determines your
 most and least popular takes compared to the side-wide average.
 
-Feel free to try it by
-<a href="https://pop-tool-anilist-ftybdinz2q-nw.a.run.app" target="_blank">clicking
+Feel free to try it by <a href="https://www.anipop.uk/" target="_blank">clicking
 here!</a>
