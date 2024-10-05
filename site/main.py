@@ -31,7 +31,7 @@ app.add_middleware(
 )
 
 
-@app.get("/api/home/")
+@app.get("/home/")
 @cache(expire=86400)
 def process_preferences(username: str, manga: bool):
     if 2 < len(username) < 20:

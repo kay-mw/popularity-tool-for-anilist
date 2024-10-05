@@ -6,7 +6,7 @@ export const load: PageLoad = async ({ fetch, url }) => {
   const manga = url.searchParams.get("manga");
 
   const response = await fetch(
-    `http://backend:8000/api/home/?username=${username}&manga=${manga}`,
+    `/api/home/?username=${username}&manga=${manga}`,
   );
 
   if (!response.ok) {

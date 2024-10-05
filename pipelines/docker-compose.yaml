@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     command: ["dagster-webserver", "-h", "0.0.0.0", "-p", "3000"]
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - DAGSTER_HOME=/opt/dagster/dagster_home
       - STORAGE_CONNECTION_STRING=${STORAGE_CONNECTION_STRING}
