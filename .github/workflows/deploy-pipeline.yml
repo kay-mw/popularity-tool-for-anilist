@@ -3,7 +3,7 @@ name: deploy-pipeline
 on:
   push:
     branches:
-      - main
+      - dev
     paths:
       - pipelines/**
       - .github/**/deploy-pipeline.yml

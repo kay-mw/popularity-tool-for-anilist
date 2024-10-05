@@ -18,13 +18,15 @@ jobs:
 
       - name: SSH (build and deploy)
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
         with:
           host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
+          envs: STORAGE_CONNECTION_STRING
           script: |
             cd ~/popularity-tool-for-anilist/site
             git pull origin main
-            export STORAGE_CONNECTION_STRING="${{ secrets.STORAGE_CONNECTION_STRING }}"
             docker compose up --build -d
