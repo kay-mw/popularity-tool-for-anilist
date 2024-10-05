@@ -27,7 +27,6 @@ jobs:
           key: ${{ secrets.KEY }}
           envs: STORAGE_CONNECTION_STRING
           script: |
-            echo "$STORAGE_CONNECTION_STRING" >> "test.txt"
             cd ~/popularity-tool-for-anilist/site
             git pull origin main
             docker compose up --build -d
