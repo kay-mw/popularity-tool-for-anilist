@@ -14,6 +14,4 @@ RUN apt install -y unixodbc-dev
 
 RUN pip install -e ".[dev]"
 
-RUN --mount=type=secret,id=AZURE_ODBC,env=AZURE_ODBC
-
 EXPOSE 3000

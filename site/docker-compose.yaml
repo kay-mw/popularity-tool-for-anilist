@@ -3,10 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      secrets:
-        - STORAGE_CONNECTION_STRING
     ports:
       - "8000:8000"
+    environment:
+      - STORAGE_CONNECTION_STRING=${STORAGE_CONNECTION_STRING}
     
   frontend:
     build:
@@ -26,7 +26,3 @@ services:
       - "443:443"
     depends_on:
       - frontend
-
-secrets:
-  STORAGE_CONNECTION_STRING:
-    environment: STORAGE_CONNECTION_STRING

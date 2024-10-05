@@ -3,7 +3,7 @@ name: deploy-pipeline
 on:
   push:
     branches:
-      - dev
+      - main
     paths:
       - pipelines/**
       - .github/**/deploy-pipeline.yml
@@ -18,13 +18,15 @@ jobs:
 
       - name: SSH (build and deploy)
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
         with:
           host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
+          envs: AZURE_ODBC
           script: |
             cd ~/popularity-tool-for-anilist/pipelines
             git pull origin main
-            export AZURE_ODBC="${{ secrets.AZURE_ODBC }}"
             docker compose up --build -d
