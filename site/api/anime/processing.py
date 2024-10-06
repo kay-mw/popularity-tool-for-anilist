@@ -54,6 +54,10 @@ def get_user_data(
         record_path=["data", "Page", "users", "statistics", "anime", "scores"],
         meta=[["data", "Page", "users", "id"]],
     )
+
+    if user_score.empty:
+        raise ValueError(f"AniList returned no anime for {username}.")
+
     user_score = user_score.explode("mediaIds", ignore_index=True)
     user_score["mediaIds"] = user_score["mediaIds"].astype(int)
     user_score.rename(

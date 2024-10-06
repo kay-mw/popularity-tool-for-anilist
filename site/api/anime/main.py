@@ -6,7 +6,7 @@ from api.upload import blob_upload
 def fetch_anime(username: str):
 
     # Local testing
-    # username = "keejan"
+    # username = "levi"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)

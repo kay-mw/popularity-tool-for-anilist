@@ -23,7 +23,7 @@ app.add_middleware(
     allow_origins=[
         "https://www.anipop.uk",
         "https://anipop.uk",
-        # "http://localhost:5173", # Dev
+        # "http://localhost:5173",  # Dev
     ],
     allow_credentials=True,
     allow_methods=["*"],

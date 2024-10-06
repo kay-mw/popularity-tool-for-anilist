@@ -116,8 +116,8 @@
 
   <AnimatedScroll>
     <DashboardContainer>
-      <section class="m-auto min-w-[50rem]">
-        <Card.Root>
+      <section class="m-auto w-full">
+        <Card.Root class="overflow-x-auto">
           <Card.Header>
             <Card.Title class="text-4xl">
               <span class="text-primary">{username}</span> vs.
@@ -128,7 +128,7 @@
               average.
             </Card.Description>
           </Card.Header>
-          <Card.Content>
+          <Card.Content class="inline-flex">
             <Bar {data} />
           </Card.Content>
         </Card.Root>
@@ -171,8 +171,8 @@
 
   <AnimatedScroll>
     <DashboardContainer>
-      <div class="m-auto min-w-[50rem]">
-        <Card.Root>
+      <div class="m-auto w-full">
+        <Card.Root class="overflow-x-auto">
           <Card.Header>
             <Card.Title
               class={data.insights.genreMax > 0
@@ -218,7 +218,9 @@
               <span class="text-primary">{username}</span> vs.
               <span class="text-plot-accent">the AniList Average</span> (by genre)
             </h1>
-            <HorizontalBar {data} />
+            <div class="inline-flex">
+              <HorizontalBar {data} />
+            </div>
           </Card.Content>
         </Card.Root>
       </div>

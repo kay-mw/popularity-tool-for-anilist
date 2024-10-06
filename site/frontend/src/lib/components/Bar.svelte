@@ -92,6 +92,7 @@
 					{#if point.average_count > 0 && point.user_count > 0}
 						<rect
 							class="fill-plot-accent"
+							rx="0.5rem"
 							x={xScale(i) + barWidth / 2}
 							y={yScale(point.average_count)}
 							width={barWidth * 0.4}
@@ -99,6 +100,7 @@
 						/>
 						<rect
 							class="fill-primary"
+							rx="0.5rem"
 							x={xScale(i) + 6.5}
 							y={yScale(point.user_count)}
 							width={barWidth * 0.4}
@@ -107,6 +109,7 @@
 					{:else if point.average_count > 0 && point.user_count == 0}
 						<rect
 							class="fill-plot-accent"
+							rx="0.5rem"
 							x={xScale(i) + 2}
 							y={yScale(point.average_count)}
 							width={barWidth * 0.9}
@@ -115,6 +118,7 @@
 					{:else}
 						<rect
 							class="fill-primary"
+							rx="0.5rem"
 							x={xScale(i) + 2}
 							y={yScale(point.user_count)}
 							width={barWidth * 0.9}
@@ -131,7 +135,7 @@
 					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
 				>
 					<g class="tick" transform="translate({xScale(i)}, {height})">
-						<text x={barWidth / 2} y="-4">
+						<text x={barWidth / 2}>
 							{point.user_score > 0 ? point.user_score : point.average_score}
 						</text>
 					</g>
