@@ -138,7 +138,7 @@
 
   <AnimatedScroll>
     <DashboardContainer>
-      <section class="grid grid-cols-2 grid-rows-1 gap-3">
+      <section class="flex flex-col md:grid md:grid-cols-2 md:grid-rows-1 md:gap-3">
         <ImageCard
           title="Your Hottest Take"
           description="The show you scored most differently compared to the AniList average."
