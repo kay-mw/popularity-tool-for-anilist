@@ -18,7 +18,7 @@
 				min(data.insights.genreData, (d) => +d.weighted_average),
 				min(data.insights.genreData, (d) => +d.weighted_user),
 			),
-		) - 5;
+		) - 1;
 
 	$: xMax = Math.ceil(
 		Math.max(
@@ -118,6 +118,7 @@
 				>
 					<rect
 						class="fill-primary"
+						rx="0.5rem"
 						x={xScale(xMin)}
 						y={yScale(i) - yAdj - barWidth / 2.5}
 						height={width > 380 ? barWidth * 0.4 : barWidth * 1.5}
@@ -125,6 +126,7 @@
 					/>
 					<rect
 						class="fill-plot-accent"
+						rx="0.5rem"
 						x={xScale(xMin)}
 						y={yScale(i) - yAdj}
 						height={width > 380 ? barWidth * 0.4 : barWidth * 1.5}
@@ -147,7 +149,10 @@
 		</g>
 	</svg>
 	{#if tooltipVisible}
-		<div class="tooltip" style="left: {$tooltipPosition.x}px; top: {$tooltipPosition.y}px">
+		<div
+			class="tooltip"
+			style="left: {$tooltipPosition.x}px; top: {$tooltipPosition.y}px"
+		>
 			<span class="text-primary">{username}: {toolUser}</span><br /><span
 				class="text-plot-accent">AniList: {toolAvg}</span
 			><br /><span class="text-destructive">Difference: {toolDiff}</span>
