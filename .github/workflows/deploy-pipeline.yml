@@ -20,12 +20,13 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         env:
           AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
+          STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
         with:
           host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          envs: AZURE_ODBC
+          envs: AZURE_ODBC,STORAGE_CONNECTION_STRING
           script: |
             cd ~/popularity-tool-for-anilist/pipelines
             git pull origin main

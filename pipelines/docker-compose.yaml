@@ -9,6 +9,7 @@ services:
     environment:
       - DAGSTER_HOME=/opt/dagster/dagster_home
       - AZURE_ODBC=${AZURE_ODBC}
+      - STORAGE_CONNECTION_STRING=${STORAGE_CONNECTION_STRING}
     volumes:
       - .:/opt/dagster/dagster_home
 
@@ -20,6 +21,7 @@ services:
     environment:
       - DAGSTER_HOME=/opt/dagster/dagster_home
       - AZURE_ODBC=${AZURE_ODBC}
+      - STORAGE_CONNECTION_STRING=${STORAGE_CONNECTION_STRING}
     volumes:
       - .:/opt/dagster/dagster_home
 
