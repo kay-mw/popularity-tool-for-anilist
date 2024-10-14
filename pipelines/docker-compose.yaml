@@ -8,7 +8,7 @@ services:
       - "4000:4000"
     environment:
       - DAGSTER_HOME=/opt/dagster/dagster_home
-      - STORAGE_CONNECTION_STRING=${STORAGE_CONNECTION_STRING}
+      - AZURE_ODBC=${AZURE_ODBC}
     volumes:
       - .:/opt/dagster/dagster_home
 
@@ -19,7 +19,7 @@ services:
     command: ["dagster-daemon", "run"]
     environment:
       - DAGSTER_HOME=/opt/dagster/dagster_home
-      - STORAGE_CONNECTION_STRING=${STORAGE_CONNECTION_STRING}
+      - AZURE_ODBC=${AZURE_ODBC}
     volumes:
       - .:/opt/dagster/dagster_home
 
