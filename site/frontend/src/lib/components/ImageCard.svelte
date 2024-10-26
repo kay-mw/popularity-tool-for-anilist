@@ -20,15 +20,15 @@
 	</Card.Header>
 	<Card.Content class="relative justify-center space-y-4 font-semibold">
 		<H2 class="{textColour} text-2xl">{animeTitle}</H2>
-		<div class="relative group">
+		<div class="relative">
 			<figure>
 				<img
-					class="border-solid border-2 border-border rounded-lg w-full opacity-20 md:opacity-100 group-hover:opacity-20 md:group-hover:opacity-20 transition-opacity duration-500 ease-in-out"
+					class="border-solid border-2 border-border rounded-lg w-full opacity-25"
 					src={image}
 					alt="coldest take anime"
 				/>
 			</figure>
-			<div class="absolute space-y-2 font-semibold text-xl md:text-3xl md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 ease-in-out top-1/2 left-1/2" style="transform: translate(-50%, -50%);">
+			<div class="absolute space-y-2 font-semibold text-xl md:text-3xl top-1/2 left-1/2 w-[75%] text-center" style="transform: translate(-50%, -50%);">
 				{#if userScore < avgScore}
 					<p class={textColour}>{username} ↓ {userScore}</p>
 					<Separator />

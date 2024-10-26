@@ -13,7 +13,6 @@
 
   import DashboardContainer from "$lib/components/DashboardContainer.svelte";
   import ImageCard from "$lib/components/ImageCard.svelte";
-  import H1 from "$lib/components/H1.svelte";
   import H2 from "$lib/components/H2.svelte";
   import SectionHeader from "$lib/components/SectionHeader.svelte";
   import AvgCard from "$lib/components/AvgCard.svelte";
@@ -22,6 +21,8 @@
 
   import Bar from "$lib/components/Bar.svelte";
   import HorizontalBar from "$lib/components/HorizontalBar.svelte";
+
+  import ScrollArrow from "$lib/components/ScrollArrow.svelte";
 
   export let data: PageData;
 
@@ -34,6 +35,29 @@
     });
   }
 
+  let block = "center";
+
+  function* getValidElements() {
+    while (true) {
+      const elements = Array.from(
+        document.getElementsByClassName(
+          "flex flex-col items-center justify-center m-auto w-full max-w-screen-lg p-4 min-h-screen",
+        ),
+      ).slice(1);
+      for (let [i, item] of elements.entries()) {
+        if (i == 4) {
+          block = "start";
+          yield item;
+        } else {
+          block = "center";
+          yield item;
+        }
+      }
+    }
+  }
+
+  const g = getValidElements();
+
   let valueAbs = 0;
   let valueAvg = 0;
   onMount(() => {
@@ -41,6 +65,10 @@
     valueAvg = data.insights.avgScoreDiff;
   });
 </script>
+
+<div class="hidden md:flex sticky z-10 md:top-[45.5%] h-0">
+  <ScrollArrow class="absolute z-10 md:right-0 pr-8" {g} {block} />
+</div>
 
 <section class="space-y-[50vw]">
   <AnimatedScroll>
@@ -138,7 +166,9 @@
 
   <AnimatedScroll>
     <DashboardContainer>
-      <section class="flex flex-col gap-3 md:grid md:grid-cols-2 md:grid-rows-1">
+      <section
+        class="flex flex-col gap-3 md:grid md:grid-cols-2 md:grid-rows-1"
+      >
         <ImageCard
           title="Your Hottest Take"
           description="The show you scored most differently compared to the AniList average."
@@ -165,7 +195,7 @@
 
   <AnimatedScroll>
     <DashboardContainer>
-      <SectionHeader header="your genre opinions" arrow={false} />
+      <SectionHeader header="your genre opinions" />
     </DashboardContainer>
   </AnimatedScroll>
 
