@@ -4,14 +4,16 @@ from typing import List
 import pandas as pd
 
 
-def check_range(df: pd.DataFrame, column: str) -> None:
+def check_range(df: pd.DataFrame, column: str) -> AssertionError | None:
     assert (
         df[column].max() <= 100
-    ), f"{df.name}[{column}] contains values greater than 100."
-    assert df[column].max() >= 0, f"{df.name}[{column}] contains values less than 0."
+    ), f"Column {column} in DataFrame {df.name} contains values greater than 100."
+    assert (
+        df[column].max() >= 0
+    ), f"Column {column} in DataFrame {df.name} contains values less than 0."
 
 
-def check_key(df: pd.DataFrame, column: str) -> None:
+def check_key(df: pd.DataFrame, column: str) -> AssertionError | None:
     assert len(df[column].unique()) == len(
         df[column]
     ), f"Primary key column {column} in {df.name} contains duplicate values."
@@ -32,7 +34,7 @@ def test_anime(
 
     assert len(anime_info.index) == len(
         user_anime_score.index
-    ), "Row counts between anime_info and user_anime_score are not equal."
+    ), f"Row counts between anime_info and user_anime_score are not equal. anime_info: {len(anime_info.index)}, user_anime_score: {len(user_anime_score.index)}"
 
     check_range(df=anime_info, column="average_score")
     check_range(df=user_anime_score, column="user_score")
