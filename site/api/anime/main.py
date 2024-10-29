@@ -1,3 +1,4 @@
+import pandas as pd
 from api.anime.insights import general_insights, genre_insights
 from api.anime.processing import check_nulls, get_anime_info, get_id, get_user_data
 from api.upload import blob_upload
@@ -6,7 +7,7 @@ from api.upload import blob_upload
 def fetch_anime(username: str):
 
     # Local testing
-    # username = "levi"
+    # username = "keejan"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)
@@ -45,8 +46,24 @@ def fetch_anime(username: str):
 
     if (merged_dfs["user_score"] % 10 == 0).all():
         merged_dfs["average_score"] = 10 * round(merged_dfs["average_score"] / 10)
+        all_scores = list(range(10, 101, 10))
+        new_rows = pd.DataFrame(
+            {
+                "score": all_scores,
+                "user_count": 0,
+                "average_count": 0,
+            }
+        )
     else:
         merged_dfs["average_score"] = 5 * round(merged_dfs["average_score"] / 5)
+        all_scores = list(range(10, 101, 5))
+        new_rows = pd.DataFrame(
+            {
+                "score": all_scores,
+                "user_count": 0,
+                "average_count": 0,
+            }
+        )
 
     user_count = merged_dfs.value_counts("user_score").reset_index()
     average_count = merged_dfs.value_counts("average_score").reset_index()
@@ -54,12 +71,19 @@ def fetch_anime(username: str):
     average_count = average_count.rename(columns={"count": "average_count"})
     average_count["average_score"] = average_count["average_score"].astype(int)
     plot_data = user_count.merge(
-        right=average_count, how="outer", left_on="user_score", right_on="average_score"
+        right=average_count,
+        how="outer",
+        left_on="user_score",
+        right_on="average_score",
     )
-    plot_data = plot_data.fillna(0.0).astype(
-        {"average_score": int, "average_count": int}
+    plot_data["user_score"] = plot_data["user_score"].fillna(plot_data["average_score"])
+    plot_data = plot_data.fillna(0.0).astype({"average_count": int})
+    plot_data = plot_data.drop("average_score", axis=1).rename(
+        columns={"user_score": "score"}
     )
-    assert plot_data["average_count"].sum() == plot_data["user_count"].sum()
+    plot_data = pd.concat([plot_data, new_rows], ignore_index=True)
+    plot_data = plot_data.drop_duplicates(subset=["score"], keep="first")
+    plot_data = plot_data.sort_values(by="score", ascending=True).reset_index(drop=True)
     plot_json = plot_data.to_dict(orient="records")
 
     score_table = merged_dfs[

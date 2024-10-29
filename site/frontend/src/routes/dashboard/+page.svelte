@@ -36,6 +36,8 @@
   }
 
   let block = "center";
+  let up = false;
+  $: console.log(up)
 
   function* getValidElements() {
     while (true) {
@@ -47,9 +49,14 @@
       for (let [i, item] of elements.entries()) {
         if (i == 4) {
           block = "start";
+          up = false;
+          yield item;
+        } else if (i == 6) {
+          up = true;
           yield item;
         } else {
           block = "center";
+          up = false;
           yield item;
         }
       }
@@ -67,7 +74,7 @@
 </script>
 
 <div class="hidden md:flex sticky z-10 md:top-[45.5%] h-0">
-  <ScrollArrow class="absolute z-10 md:right-0 pr-8" {g} {block} />
+  <ScrollArrow class="absolute z-10 md:right-0 pr-8" {g} {block} {up} />
 </div>
 
 <section class="space-y-[50vw]">
