@@ -2,6 +2,7 @@
 	import { Separator } from "$lib/components/ui/separator";
 	import { ProgressAbs } from "$lib/components/ui/progress";
 	import * as Card from "$lib/components/ui/card";
+	import ScrollArrow from "$lib/components/ScrollArrow.svelte";
 
 	export let valueAbs = 0;
 	export let colour;

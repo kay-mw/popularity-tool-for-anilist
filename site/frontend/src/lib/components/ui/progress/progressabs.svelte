@@ -8,7 +8,7 @@
 	export let max: $$Props["max"] = 100;
 	export let value: $$Props["value"] = undefined;
 	//export let color: $$Props["color"] = undefined;
-	export { className as class };
+	//export { className as class };
 	$: percentage = ((value ?? 0) / (max ?? 1)) * 100;
 </script>
 
