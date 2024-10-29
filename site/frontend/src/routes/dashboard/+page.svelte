@@ -37,7 +37,6 @@
 
   let block = "center";
   let up = false;
-  $: console.log(up)
 
   function* getValidElements() {
     while (true) {
