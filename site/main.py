@@ -35,22 +35,15 @@ app.add_middleware(
 @cache(expire=86400)
 def process_preferences(username: str, manga: bool):
     if 2 < len(username) < 20:
-        if manga:
-            try:
+        try:
+            if manga:
                 _, _, insights = fetch_manga(username)
                 return {"insights": insights}
-            except ValueError as e:
-                raise HTTPException(status_code=404, detail=f"{e}")
-            except HTTPError as e:
-                raise HTTPException(status_code=404, detail=f"{e}")
-        else:
-            try:
+            else:
                 _, _, insights = fetch_anime(username)
                 return {"insights": insights}
-            except ValueError as e:
-                raise HTTPException(status_code=404, detail=f"{e}")
-            except HTTPError as e:
-                raise HTTPException(status_code=404, detail=f"{e}")
+        except ValueError or HTTPError as e:
+            raise HTTPException(status_code=404, detail=f"{e}")
     else:
         raise HTTPException(
             status_code=404,

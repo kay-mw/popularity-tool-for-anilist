@@ -44,6 +44,7 @@ def fetch_anime(username: str):
         cover_image_3,
     ) = general_insights(merged_dfs=merged_dfs, genre_fav=genre_fav)
 
+    # Round average scores to match user scores(as user scores only increase in increments of 5-10)
     if (merged_dfs["user_score"] % 10 == 0).all():
         merged_dfs["average_score"] = 10 * round(merged_dfs["average_score"] / 10)
         all_scores = list(range(10, 101, 10))
@@ -65,24 +66,39 @@ def fetch_anime(username: str):
             }
         )
 
+    # Fix index
     user_count = merged_dfs.value_counts("user_score").reset_index()
     average_count = merged_dfs.value_counts("average_score").reset_index()
+
+    # Rename
     user_count = user_count.rename(columns={"count": "user_count"})
     average_count = average_count.rename(columns={"count": "average_count"})
+
+    # Fix types
     average_count["average_score"] = average_count["average_score"].astype(int)
+
+    # Join
     plot_data = user_count.merge(
         right=average_count,
         how="outer",
         left_on="user_score",
         right_on="average_score",
     )
+
+    # Fix NAs after join.
     plot_data["user_score"] = plot_data["user_score"].fillna(plot_data["average_score"])
     plot_data = plot_data.fillna(0.0).astype({"average_count": int})
+
+    # Drop unnecessary column.
     plot_data = plot_data.drop("average_score", axis=1).rename(
         columns={"user_score": "score"}
     )
+
+    # Add missing score values.
     plot_data = pd.concat([plot_data, new_rows], ignore_index=True)
     plot_data = plot_data.drop_duplicates(subset=["score"], keep="first")
+
+    # Sort and export to JSON (so it can be sent to frontend later)
     plot_data = plot_data.sort_values(by="score", ascending=True).reset_index(drop=True)
     plot_json = plot_data.to_dict(orient="records")
 

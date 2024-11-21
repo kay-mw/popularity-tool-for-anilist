@@ -44,6 +44,7 @@ def fetch_manga(username: str):
         cover_image_3,
     ) = general_insights(merged_dfs=merged_dfs, genre_fav=genre_fav)
 
+    # TODO: Make this into a function, as it's the exact same logic as anime/main.py.
     if (merged_dfs["user_score"] % 10 == 0).all():
         merged_dfs["average_score"] = 10 * round(merged_dfs["average_score"] / 10)
         all_scores = list(range(10, 101, 10))
