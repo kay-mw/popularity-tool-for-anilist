@@ -1,3 +1,5 @@
+from typing import Literal
+
 from api.funcs import (
     check_nulls,
     create_genre_data,
@@ -12,11 +14,9 @@ from api.insights import general_insights, genre_insights
 from api.upload import blob_upload
 
 
-def fetch_manga(username: str):
+def fetch_data(username: str, format: Literal["anime", "manga"]):
     # Local testing
-    # username = "ZNote"
-
-    format = "manga"
+    # username = "keejan"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)
@@ -25,15 +25,14 @@ def fetch_manga(username: str):
         anilist_id=anilist_id,
         format=format,
     )
-    manga_info = get_format_info(username=username, id_list=id_list, format=format)
-    manga_info, user_score = check_nulls(
-        format_info=manga_info, user_score=user_score, format=format
+    format_info = get_format_info(username=username, id_list=id_list, format=format)
+    format_info, user_score = check_nulls(
+        format_info=format_info, user_score=user_score, format=format
     )
 
     # NOTE: Insights
-    merged_dfs = user_score.merge(manga_info, on=f"{format}_id", how="left")
+    merged_dfs = user_score.merge(format_info, on=f"{format}_id", how="left")
 
-    # TODO: Split these functions into smaller parts so they don't return 8 different variables
     (
         genre_max,
         genre_max_name,
@@ -64,8 +63,8 @@ def fetch_manga(username: str):
     genre_dict = create_genre_data(genre_df=genre_info)
 
     # NOTE: Upload
-    dfs = [manga_info, user_info, user_score]
-    names = ["manga_info", "user_info", "user_manga_score"]
+    dfs = [format_info, user_info, user_score]
+    names = [f"{format}_info", "user_info", f"user_{format}_score"]
     blob_upload(dfs=dfs, names=names, anilist_id=anilist_id)
 
     # NOTE: Return
