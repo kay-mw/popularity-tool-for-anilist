@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 
-from api.anime.main import fetch_anime
-from api.manga.main import fetch_manga
+from api.main import fetch_data
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_cache import FastAPICache
@@ -32,25 +31,18 @@ app.add_middleware(
 
 
 @app.get("/home/")
-@cache(expire=86400)
+@cache(expire=3600)
 def process_preferences(username: str, manga: bool):
     if 2 < len(username) < 20:
-        if manga:
-            try:
-                _, _, insights = fetch_manga(username)
-                return {"insights": insights}
-            except ValueError as e:
-                raise HTTPException(status_code=404, detail=f"{e}")
-            except HTTPError as e:
-                raise HTTPException(status_code=404, detail=f"{e}")
-        else:
-            try:
-                _, _, insights = fetch_anime(username)
-                return {"insights": insights}
-            except ValueError as e:
-                raise HTTPException(status_code=404, detail=f"{e}")
-            except HTTPError as e:
-                raise HTTPException(status_code=404, detail=f"{e}")
+        try:
+            _, _, insights = (
+                fetch_data(username=username, format="manga")
+                if manga
+                else fetch_data(username=username, format="anime")
+            )
+            return {"insights": insights}
+        except ValueError or HTTPError as e:
+            raise HTTPException(status_code=404, detail=f"{e}")
     else:
         raise HTTPException(
             status_code=404,

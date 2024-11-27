@@ -1,4 +1,4 @@
-aiohttp==3.10.7
+aiohttp==3.11.8
 pandas==2.2.2
 Requests==2.32.3
 azure-storage-blob==12.21.0

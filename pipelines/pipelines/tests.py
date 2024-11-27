@@ -32,8 +32,8 @@ def test_anime(
     for df in dfs:
         assert not df.empty, f"{df.name} is empty."
 
-    assert len(anime_info.index) == len(
-        user_anime_score.index
+    assert (
+        len(anime_info.index) == len(user_anime_score.index)
     ), f"Row counts between anime_info and user_anime_score are not equal. anime_info: {len(anime_info.index)}, user_anime_score: {len(user_anime_score.index)}"
 
     check_range(df=anime_info, column="average_score")
