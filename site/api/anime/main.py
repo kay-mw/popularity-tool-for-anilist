@@ -1,11 +1,11 @@
 import pandas as pd
 from api.anime.insights import general_insights, genre_insights
 from api.anime.processing import check_nulls, get_anime_info, get_id, get_user_data
+from api.funcs import create_genre_data, create_plot_data, create_table, round_scores
 from api.upload import blob_upload
 
 
 def fetch_anime(username: str):
-
     # Local testing
     # username = "keejan"
 
@@ -44,86 +44,10 @@ def fetch_anime(username: str):
         cover_image_3,
     ) = general_insights(merged_dfs=merged_dfs, genre_fav=genre_fav)
 
-    # Round average scores to match user scores(as user scores only increase in increments of 5-10)
-    if (merged_dfs["user_score"] % 10 == 0).all():
-        merged_dfs["average_score"] = 10 * round(merged_dfs["average_score"] / 10)
-        all_scores = list(range(10, 101, 10))
-        new_rows = pd.DataFrame(
-            {
-                "score": all_scores,
-                "user_count": 0,
-                "average_count": 0,
-            }
-        )
-    else:
-        merged_dfs["average_score"] = 5 * round(merged_dfs["average_score"] / 5)
-        all_scores = list(range(10, 101, 5))
-        new_rows = pd.DataFrame(
-            {
-                "score": all_scores,
-                "user_count": 0,
-                "average_count": 0,
-            }
-        )
-
-    # Fix index
-    user_count = merged_dfs.value_counts("user_score").reset_index()
-    average_count = merged_dfs.value_counts("average_score").reset_index()
-
-    # Rename
-    user_count = user_count.rename(columns={"count": "user_count"})
-    average_count = average_count.rename(columns={"count": "average_count"})
-
-    # Fix types
-    average_count["average_score"] = average_count["average_score"].astype(int)
-
-    # Join
-    plot_data = user_count.merge(
-        right=average_count,
-        how="outer",
-        left_on="user_score",
-        right_on="average_score",
-    )
-
-    # Fix NAs after join.
-    plot_data["user_score"] = plot_data["user_score"].fillna(plot_data["average_score"])
-    plot_data = plot_data.fillna(0.0).astype({"average_count": int})
-
-    # Drop unnecessary column.
-    plot_data = plot_data.drop("average_score", axis=1).rename(
-        columns={"user_score": "score"}
-    )
-
-    # Add missing score values.
-    plot_data = pd.concat([plot_data, new_rows], ignore_index=True)
-    plot_data = plot_data.drop_duplicates(subset=["score"], keep="first")
-
-    # Sort and export to JSON (so it can be sent to frontend later)
-    plot_data = plot_data.sort_values(by="score", ascending=True).reset_index(drop=True)
-    plot_json = plot_data.to_dict(orient="records")
-
-    score_table = merged_dfs[
-        ["title_romaji", "score_diff", "user_score", "average_score"]
-    ].copy()
-    score_table["abs_score_diff"] = abs(score_table.loc[:, "score_diff"])
-    score_table["average_score"] = score_table["average_score"].astype(int)
-    score_table = score_table.sort_values(by="abs_score_diff", ascending=False)
-    score_table = score_table.reset_index(drop=True)
-    score_table = score_table.drop(labels="abs_score_diff", axis=1)
-    table_dict = score_table.to_dict(orient="records")
-
-    genre_info = (
-        genre_info.round(
-            {"weighted_average": 1, "weighted_user": 1, "weighted_diff": 2}
-        )
-        .reset_index(drop=True)
-        .drop(
-            labels=["average_score", "user_score", "count"],
-            axis=1,
-        )
-        .sort_values("weighted_diff", ascending=False, key=abs)
-    )
-    genre_dict = genre_info.to_dict(orient="records")
+    merged_dfs, new_rows = round_scores(df=merged_dfs)
+    plot_json = create_plot_data(df=merged_dfs, fill_df=new_rows)
+    table_dict = create_table(df=merged_dfs)
+    genre_dict = create_genre_data(genre_df=genre_info)
 
     # NOTE: Upload
     dfs = [anime_info, user_info, user_score]
