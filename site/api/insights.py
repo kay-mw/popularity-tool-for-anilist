@@ -1,4 +1,7 @@
+from typing import Literal
+
 import pandas as pd
+
 from api.funcs import fetch_anilist_data, load_query
 
 
@@ -82,7 +85,9 @@ def genre_insights(
 
 
 def general_insights(
-    merged_dfs: pd.DataFrame, genre_fav: pd.DataFrame
+    merged_dfs: pd.DataFrame,
+    genre_fav: pd.DataFrame,
+    format: Literal["anime", "manga"],
 ) -> tuple[float, float, int, int, int, int, str, str, str, str, str]:
     merged_dfs["score_diff"] = merged_dfs["user_score"] - merged_dfs["average_score"]
 
@@ -105,9 +110,9 @@ def general_insights(
     title_max = max_diff["title_romaji"].iloc[0]
     title_min = min_diff["title_romaji"].iloc[0]
 
-    image_id_1 = int(max_diff["anime_id"].iloc[0])
-    image_id_2 = int(min_diff["anime_id"].iloc[0])
-    image_id_3 = int(genre_fav["anime_id"].iloc[0])
+    image_id_1 = int(max_diff[f"{format}_id"].iloc[0])
+    image_id_2 = int(min_diff[f"{format}_id"].iloc[0])
+    image_id_3 = int(genre_fav[f"{format}_id"].iloc[0])
     query_image = load_query("image.gql")
     variables_image_1 = {"id": image_id_1}
     variables_image_2 = {"id": image_id_2}

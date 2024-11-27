@@ -1,4 +1,3 @@
-from api.anime.insights import general_insights, genre_insights
 from api.funcs import (
     check_nulls,
     create_genre_data,
@@ -9,6 +8,7 @@ from api.funcs import (
     get_user_data,
     round_scores,
 )
+from api.insights import general_insights, genre_insights
 from api.upload import blob_upload
 
 
@@ -31,7 +31,7 @@ def fetch_anime(username: str):
     )
 
     # NOTE: Insights
-    merged_dfs = user_score.merge(anime_info, on="anime_id", how="left")
+    merged_dfs = user_score.merge(anime_info, on=f"{format}_id", how="left")
 
     (
         genre_max,
@@ -55,7 +55,7 @@ def fetch_anime(username: str):
         cover_image_1,
         cover_image_2,
         cover_image_3,
-    ) = general_insights(merged_dfs=merged_dfs, genre_fav=genre_fav)
+    ) = general_insights(merged_dfs=merged_dfs, genre_fav=genre_fav, format=format)
 
     merged_dfs, new_rows = round_scores(df=merged_dfs)
     plot_json = create_plot_data(df=merged_dfs, fill_df=new_rows)
