@@ -1,7 +1,14 @@
-import pandas as pd
-from api.funcs import create_genre_data, create_plot_data, create_table, round_scores
+from api.funcs import (
+    check_nulls,
+    create_genre_data,
+    create_plot_data,
+    create_table,
+    get_format_info,
+    get_id,
+    get_user_data,
+    round_scores,
+)
 from api.manga.insights import general_insights, genre_insights
-from api.manga.processing import check_nulls, get_id, get_manga_info, get_user_data
 from api.upload import blob_upload
 
 
@@ -9,17 +16,24 @@ def fetch_manga(username: str):
     # Local testing
     # username = "ZNote"
 
+    format = "manga"
+
     # NOTE: Processing
     anilist_id = get_id(username=username)
     user_score, user_info, id_list = get_user_data(
-        username=username, anilist_id=anilist_id
+        username=username,
+        anilist_id=anilist_id,
+        format=format,
     )
-    manga_info = get_manga_info(username=username, id_list=id_list)
-    manga_info, user_score = check_nulls(manga_info=manga_info, user_score=user_score)
+    manga_info = get_format_info(username=username, id_list=id_list, format=format)
+    manga_info, user_score = check_nulls(
+        format_info=manga_info, user_score=user_score, format=format
+    )
 
     # NOTE: Insights
     merged_dfs = user_score.merge(manga_info, on="manga_id", how="left")
 
+    # TODO: Split these functions into smaller parts so they don't return 8 different variables
     (
         genre_max,
         genre_max_name,

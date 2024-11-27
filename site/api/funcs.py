@@ -1,4 +1,8 @@
+# TODO: Separate these functions into other files based on their general purpose (getting insights, processing data, etc.)
+
+import asyncio
 import os
+from typing import Literal
 
 import aiohttp
 import pandas as pd
@@ -29,6 +33,156 @@ async def fetch_anilist_data_async(query: str, variables: dict) -> dict:
             json={"query": query, "variables": variables},
         ) as response:
             return await response.json()
+
+
+def get_id(username: str) -> int:
+    query_get_id = load_query("get_id.gql")
+    variables_get_id = {"name": username}
+    json_response = None
+    try:
+        json_response, response_header = fetch_anilist_data(
+            query_get_id, variables_get_id
+        )
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            raise ValueError(f"Username {username} not found.")
+        if e.response.status_code == 429:
+            raise ValueError(
+                "Oops! AniList is a bit overloaded at the moment, please try again later."
+            )
+
+    if json_response is None:
+        raise ValueError(f"Failed to fetch data for {username}.")
+
+    anilist_id = json_response["data"]["User"]["id"]
+
+    return anilist_id
+
+
+def get_user_data(
+    username: str, anilist_id: int, format: Literal["anime", "manga"]
+) -> tuple[pd.DataFrame, pd.DataFrame, list[int]]:
+    json_response = None
+    response_header = None
+    query_user = load_query(f"{format}_user.gql")
+
+    variables_user = {"page": 1, "id": anilist_id}
+    try:
+        json_response, response_header = fetch_anilist_data(query_user, variables_user)
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 429:
+            raise ValueError(
+                "Oops! AniList is a bit overloaded at the moment, please try again later."
+            )
+
+    if json_response is None or response_header is None:
+        raise ValueError(f"Failed to fetch data for {username}.")
+
+    user_score = pd.json_normalize(
+        json_response,
+        record_path=["data", "Page", "users", "statistics", f"{format}", "scores"],
+        meta=[["data", "Page", "users", "id"]],
+    )
+
+    if user_score.empty:
+        raise ValueError(f"AniList returned no {format} for {username}.")
+
+    user_score = user_score.explode("mediaIds", ignore_index=True)
+    user_score["mediaIds"] = user_score["mediaIds"].astype(int)
+
+    user_score.rename(
+        columns={
+            "mediaIds": f"{format}_id",
+            "data.Page.users.id": "user_id",
+            "score": "user_score",
+        },
+        inplace=True,
+    )
+
+    if max(user_score["user_score"]) <= 10:
+        user_score["user_score"] = user_score["user_score"].apply(lambda x: x * 10)
+    else:
+        pass
+
+    # NOTE: Make user info table
+    user_info = pd.json_normalize(json_response, record_path=["data", "Page", "users"])
+    user_info.drop(f"statistics.{format}.scores", axis=1, inplace=True)
+
+    user_info = pd.concat([user_info, response_header], axis=1)
+    user_info.rename(
+        columns={0: "request_date", "id": "user_id", "name": "user_name"},
+        inplace=True,
+    )
+    user_info["request_date"] = pd.to_datetime(
+        user_info["request_date"], format="%a, %d %b %Y %H:%M:%S %Z"
+    ).dt.tz_localize(None)
+
+    id_list = user_score[f"{format}_id"].values.tolist()
+    return user_score, user_info, id_list
+
+
+def get_format_info(
+    username: str, id_list: list[int], format: Literal["anime", "manga"]
+) -> pd.DataFrame:
+    async def main():
+        response_ids = None
+        format_info = pd.DataFrame()
+
+        variables_format = {"page": 1, "id_in": id_list}
+        query_format = load_query("media.gql")
+
+        while True:
+            try:
+                response_ids = await fetch_anilist_data_async(
+                    query_format, variables_format
+                )
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 429:
+                    raise ValueError(
+                        "Oops! AniList is a bit overloaded at the moment, please try again later."
+                    )
+
+            if response_ids == None:
+                raise ValueError(f"Failed to fetch data for {username}.")
+
+            page_df = pd.json_normalize(
+                response_ids, record_path=["data", "Page", "media"]
+            )
+            format_info = pd.concat([format_info, page_df], ignore_index=True)
+
+            if not response_ids["data"]["Page"]["pageInfo"]["hasNextPage"]:
+                break
+
+            variables_format["page"] += 1
+
+        return format_info
+
+    format_info = asyncio.run(main())
+
+    format_info.rename(
+        columns={
+            "averageScore": "average_score",
+            "title.romaji": "title_romaji",
+            "id": f"{format}_id",
+        },
+        inplace=True,
+    )
+
+    return format_info
+
+
+def check_nulls(
+    format_info: pd.DataFrame,
+    user_score: pd.DataFrame,
+    format: Literal["anime", "manga"],
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    null_ids = list(format_info.loc[format_info.isna().any(axis=1)][f"{format}_id"])
+    if len(null_ids) > 0:
+        format_info.dropna(axis=0, inplace=True)
+        user_score = user_score[~user_score[f"{format}_id"].isin(null_ids)]
+    format_info = format_info.astype({"average_score": int})
+
+    return format_info, user_score
 
 
 def round_scores(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
