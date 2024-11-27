@@ -27,15 +27,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Black
-      uses: psf/black@stable
+    - name: Lint
+      uses: astral-sh/ruff-action@v1
       with:
-        options: "--check --verbose"
-        src: "."
-
-    - name: Isort
-      uses: isort/isort-action@master
-      with:
-        sort-path: "."
-        requirements-files: "./requirements.txt"
-        configuration: "--check-only --diff --profile black"
+        args: "format --check"
