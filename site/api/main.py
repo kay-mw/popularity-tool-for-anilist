@@ -1,6 +1,7 @@
 from typing import Literal
 
-from api.funcs import (
+from api.insights import general_insights, genre_insights
+from api.processing import (
     check_nulls,
     create_genre_data,
     create_plot_data,
@@ -10,7 +11,6 @@ from api.funcs import (
     get_user_data,
     round_scores,
 )
-from api.insights import general_insights, genre_insights
 from api.upload import blob_upload
 
 
