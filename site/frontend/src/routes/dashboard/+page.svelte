@@ -220,36 +220,8 @@
             </Card.Description>
           </Card.Header>
           <Card.Content class="space-y-6">
-            <H2
-              class="{data.insights.genreMax > 0
-                ? 'text-plot-accent'
-                : 'text-destructive'} text-2xl"
-              >{data.insights.genreMaxTitle}</H2
-            >
-            {#if data.insights.genreMax > 0}
-              <p class="text-xl">
-                Specifically, you <span class="text-plot-accent font-bold"
-                  >love</span
-                >
-                {data.insights.genreMaxTitle} shows more than most users, scoring
-                them
-                {data.insights.genreMax} points higher on average.
-              </p>
-            {:else}
-              <p class="text-xl">
-                Specifically, you <span class="text-destructive font-bold"
-                  >hate</span
-                >
-                {data.insights.genreMaxTitle} shows more than most users, scoring
-                them
-                <span class="text-destructive font-bold"
-                  >{Math.abs(data.insights.genreMax)} points</span
-                > lower on average.
-              </p>
-            {/if}
-            <Separator />
             <h1
-              class="text-2xl font-semibold leading-none tracking-tight text-center"
+              class="text-2xl font-semibold leading-none tracking-tight"
             >
               <span class="text-primary">{username}</span> vs.
               <span class="text-plot-accent">the AniList Average</span> (by genre)
