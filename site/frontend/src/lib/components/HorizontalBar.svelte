@@ -142,7 +142,7 @@
 					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
 				>
 					<g class="tick" transform="translate(0, {yScale(i)})">
-						<text x={barHeight * 2.4}>{point.genres}</text>
+						<text x={xScale(xMin) - 20}>{point.genres}</text>
 					</g>
 				</g>
 			{/each}
