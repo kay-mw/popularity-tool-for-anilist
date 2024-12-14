@@ -1,4 +1,10 @@
+import os
 from typing import Literal
+from urllib.parse import quote_plus
+
+import pandas as pd
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
 
 from api.insights import general_insights, genre_insights
 from api.processing import (
@@ -16,7 +22,8 @@ from api.upload import blob_upload
 
 def fetch_data(username: str, format: Literal["anime", "manga"]):
     # Local testing
-    # username = "keejan"
+    username = "keejan"
+    format = "anime"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)
@@ -62,6 +69,36 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
     table_dict = create_table(df=merged_dfs)
     genre_dict = create_genre_data(genre_df=genre_info)
 
+    load_dotenv()
+    connection_string = os.environ["AZURE_ODBC"]
+    connection_url = f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
+    engine = create_engine(connection_url)
+
+    with engine.connect() as connection:
+        query = f"""SELECT *
+        FROM user_{format}_score;"""
+        existing_user_score = pd.read_sql(sql=query, con=connection)
+        query = f"""SELECT *
+        FROM {format}_info;"""
+        existing_format_info = pd.read_sql(sql=query, con=connection)
+
+    existing_merged_dfs = existing_user_score.merge(
+        existing_format_info, on=f"{format}_id", how="left"
+    )
+    existing_merged_dfs["score_diff"] = (
+        existing_merged_dfs["user_score"] - existing_merged_dfs["average_score"]
+    )
+    existing_merged_dfs["abs_score_diff"] = (
+        existing_merged_dfs["user_score"] - existing_merged_dfs["average_score"]
+    ).abs()
+
+    existing_avg_score_diff = existing_merged_dfs.groupby(
+        by="user_id", as_index=False
+    ).agg({"score_diff": "mean"})
+    existing_abs_score_diff = existing_merged_dfs.groupby(
+        by="user_id", as_index=False
+    ).agg({"abs_score_diff": "mean"})
+
     # NOTE: Upload
     dfs = [format_info, user_info, user_score]
     names = [f"{format}_info", "user_info", f"user_{format}_score"]
@@ -88,6 +125,8 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
         "genreDiffAvg": genre_fav_avg_score,
         "tableData": table_dict,
         "genreData": genre_dict,
+        "existingAvgScoreDiff": existing_avg_score_diff,
+        "existingAbsScoreDiff": existing_abs_score_diff,
     }
 
     return dfs, anilist_id, insights
