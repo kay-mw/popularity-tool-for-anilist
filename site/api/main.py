@@ -4,6 +4,7 @@ from urllib.parse import quote_plus
 
 import pandas as pd
 from dotenv import load_dotenv
+from scipy.stats import percentileofscore
 from sqlalchemy import create_engine
 
 from api.insights import general_insights, genre_insights
@@ -22,8 +23,8 @@ from api.upload import blob_upload
 
 def fetch_data(username: str, format: Literal["anime", "manga"]):
     # Local testing
-    username = "keejan"
-    format = "anime"
+    # username = "keejan"
+    # format = "anime"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)
@@ -92,12 +93,21 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
         existing_merged_dfs["user_score"] - existing_merged_dfs["average_score"]
     ).abs()
 
-    existing_avg_score_diff = existing_merged_dfs.groupby(
-        by="user_id", as_index=False
-    ).agg({"score_diff": "mean"})
-    existing_abs_score_diff = existing_merged_dfs.groupby(
-        by="user_id", as_index=False
-    ).agg({"abs_score_diff": "mean"})
+    abs_data = existing_merged_dfs.groupby(by="user_id", as_index=False).agg(
+        {"abs_score_diff": "mean"}
+    )
+    abs_data["abs_score_diff"] = 2 * round(abs_data["abs_score_diff"] / 2)
+    abs_data["abs_score_diff"] = abs_data["abs_score_diff"].astype(int)
+    abs_data = (
+        pd.DataFrame(abs_data.value_counts("abs_score_diff", sort=False))
+        .reset_index()
+        .to_dict(orient="records")
+    )
+
+    avg_data = existing_merged_dfs.groupby(by="user_id", as_index=False).agg(
+        {"score_diff": "mean"}
+    )
+    avg_data = avg_data.to_dict(orient="records")
 
     # NOTE: Upload
     dfs = [format_info, user_info, user_score]
@@ -125,8 +135,8 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
         "genreDiffAvg": genre_fav_avg_score,
         "tableData": table_dict,
         "genreData": genre_dict,
-        "existingAvgScoreDiff": existing_avg_score_diff,
-        "existingAbsScoreDiff": existing_abs_score_diff,
+        "absData": abs_data,
+        "existingAbsScoreDiff": abs_data,
     }
 
     return dfs, anilist_id, insights
