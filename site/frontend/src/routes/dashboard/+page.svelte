@@ -20,6 +20,7 @@
   import AnimatedScroll from "$lib/components/AnimatedScroll.svelte";
 
   import Bar from "$lib/components/Bar.svelte";
+  import DoubleBar from "$lib/components/DoubleBar.svelte";
   import HorizontalBar from "$lib/components/HorizontalBar.svelte";
 
   import ScrollArrow from "$lib/components/ScrollArrow.svelte";
@@ -82,6 +83,34 @@
       <SectionHeader header="your overall taste" />
     </DashboardContainer>
   </AnimatedScroll>
+
+  <AnimatedScroll>
+    <DashboardContainer>
+      <section class="m-auto w-full">
+        <Card.Root class="overflow-x-auto">
+          <Card.Header>
+            <Card.Title class="text-4xl">
+              <span class="text-primary">{username}</span> vs.
+              <span class="text-plot-accent">the AniList Average</span>
+            </Card.Title>
+            <Card.Description>
+              How frequently you give certain scores compared to the AniList
+              average.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content>
+            <Bar
+              data={data.insights.absData}
+              x="abs_score_diff"
+              y="count"
+              scoreVariable={data.insights.absScoreDiff}
+            />
+          </Card.Content>
+        </Card.Root>
+      </section>
+    </DashboardContainer>
+  </AnimatedScroll>
+
   <AnimatedScroll>
     <DashboardContainer>
       {#if Math.floor(valueAbs) < 5}
@@ -163,7 +192,11 @@
             </Card.Description>
           </Card.Header>
           <Card.Content class="inline-flex">
-            <Bar {data} />
+            <DoubleBar
+              data={data.insights.userData}
+              yKeys={["user_score", "average_score"]}
+              x="score"
+            />
           </Card.Content>
         </Card.Root>
       </section>
@@ -220,9 +253,7 @@
             </Card.Description>
           </Card.Header>
           <Card.Content class="space-y-6">
-            <h1
-              class="text-2xl font-semibold leading-none tracking-tight"
-            >
+            <h1 class="text-2xl font-semibold leading-none tracking-tight">
               <span class="text-primary">{username}</span> vs.
               <span class="text-plot-accent">the AniList Average</span> (by genre)
             </h1>

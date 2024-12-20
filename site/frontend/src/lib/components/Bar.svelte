@@ -1,4 +1,5 @@
 <script lang="ts">
+	// Reduce gap between bars to make it look more like obscurify ;)
 	import { scaleLinear } from "d3-scale";
 	import { max } from "d3-array";
 	import { page } from "$app/stores";
@@ -6,19 +7,18 @@
 	export let data;
 	export let x: string;
 	export let y: string;
+	export let scoreVariable: number;
 
-	let width = 913;
-	let height = 525;
+	let width = 500;
+	let height = 400;
 	const padding = { top: 20, right: 15, bottom: 20, left: 25 };
 
 	const username = $page.url.searchParams.get("username");
 
-	$: console.log(data);
+	//$: console.log(data);
 
-	$: xMax = 100;
-	$: yMax = max(data, (d) => +d[y])
+	$: yMax = max(data, (d) => +d[y]);
 
-	$: xTicks = [0, 25, 50, 75, 100]
 	$: yTicks = Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5);
 
 	$: xScale = scaleLinear()
@@ -31,15 +31,13 @@
 
 	$: innerWidth = width - (padding.left + padding.right);
 	$: barWidth = innerWidth / data.length;
+
+	$: console.log(Math.round(scoreVariable * 5) / 5);
+	$: console.log(data)
 </script>
 
 <div class="chart" bind:clientWidth={width} bind:clientHeight={height}>
-	<svg
-		{width}
-		{height}
-		role="tooltip"
-		viewBox="0 0 {width} {height}"
-	>
+	<svg {width} {height} role="tooltip" viewBox="0 0 {width} {height}">
 		<g class="axis y-axis">
 			{#each yTicks as tick}
 				<g class="tick tick-{tick}" transform="translate(0, {yScale(tick)})">
@@ -50,23 +48,40 @@
 		</g>
 		<g class="bars">
 			{#each data as point, i}
-						<rect
-							class="fill-primary"
-							rx="0.5rem"
-							x={xScale(i) + barWidth / 2}
-							y={yScale(point[y])}
-							width={barWidth * 0.35}
-							height={yScale(0) - yScale(point[y])}
-						/>
+				{#if Math.round(scoreVariable * 5) / 5 == point[x]}
+					<rect
+						class="fill-primary"
+						rx="0.5rem"
+						x={xScale(i)}
+						y={yScale(point[y])}
+						width={barWidth * 0.4}
+						height={yScale(0) - yScale(point[y])}
+					/>
+					<text
+					class="fill-primary font-bold text-xl"
+					style="text-anchor: middle;"
+					x={xScale(i) + 15}
+					y={yScale(point[y]) - 20}
+					>{username}</text>
+				{:else}
+					<rect
+						class="fill-plot-accent"
+						rx="0.5rem"
+						x={xScale(i)}
+						y={yScale(point[y])}
+						width={barWidth * 0.4}
+						height={yScale(0) - yScale(point[y])}
+					/>
+				{/if}
 			{/each}
 		</g>
 		<g class="axis x-axis">
 			{#each data as point, i}
-					<g class="tick" transform="translate({xScale(i)}, {height})">
-						<text x={barWidth / 2}>
-							{point[x]}
-						</text>
-					</g>
+				<g class="tick" transform="translate({xScale(i)}, {height})">
+					<text x={barWidth / 5}>
+						{point[x]}
+					</text>
+				</g>
 			{/each}
 		</g>
 	</svg>
