@@ -1,23 +1,20 @@
 <script lang="ts">
-	// Reduce gap between bars to make it look more like obscurify ;)
 	import { scaleLinear } from "d3-scale";
 	import { max } from "d3-array";
 	import { page } from "$app/stores";
 
-	export let data;
+	export let data: Array<Record<string, number>>;
 	export let x: string;
 	export let y: string;
 	export let scoreVariable: number;
 
-	let width = 500;
+	let width = 300;
 	let height = 400;
-	const padding = { top: 20, right: 15, bottom: 20, left: 25 };
+	const padding = { top: 20, bottom: 35, left: 35, right: 0 };
 
 	const username = $page.url.searchParams.get("username");
 
-	//$: console.log(data);
-
-	$: yMax = max(data, (d) => +d[y]);
+	$: yMax = data.length > 0 ? max(data, (d) => +d[y]) : 20;
 
 	$: yTicks = Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5);
 
@@ -32,8 +29,15 @@
 	$: innerWidth = width - (padding.left + padding.right);
 	$: barWidth = innerWidth / data.length;
 
-	$: console.log(Math.round(scoreVariable * 5) / 5);
-	$: console.log(data)
+	let i = 0;
+	let percentile = 0;
+	let pct = 0;
+	const sum = data.reduce((sm, d) => sm + +d[y], 0);
+	while (data[i] && data[i][x] != Math.round(scoreVariable)) {
+		pct = Math.round((data[i][y] / sum) * 100);
+		percentile += pct;
+		i++;
+	}
 </script>
 
 <div class="chart" bind:clientWidth={width} bind:clientHeight={height}>
@@ -48,7 +52,7 @@
 		</g>
 		<g class="bars">
 			{#each data as point, i}
-				{#if Math.round(scoreVariable * 5) / 5 == point[x]}
+				{#if Math.round(scoreVariable) == point[x]}
 					<rect
 						class="fill-primary"
 						rx="0.5rem"
@@ -58,11 +62,17 @@
 						height={yScale(0) - yScale(point[y])}
 					/>
 					<text
-					class="fill-primary font-bold text-xl"
-					style="text-anchor: middle;"
-					x={xScale(i) + 15}
-					y={yScale(point[y]) - 20}
-					>{username}</text>
+						class="fill-primary font-bold text-xl"
+						style="text-anchor: middle;"
+						x={xScale(i) + 9}
+						y={height - 15}>{username}</text
+					>
+					<text
+						class="fill-primary font-bold text-xl"
+						style="text-anchor: middle;"
+						x={xScale(i) + 9}
+						y={yScale(point[y])}>More Obscure Than {percentile}%</text
+					>
 				{:else}
 					<rect
 						class="fill-plot-accent"
@@ -76,13 +86,12 @@
 			{/each}
 		</g>
 		<g class="axis x-axis">
-			{#each data as point, i}
-				<g class="tick" transform="translate({xScale(i)}, {height})">
-					<text x={barWidth / 5}>
-						{point[x]}
-					</text>
-				</g>
-			{/each}
+			<g
+				class="tick"
+				transform="translate({(width + padding.left) / 2}, {height - 5})"
+			>
+				<text>Obscurity →</text>
+			</g>
 		</g>
 	</svg>
 </div>

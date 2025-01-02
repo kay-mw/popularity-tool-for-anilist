@@ -96,13 +96,12 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
     abs_data = existing_merged_dfs.groupby(by="user_id", as_index=False).agg(
         {"abs_score_diff": "mean"}
     )
-    abs_data["abs_score_diff"] = 5 * round(abs_data["abs_score_diff"] / 5)
-    abs_data["abs_score_diff"] = abs_data["abs_score_diff"].astype(int)
-    abs_data = (
-        pd.DataFrame(abs_data.value_counts("abs_score_diff", sort=False))
-        .reset_index()
-        .to_dict(orient="records")
-    )
+    abs_data["abs_score_diff"] = abs_data["abs_score_diff"].round().astype(int)
+    abs_data = pd.DataFrame(
+        abs_data.value_counts("abs_score_diff", sort=False)
+    ).reset_index()
+    print(abs_data)
+    abs_data = abs_data.to_dict(orient="records")
 
     avg_data = existing_merged_dfs.groupby(by="user_id", as_index=False).agg(
         {"score_diff": "mean"}
