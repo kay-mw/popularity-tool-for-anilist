@@ -8,13 +8,15 @@
 	export let y: string;
 	export let scoreVariable: number;
 
+	scoreVariable = Math.round(scoreVariable);
+
 	let width = 300;
 	let height = 400;
-	const padding = { top: 20, bottom: 35, left: 35, right: 0 };
+	const padding = { top: 20, bottom: 55, left: 65, right: 0 };
 
 	const username = $page.url.searchParams.get("username");
 
-	$: yMax = data.length > 0 ? max(data, (d) => +d[y]) : 20;
+	$: yMax = max(data, (d) => +d[y]);
 
 	$: yTicks = Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5);
 
@@ -33,50 +35,54 @@
 	let percentile = 0;
 	let pct = 0;
 	const sum = data.reduce((sm, d) => sm + +d[y], 0);
-	while (data[i] && data[i][x] != Math.round(scoreVariable)) {
+	while (data[i] && data[i][x] < scoreVariable) {
 		pct = Math.round((data[i][y] / sum) * 100);
 		percentile += pct;
 		i++;
 	}
+
+	const barRadius = "0.5em"
 </script>
 
-<div class="chart" bind:clientWidth={width} bind:clientHeight={height}>
+<div class="relative" bind:clientWidth={width} bind:clientHeight={height}>
 	<svg {width} {height} role="tooltip" viewBox="0 0 {width} {height}">
 		<g class="axis y-axis">
 			{#each yTicks as tick}
-				<g class="tick tick-{tick}" transform="translate(0, {yScale(tick)})">
+				<g class="tick tick-{tick}" transform="translate(25, {yScale(tick)})">
 					<line x2="100%" />
 					<text y="-4">{tick}</text>
 				</g>
 			{/each}
+			<g
+				class="tick"
+				transform="translate({10}, {(height - padding.bottom + padding.top) /
+					2}) rotate(-90)"
+			>
+				<text style="text-anchor: middle;">% of Users →</text>
+			</g>
 		</g>
 		<g class="bars">
 			{#each data as point, i}
-				{#if Math.round(scoreVariable) == point[x]}
+				{#if scoreVariable == point[x]}
 					<rect
 						class="fill-primary"
-						rx="0.5rem"
+						rx={barRadius}
 						x={xScale(i)}
 						y={yScale(point[y])}
 						width={barWidth * 0.4}
 						height={yScale(0) - yScale(point[y])}
 					/>
 					<text
-						class="fill-primary font-bold text-xl"
+						class="fill-primary font-bold text-sm md:text-lg"
 						style="text-anchor: middle;"
-						x={xScale(i) + 9}
-						y={height - 15}>{username}</text
-					>
-					<text
-						class="fill-primary font-bold text-xl"
-						style="text-anchor: middle;"
-						x={xScale(i) + 9}
-						y={yScale(point[y])}>More Obscure Than {percentile}%</text
-					>
+						x={xScale(i) + barWidth * 0.2}
+						y={height - 35}
+						>&gt;{percentile}% of Users
+					</text>
 				{:else}
 					<rect
-						class="fill-plot-accent"
-						rx="0.5rem"
+						class="fill-plot-accent opacity-30"
+						rx={barRadius}
 						x={xScale(i)}
 						y={yScale(point[y])}
 						width={barWidth * 0.4}
@@ -88,9 +94,9 @@
 		<g class="axis x-axis">
 			<g
 				class="tick"
-				transform="translate({(width + padding.left) / 2}, {height - 5})"
+				transform="translate({(padding.left + width - 25) / 2}, {height - 10})"
 			>
-				<text>Obscurity →</text>
+				<text>Controversial →</text>
 			</g>
 		</g>
 	</svg>
@@ -100,30 +106,6 @@
 	.x-axis .tick text {
 		@apply text-center text-current;
 		text-anchor: middle;
-	}
-
-	.bars rect {
-		transition: opacity 0.2s ease-in-out;
-	}
-
-	.bars g.dimmed rect {
-		opacity: 0.3;
-	}
-
-	.bars g.hovered rect {
-		opacity: 1;
-	}
-
-	.x-axis text {
-		transition: opacity 0.2s ease-in-out;
-	}
-
-	.x-axis g.dimmed text {
-		opacity: 0.3;
-	}
-
-	.x-axis g.hovered text {
-		opacity: 1;
 	}
 
 	.tick {
@@ -141,12 +123,5 @@
 
 	.tick.tick-0 line {
 		@apply inline-block;
-	}
-
-	.tooltip {
-		@apply absolute bg-background border border-secondary font-semibold p-2 rounded shadow-lg text-base;
-		pointer-events: none;
-		z-index: 100;
-		transition: opacity 0.2s ease-in-out;
 	}
 </style>

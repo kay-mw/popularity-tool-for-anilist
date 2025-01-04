@@ -4,7 +4,7 @@
 	import { spring } from "svelte/motion";
 	import { page } from "$app/stores";
 
-	export let data;
+	export let data: Array<Record<string, number>>;
 	export let y1 = "user_count";
 	export let y2 = "average_count";
 	export let x = "score";
@@ -45,8 +45,8 @@
 	let toolAvg = "";
 	let hoveredIndex = -1;
 
-	function handleMouseMove(event) {
-		const svgRect = event.currentTarget.getBoundingClientRect();
+	function handleMouseMove(event: MouseEvent) {
+		const svgRect = (event.currentTarget as SVGElement).getBoundingClientRect();
 		const mouseX = event.clientX - svgRect.left;
 		const mouseY = event.clientY - svgRect.top;
 		const index = Math.floor((mouseX - padding.left) / barWidth);
@@ -54,7 +54,7 @@
 		if (index >= 0 && index < data.length) {
 			const point = data[index];
 			tooltipVisible = true;
-			tooltipPosition.set({ x: mouseX + 20, y: mouseY - 90 });
+			tooltipPosition.set({ x: mouseX + 20, y: mouseY - 60 });
 			toolUser = `${point[y1]}`;
 			toolAvg = `${point[y2]}`;
 			hoveredIndex = index;
@@ -149,7 +149,7 @@
 	{#if tooltipVisible}
 		<div
 			class="tooltip"
-			style="left: {$tooltipPosition.x}px; top: {$tooltipPosition.y}px"
+			style="left: {$tooltipPosition.x + width / 2}px; top: {$tooltipPosition.y + height / 2}px"
 		>
 			<span class="text-primary">{username}: {toolUser}</span><br /><span
 				class="text-plot-accent">AniList: {toolAvg}</span
@@ -208,7 +208,6 @@
 	.tooltip {
 		@apply absolute bg-background border border-secondary font-semibold p-2 rounded shadow-lg text-base;
 		pointer-events: none;
-		z-index: 100;
 		transition: opacity 0.2s ease-in-out;
 	}
 </style>

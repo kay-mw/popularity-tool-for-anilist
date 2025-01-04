@@ -94,8 +94,7 @@
               <span class="text-plot-accent">the AniList Average</span>
             </Card.Title>
             <Card.Description>
-              How frequently you give certain scores compared to the AniList
-              average.
+              How controversial your scores are compared to the averager user.
             </Card.Description>
           </Card.Header>
           <Card.Content>
@@ -108,48 +107,6 @@
           </Card.Content>
         </Card.Root>
       </section>
-    </DashboardContainer>
-  </AnimatedScroll>
-
-  <AnimatedScroll>
-    <DashboardContainer>
-      {#if Math.floor(valueAbs) < 5}
-        <AbsCard
-          {valueAbs}
-          colour="primary"
-          image="https://media1.tenor.com/m/YjiuFd-KUVQAAAAC/one-piece-one-piece-movie-9.gif"
-          alt="chopper lying in snow"
-          descriptor="chillin"
-          emphasis="only"
-        />
-      {:else if Math.floor(valueAbs) <= 10}
-        <AbsCard
-          {valueAbs}
-          colour="red-400"
-          image="https://cdn.midjourney.com/b5d8c3da-776d-4a6e-a40b-381eac63862c/0_1.png"
-          alt="roy mustang snapping fingers"
-          descriptor="heating up...!"
-          emphasis="a solid"
-        />
-      {:else if Math.floor(valueAbs) < 20}
-        <AbsCard
-          {valueAbs}
-          colour="destructive"
-          image="https://media1.tenor.com/m/862gCSNfYggAAAAd/kyojuro-rengoku-9th-form-rengoku.gif"
-          alt="rengoku conjuring fire"
-          descriptor="SCALDING"
-          emphasis="a WHOPPING"
-        />
-      {:else}
-        <AbsCard
-          {valueAbs}
-          colour="destructive"
-          image="https://media1.tenor.com/m/TYpc9J_jeRUAAAAd/sukuna-fire-arrow.gif"
-          alt="sukuna conjuring fire arrow"
-          descriptor="fire arrow"
-          emphasis="a MASSIVE"
-        />
-      {/if}
     </DashboardContainer>
   </AnimatedScroll>
 

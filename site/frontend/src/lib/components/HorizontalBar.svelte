@@ -72,7 +72,7 @@
 		if (index >= 0 && index < data.insights.genreData.length) {
 			const point = data.insights.genreData[index];
 			tooltipVisible = true;
-			tooltipPosition.set({ x: mouseX + 20, y: mouseY - 120 });
+			tooltipPosition.set({ x: mouseX + 20, y: mouseY + 40 });
 			toolUser = `${point.weighted_user}`;
 			toolAvg = `${point.weighted_average}`;
 			toolDiff = `${point.weighted_diff}`;
@@ -151,7 +151,7 @@
 	{#if tooltipVisible}
 		<div
 			class="tooltip"
-			style="left: {$tooltipPosition.x}px; top: {$tooltipPosition.y}px"
+			style="left: {$tooltipPosition.x + width / 2}px; top: {$tooltipPosition.y}px"
 		>
 			<span class="text-primary">{username}: {toolUser}</span><br /><span
 				class="text-plot-accent">AniList: {toolAvg}</span
