@@ -86,27 +86,35 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
     existing_merged_dfs = existing_user_score.merge(
         existing_format_info, on=f"{format}_id", how="left"
     )
-    existing_merged_dfs["score_diff"] = (
-        existing_merged_dfs["user_score"] - existing_merged_dfs["average_score"]
-    )
-    existing_merged_dfs["abs_score_diff"] = (
-        existing_merged_dfs["user_score"] - existing_merged_dfs["average_score"]
-    ).abs()
 
-    abs_data = existing_merged_dfs.groupby(by="user_id", as_index=False).agg(
-        {"abs_score_diff": "mean"}
-    )
-    abs_data["abs_score_diff"] = abs_data["abs_score_diff"].round().astype(int)
-    abs_data = pd.DataFrame(
-        abs_data.value_counts("abs_score_diff", sort=False)
-    ).reset_index()
-    print(abs_data)
-    abs_data = abs_data.to_dict(orient="records")
+    def diff_buckets(df: pd.DataFrame, calc_type: Literal["abs", "avg"]) -> list[dict]:
+        df["score_diff"] = df["user_score"] - df["average_score"]
 
-    avg_data = existing_merged_dfs.groupby(by="user_id", as_index=False).agg(
-        {"score_diff": "mean"}
-    )
-    avg_data = avg_data.to_dict(orient="records")
+        if calc_type == "abs":
+            df[f"{calc_type}_score_diff"] = (
+                df["user_score"] - df["average_score"]
+            ).abs()
+        else:
+            df[f"{calc_type}_score_diff"] = df["user_score"] - df["average_score"]
+
+        agg_data = df.groupby(by="user_id", as_index=False).agg(
+            {f"{calc_type}_score_diff": "mean"}
+        )
+        agg_data[f"{calc_type}_score_diff"] = (
+            agg_data[f"{calc_type}_score_diff"].round().astype(int)
+        )
+        agg_data = pd.DataFrame(
+            agg_data.value_counts(f"{calc_type}_score_diff", sort=False)
+        ).reset_index()
+
+        print(agg_data)
+
+        agg_data = agg_data.to_dict(orient="records")
+
+        return agg_data
+
+    abs_data = diff_buckets(df=existing_merged_dfs, calc_type="abs")
+    avg_data = diff_buckets(df=existing_merged_dfs, calc_type="avg")
 
     # NOTE: Upload
     dfs = [format_info, user_info, user_score]
@@ -135,7 +143,7 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
         "tableData": table_dict,
         "genreData": genre_dict,
         "absData": abs_data,
-        "existingAbsScoreDiff": abs_data,
+        "avgData": avg_data,
     }
 
     return dfs, anilist_id, insights

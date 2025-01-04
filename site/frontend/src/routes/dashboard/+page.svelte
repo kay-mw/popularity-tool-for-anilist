@@ -20,6 +20,7 @@
   import AnimatedScroll from "$lib/components/AnimatedScroll.svelte";
 
   import Bar from "$lib/components/Bar.svelte";
+  import DivergingBar from "$lib/components/DivergingBar.svelte";
   import DoubleBar from "$lib/components/DoubleBar.svelte";
   import HorizontalBar from "$lib/components/HorizontalBar.svelte";
 
@@ -94,7 +95,7 @@
               <span class="text-plot-accent">the AniList Average</span>
             </Card.Title>
             <Card.Description>
-              How controversial your scores are compared to the averager user.
+              How controversial your scores are compared to the average user.
             </Card.Description>
           </Card.Header>
           <Card.Content>
@@ -103,6 +104,33 @@
               x="abs_score_diff"
               y="count"
               scoreVariable={data.insights.absScoreDiff}
+            />
+          </Card.Content>
+        </Card.Root>
+      </section>
+    </DashboardContainer>
+  </AnimatedScroll>
+
+  <AnimatedScroll>
+    <DashboardContainer>
+      <section class="m-auto w-full">
+        <Card.Root class="overflow-x-auto">
+          <Card.Header>
+            <Card.Title class="text-4xl">
+              <span class="text-primary">Positivity</span>/<span
+                class="text-plot-accent">Negativity</span
+              >
+            </Card.Title>
+            <Card.Description>
+              How positive your scores are compared to the average user.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content>
+            <DivergingBar
+              data={data.insights.avgData}
+              x="avg_score_diff"
+              y="count"
+              scoreVariable={data.insights.avgScoreDiff}
             />
           </Card.Content>
         </Card.Root>

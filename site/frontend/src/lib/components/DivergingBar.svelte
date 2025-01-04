@@ -1,7 +1,6 @@
 <script lang="ts">
+	import { max, min } from "d3-array";
 	import { scaleLinear } from "d3-scale";
-	import { max } from "d3-array";
-	import { page } from "$app/stores";
 
 	export let data: Array<Record<string, number>>;
 	export let x: string;
@@ -12,12 +11,13 @@
 
 	let width = 300;
 	let height = 400;
-	const padding = { top: 20, bottom: 55, left: 65, right: 0 };
 
-	const username = $page.url.searchParams.get("username");
+	const padding = { top: 0, bottom: 65, left: 55, right: 0 };
+
+	$: xMax = max(data, (d) => +d[x]);
+	$: xMin = min(data, (d) => +d[x]);
 
 	$: yMax = max(data, (d) => +d[y]);
-
 	$: yTicks = Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5);
 
 	$: xScale = scaleLinear()
@@ -41,7 +41,8 @@
 		i++;
 	}
 
-	const barRadius = "0.5em";
+	//NOTE: Currently, this percentile calculation works well for more positive scores. 
+	//But what if someone's scores are more negative? They also want to know what % of people they are more negative than.
 </script>
 
 <div class="relative" bind:clientWidth={width} bind:clientHeight={height}>
@@ -64,10 +65,12 @@
 		<g class="bars">
 			{#each data as point, i}
 				<rect
-					class={scoreVariable == point[x]
-						? "fill-primary"
-						: "fill-plot-accent"}
-					rx={barRadius}
+					class="{scoreVariable == point[x]
+						? 'opacity-100 fill-primary'
+						: 'opacity-30'} {point[x] >= 0
+						? 'fill-plot-accent'
+						: 'fill-destructive'}"
+					rx="0.5em"
 					x={xScale(i)}
 					y={yScale(point[y])}
 					width={barWidth * 0.4}
@@ -78,18 +81,22 @@
 						class="fill-primary font-bold text-sm md:text-lg"
 						style="text-anchor: middle;"
 						x={xScale(i) + barWidth * 0.2}
-						y={height - 35}
+						y={height - 20}
 						>&gt;{percentile}% of Users
 					</text>
 				{/if}
 			{/each}
 		</g>
 		<g class="axis x-axis">
-			<g
-				class="tick"
-				transform="translate({(padding.left + width - 25) / 2}, {height - 10})"
-			>
-				<text>Controversial →</text>
+			{#each data as point, i}
+				<g class="tick" transform="translate({xScale(i)}, {height - 40})">
+					<text x={barWidth * 0.2} y="-5">
+						{point[x]}
+					</text>
+				</g>
+			{/each}
+			<g class="tick" transform="translate({width / 2}, {height})">
+				<text>Positive →</text>
 			</g>
 		</g>
 	</svg>
