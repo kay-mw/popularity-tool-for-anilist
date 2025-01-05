@@ -77,7 +77,7 @@
 	}
 </script>
 
-<div class="chart" bind:clientWidth={width} bind:clientHeight={height}>
+<div bind:clientWidth={width} bind:clientHeight={height}>
 	<svg
 		{width}
 		{height}

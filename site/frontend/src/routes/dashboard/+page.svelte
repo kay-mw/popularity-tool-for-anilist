@@ -123,7 +123,7 @@
               How controversial your scores are compared to the average user.
             </Card.Description>
           </Card.Header>
-          <Card.Content>
+          <Card.Content class="inline-flex">
             <Bar
               data={data.insights.absData}
               x="abs_score_diff"
@@ -150,7 +150,7 @@
               How positive your scores are compared to the average user.
             </Card.Description>
           </Card.Header>
-          <Card.Content>
+          <Card.Content class="inline-flex">
             <DivergingBar
               data={data.insights.avgData}
               x="avg_score_diff"

@@ -10,9 +10,9 @@
 
 	scoreVariable = Math.round(scoreVariable);
 
-	let width = 300;
+	let width = 900;
 	let height = 400;
-	const padding = { top: 20, bottom: 55, left: 65, right: 0 };
+	const padding = { top: 20, bottom: 65, left: 65, right: 0 };
 
 	const username = $page.url.searchParams.get("username");
 
@@ -78,18 +78,25 @@
 						class="fill-primary font-bold text-sm md:text-lg"
 						style="text-anchor: middle;"
 						x={xScale(i) + barWidth * 0.2}
-						y={height - 35}
+						y={height - 22}
 						>&gt;{percentile}% of Users
 					</text>
 				{/if}
 			{/each}
 		</g>
 		<g class="axis x-axis">
+			{#each data as point, i}
+				<g class="tick" transform="translate({xScale(i)}, {height - 50})">
+					<text x={barWidth * 0.2} y="5">
+						{point[x]}
+					</text>
+				</g>
+			{/each}
 			<g
 				class="tick"
-				transform="translate({(padding.left + width - 25) / 2}, {height - 10})"
+				transform="translate({(width / 2) + 25}, {height - 5})"
 			>
-				<text>Controversial →</text>
+				<text>Difference →</text>
 			</g>
 		</g>
 	</svg>

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { max, min } from "d3-array";
+	//TODO: I should probably just merge this with `Bar.svelte` at some point...
+	import { max } from "d3-array";
 	import { scaleLinear } from "d3-scale";
 
 	export let data: Array<Record<string, number>>;
@@ -9,7 +10,7 @@
 
 	scoreVariable = Math.round(scoreVariable);
 
-	let width = 300;
+	let width = 900;
 	let height = 400;
 
 	const padding = { top: 0, bottom: 65, left: 55, right: 0 };
@@ -41,7 +42,7 @@
 	percentile = scoreVariable > 0 ? percentile : 100 - percentile
 </script>
 
-<div class="relative" bind:clientWidth={width} bind:clientHeight={height}>
+<div bind:clientWidth={width} bind:clientHeight={height}>
 	<svg {width} {height} viewBox="0 0 {width} {height}">
 		<g class="axis y-axis">
 			{#each yTicks as tick}
@@ -91,7 +92,7 @@
 					</text>
 				</g>
 			{/each}
-			<g class="tick" transform="translate({(width / 2) + 8}, {height})">
+			<g class="tick" transform="translate({(width / 2) + 20}, {height - 5})">
 				<text>Positive →</text>
 			</g>
 		</g>
