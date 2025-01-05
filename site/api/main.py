@@ -1,15 +1,9 @@
-import datetime as dt
-import os
 from typing import Literal
-from urllib.parse import quote_plus
-
-import pandas as pd
-from dotenv import load_dotenv
-from sqlalchemy import create_engine
 
 from api.insights import general_insights, genre_insights
 from api.processing import (
     check_nulls,
+    create_abs_avg_plot_data,
     create_genre_data,
     create_plot_data,
     create_table,
@@ -69,62 +63,7 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
     plot_json = create_plot_data(df=merged_dfs, fill_df=new_rows)
     table_dict = create_table(df=merged_dfs)
     genre_dict = create_genre_data(genre_df=genre_info)
-
-    existing_data_path = "./api/existing_user_data.parquet"
-    file_exists = os.path.isfile(existing_data_path)
-    last_queried = dt.datetime.now() - dt.datetime.fromtimestamp(
-        os.path.getmtime(existing_data_path)
-    )
-
-    if (not file_exists) or (last_queried >= dt.timedelta(days=1)):
-        load_dotenv()
-        connection_string = os.environ["AZURE_ODBC"]
-        connection_url = (
-            f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
-        )
-        engine = create_engine(connection_url)
-
-        with engine.connect() as connection:
-            query = f"""SELECT *
-            FROM user_{format}_score;"""
-            existing_user_score = pd.read_sql(sql=query, con=connection)
-            query = f"""SELECT *
-            FROM {format}_info;"""
-            existing_format_info = pd.read_sql(sql=query, con=connection)
-            existing_merged_dfs = existing_user_score.merge(
-                existing_format_info, on=f"{format}_id", how="left"
-            )
-            existing_merged_dfs.to_parquet(existing_data_path)
-
-    def diff_buckets(df: pd.DataFrame, calc_type: Literal["abs", "avg"]) -> list[dict]:
-        df["score_diff"] = df["user_score"] - df["average_score"]
-
-        if calc_type == "abs":
-            df[f"{calc_type}_score_diff"] = (
-                df["user_score"] - df["average_score"]
-            ).abs()
-        else:
-            df[f"{calc_type}_score_diff"] = df["user_score"] - df["average_score"]
-
-        agg_data = df.groupby(by="user_id", as_index=False).agg(
-            {f"{calc_type}_score_diff": "mean"}
-        )
-        agg_data[f"{calc_type}_score_diff"] = (
-            agg_data[f"{calc_type}_score_diff"].round().astype(int)
-        )
-        agg_data = pd.DataFrame(
-            agg_data.value_counts(f"{calc_type}_score_diff", sort=False)
-        ).reset_index()
-
-        print(agg_data)
-
-        agg_data = agg_data.to_dict(orient="records")
-
-        return agg_data
-
-    existing_user_df = pd.read_parquet(existing_data_path)
-    abs_data = diff_buckets(df=existing_user_df, calc_type="abs")
-    avg_data = diff_buckets(df=existing_user_df, calc_type="avg")
+    abs_data, avg_data = create_abs_avg_plot_data()
 
     # NOTE: Upload
     dfs = [format_info, user_info, user_score]
