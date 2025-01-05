@@ -1,10 +1,10 @@
+import datetime as dt
 import os
 from typing import Literal
 from urllib.parse import quote_plus
 
 import pandas as pd
 from dotenv import load_dotenv
-from scipy.stats import percentileofscore
 from sqlalchemy import create_engine
 
 from api.insights import general_insights, genre_insights
@@ -70,23 +70,31 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
     table_dict = create_table(df=merged_dfs)
     genre_dict = create_genre_data(genre_df=genre_info)
 
-    # TODO: Optimize this SQL query, such that it only runs once every 24 hours.
-    load_dotenv()
-    connection_string = os.environ["AZURE_ODBC"]
-    connection_url = f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
-    engine = create_engine(connection_url)
-
-    with engine.connect() as connection:
-        query = f"""SELECT *
-        FROM user_{format}_score;"""
-        existing_user_score = pd.read_sql(sql=query, con=connection)
-        query = f"""SELECT *
-        FROM {format}_info;"""
-        existing_format_info = pd.read_sql(sql=query, con=connection)
-
-    existing_merged_dfs = existing_user_score.merge(
-        existing_format_info, on=f"{format}_id", how="left"
+    existing_data_path = "./api/existing_user_data.parquet"
+    file_exists = os.path.isfile(existing_data_path)
+    last_queried = dt.datetime.now() - dt.datetime.fromtimestamp(
+        os.path.getmtime(existing_data_path)
     )
+
+    if (not file_exists) or (last_queried >= dt.timedelta(days=1)):
+        load_dotenv()
+        connection_string = os.environ["AZURE_ODBC"]
+        connection_url = (
+            f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
+        )
+        engine = create_engine(connection_url)
+
+        with engine.connect() as connection:
+            query = f"""SELECT *
+            FROM user_{format}_score;"""
+            existing_user_score = pd.read_sql(sql=query, con=connection)
+            query = f"""SELECT *
+            FROM {format}_info;"""
+            existing_format_info = pd.read_sql(sql=query, con=connection)
+            existing_merged_dfs = existing_user_score.merge(
+                existing_format_info, on=f"{format}_id", how="left"
+            )
+            existing_merged_dfs.to_parquet(existing_data_path)
 
     def diff_buckets(df: pd.DataFrame, calc_type: Literal["abs", "avg"]) -> list[dict]:
         df["score_diff"] = df["user_score"] - df["average_score"]
@@ -114,8 +122,9 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
 
         return agg_data
 
-    abs_data = diff_buckets(df=existing_merged_dfs, calc_type="abs")
-    avg_data = diff_buckets(df=existing_merged_dfs, calc_type="avg")
+    existing_user_df = pd.read_parquet(existing_data_path)
+    abs_data = diff_buckets(df=existing_user_df, calc_type="abs")
+    avg_data = diff_buckets(df=existing_user_df, calc_type="avg")
 
     # NOTE: Upload
     dfs = [format_info, user_info, user_score]

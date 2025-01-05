@@ -1,3 +1,6 @@
+# generated file
+existing_user_data.parquet
+
 # created by virtualenv automatically
 venv/Lib
 .bashrc
