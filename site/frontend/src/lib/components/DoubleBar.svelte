@@ -55,9 +55,10 @@
 		if (index >= 0 && index < data.length) {
 			const point = data[index];
 			tooltipVisible = true;
+			tooltipPosition.target = { x: mouseX + 25, y: mouseY - 100 };
 			if (mouseX + 25 > 820) {
 				tooltipPosition.damping = 1;
-				tooltipPosition.target = { x: mouseX - 125, y: mouseY - 100 };
+				tooltipPosition.target = { x: mouseX - 115, y: mouseY - 100 };
 			} else {
 				tooltipPosition.damping = 0.4;
 				tooltipPosition.target = { x: mouseX + 25, y: mouseY - 100 };

@@ -90,6 +90,32 @@
       <section class="m-auto w-full">
         <Card.Root class="overflow-x-auto">
           <Card.Header>
+            <Card.Title class="text-4xl">
+              <span class="text-primary">{username}</span> vs.
+              <span class="text-plot-accent">the AniList Average</span>
+            </Card.Title>
+            <Card.Description>
+              How frequently you give certain scores compared to the AniList
+              average.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content class="inline-flex">
+            <DoubleBar
+              data={data.insights.userData}
+              yKeys={["user_score", "average_score"]}
+              x="score"
+            />
+          </Card.Content>
+        </Card.Root>
+      </section>
+    </DashboardContainer>
+  </AnimatedScroll>
+
+  <AnimatedScroll>
+    <DashboardContainer>
+      <section class="m-auto w-full">
+        <Card.Root class="overflow-x-auto">
+          <Card.Header>
             <Card.Title class="text-4xl text-primary">
               Overall Score Difference
             </Card.Title>
@@ -130,32 +156,6 @@
               x="avg_score_diff"
               y="count"
               scoreVariable={data.insights.avgScoreDiff}
-            />
-          </Card.Content>
-        </Card.Root>
-      </section>
-    </DashboardContainer>
-  </AnimatedScroll>
-
-  <AnimatedScroll>
-    <DashboardContainer>
-      <section class="m-auto w-full">
-        <Card.Root class="overflow-x-auto">
-          <Card.Header>
-            <Card.Title class="text-4xl">
-              <span class="text-primary">{username}</span> vs.
-              <span class="text-plot-accent">the AniList Average</span>
-            </Card.Title>
-            <Card.Description>
-              How frequently you give certain scores compared to the AniList
-              average.
-            </Card.Description>
-          </Card.Header>
-          <Card.Content class="inline-flex">
-            <DoubleBar
-              data={data.insights.userData}
-              yKeys={["user_score", "average_score"]}
-              x="score"
             />
           </Card.Content>
         </Card.Root>
@@ -238,7 +238,7 @@
       ></ImageCard>
 
       <div
-        class="grid grid-cols-2 grid-rows-2 justify-center items-center m-auto gap-4 max-w-screen-lg"
+        class="grid grid-cols-2 grid-rows-2 justify-center items-center p-6 gap-4 max-w-screen-lg"
       >
         <Dialog.Root>
           <Dialog.Trigger>
@@ -295,7 +295,6 @@
           >Return Home</Button
         >
       </div>
-
     </DashboardContainer>
   </AnimatedScroll>
 </section>
