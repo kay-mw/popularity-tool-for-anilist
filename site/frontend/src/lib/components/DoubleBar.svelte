@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { scaleLinear } from "d3-scale";
 	import { max } from "d3-array";
-	import { spring } from "svelte/motion";
+	import { Spring } from "svelte/motion";
 	import { page } from "$app/stores";
 
 	export let data: Array<Record<string, number>>;
@@ -33,14 +33,15 @@
 	$: innerWidth = width - (padding.left + padding.right);
 	$: barWidth = innerWidth / data.length;
 
-	let tooltipVisible = false;
-	const tooltipPosition = spring(
+	let tooltipPosition = new Spring(
 		{ x: 0, y: 0 },
 		{
 			stiffness: 0.15,
 			damping: 0.4,
 		},
 	);
+
+	let tooltipVisible = false;
 	let toolUser = "";
 	let toolAvg = "";
 	let hoveredIndex = -1;
@@ -54,7 +55,13 @@
 		if (index >= 0 && index < data.length) {
 			const point = data[index];
 			tooltipVisible = true;
-			tooltipPosition.set({ x: mouseX + 20, y: mouseY - 60 });
+			if (mouseX + 25 > 820) {
+				tooltipPosition.damping = 1;
+				tooltipPosition.target = { x: mouseX - 125, y: mouseY - 100 };
+			} else {
+				tooltipPosition.damping = 0.4;
+				tooltipPosition.target = { x: mouseX + 25, y: mouseY - 100 };
+			}
 			toolUser = `${point[y1]}`;
 			toolAvg = `${point[y2]}`;
 			hoveredIndex = index;
@@ -75,7 +82,7 @@
 		{height}
 		on:mousemove={handleMouseMove}
 		on:mouseleave={hideTooltip}
-		role="tooltip"
+		role="presentation"
 		viewBox="0 0 {width} {height}"
 	>
 		<g class="axis y-axis">
@@ -145,17 +152,22 @@
 				</g>
 			{/each}
 		</g>
-	</svg>
-	{#if tooltipVisible}
-		<div
-			class="tooltip"
-			style="left: {$tooltipPosition.x + width / 2}px; top: {$tooltipPosition.y + height / 2}px"
-		>
-			<span class="text-primary">{username}: {toolUser}</span><br /><span
-				class="text-plot-accent">AniList: {toolAvg}</span
+
+		{#if tooltipVisible}
+			<foreignObject
+				x={tooltipPosition.current.x}
+				y={tooltipPosition.current.y}
+				width="100%"
+				height="100%"
 			>
-		</div>
-	{/if}
+				<div class="tooltip">
+					<span class="text-primary">{username}: {toolUser}</span><br /><span
+						class="text-plot-accent">AniList: {toolAvg}</span
+					>
+				</div>
+			</foreignObject>
+		{/if}
+	</svg>
 </div>
 
 <style lang="postcss">
@@ -208,6 +220,7 @@
 	.tooltip {
 		@apply absolute bg-background border border-secondary font-semibold p-2 rounded shadow-lg text-base;
 		pointer-events: none;
+		z-index: 100;
 		transition: opacity 0.2s ease-in-out;
 	}
 </style>

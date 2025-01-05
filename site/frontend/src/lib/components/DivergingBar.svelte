@@ -14,9 +14,6 @@
 
 	const padding = { top: 0, bottom: 65, left: 55, right: 0 };
 
-	$: xMax = max(data, (d) => +d[x]);
-	$: xMin = min(data, (d) => +d[x]);
-
 	$: yMax = max(data, (d) => +d[y]);
 	$: yTicks = Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5);
 
@@ -41,8 +38,7 @@
 		i++;
 	}
 
-	//NOTE: Currently, this percentile calculation works well for more positive scores. 
-	//But what if someone's scores are more negative? They also want to know what % of people they are more negative than.
+	percentile = scoreVariable > 0 ? percentile : 100 - percentile
 </script>
 
 <div class="relative" bind:clientWidth={width} bind:clientHeight={height}>
@@ -82,7 +78,7 @@
 						style="text-anchor: middle;"
 						x={xScale(i) + barWidth * 0.2}
 						y={height - 20}
-						>&gt;{percentile}% of Users
+						>{scoreVariable > 0 ? `>${percentile}% of Users` : `<${percentile}% of Users`}
 					</text>
 				{/if}
 			{/each}
@@ -95,7 +91,7 @@
 					</text>
 				</g>
 			{/each}
-			<g class="tick" transform="translate({width / 2}, {height})">
+			<g class="tick" transform="translate({(width / 2) + 8}, {height})">
 				<text>Positive →</text>
 			</g>
 		</g>

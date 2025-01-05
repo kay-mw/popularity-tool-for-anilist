@@ -65,8 +65,8 @@
 			{#each data as point, i}
 				<rect
 					class={scoreVariable == point[x]
-						? "fill-primary"
-						: "fill-plot-accent"}
+						? "fill-primary opacity-100"
+						: "fill-plot-accent opacity-30"}
 					rx={barRadius}
 					x={xScale(i)}
 					y={yScale(point[y])}

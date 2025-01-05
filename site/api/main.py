@@ -70,6 +70,7 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
     table_dict = create_table(df=merged_dfs)
     genre_dict = create_genre_data(genre_df=genre_info)
 
+    # TODO: Optimize this SQL query, such that it only runs once every 24 hours.
     load_dotenv()
     connection_string = os.environ["AZURE_ODBC"]
     connection_url = f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
