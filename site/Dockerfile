@@ -9,4 +9,4 @@ RUN uv sync
 
 COPY ./site /code/
 
-CMD ["fastapi", "run", "main.py", "--port", "8000"]
+CMD ["uv", "run", "fastapi", "run", "./site/main.py", "--port", "8000"]
