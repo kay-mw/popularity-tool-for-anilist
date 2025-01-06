@@ -2,36 +2,51 @@
 	import { scaleLinear } from "d3-scale";
 	import { max } from "d3-array";
 	import { Spring } from "svelte/motion";
-	import { page } from "$app/stores";
+	import { page } from "$app/state";
 
-	export let data: Array<Record<string, number>>;
-	export let y1 = "user_count";
-	export let y2 = "average_count";
-	export let x = "score";
+	let {
+		data,
+		y1,
+		y2,
+		x,
+	}: {
+		data: Array<Record<string, number>>;
+		y1: string;
+		y2: string;
+		x: string;
+	} = $props();
 
-	const username = $page.url.searchParams.get("username");
+	const username = page.url.searchParams.get("username");
 
-	$: yMax = Math.max(
-		max(data, (d) => +d[y1]),
-		max(data, (d) => +d[y2]),
+	let yMax = $derived(
+		Math.max(
+			max(data, (d) => +d[y1]),
+			max(data, (d) => +d[y2]),
+		),
 	);
 
-	$: yTicks = Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5);
+	let yTicks = $derived(
+		Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5),
+	);
 	const padding = { top: 20, right: 15, bottom: 20, left: 25 };
 
-	let width = 913;
-	let height = 525;
+	let width = $state(913);
+	let height = $state(525);
 
-	$: xScale = scaleLinear()
-		.domain([0, data.length])
-		.range([padding.left, width - padding.right]);
+	let xScale = $derived(
+		scaleLinear()
+			.domain([0, data.length])
+			.range([padding.left, width - padding.right]),
+	);
 
-	$: yScale = scaleLinear()
-		.domain([0, Math.max.apply(null, yTicks)])
-		.range([height - padding.bottom, padding.top]);
+	let yScale = $derived(
+		scaleLinear()
+			.domain([0, Math.max.apply(null, yTicks)])
+			.range([height - padding.bottom, padding.top]),
+	);
 
-	$: innerWidth = width - (padding.left + padding.right);
-	$: barWidth = innerWidth / data.length;
+	let innerWidth = $derived(width - (padding.left + padding.right));
+	let barWidth = $derived(innerWidth / data.length);
 
 	let tooltipPosition = new Spring(
 		{ x: 0, y: 0 },
@@ -41,10 +56,10 @@
 		},
 	);
 
-	let tooltipVisible = false;
-	let toolUser = "";
-	let toolAvg = "";
-	let hoveredIndex = -1;
+	let tooltipVisible = $state(false);
+	let toolUser = $state("");
+	let toolAvg = $state("");
+	let hoveredIndex = $state(-1);
 
 	function handleMouseMove(event: MouseEvent) {
 		const svgRect = (event.currentTarget as SVGElement).getBoundingClientRect();
@@ -81,8 +96,8 @@
 	<svg
 		{width}
 		{height}
-		on:mousemove={handleMouseMove}
-		on:mouseleave={hideTooltip}
+		onmousemove={handleMouseMove}
+		onmouseleave={hideTooltip}
 		role="presentation"
 		viewBox="0 0 {width} {height}"
 	>

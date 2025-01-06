@@ -2,30 +2,39 @@
 	import { min, max } from "d3-array";
 	import { scaleLinear } from "d3-scale";
 	import { Spring } from "svelte/motion";
-	import { page } from "$app/stores";
+	import { page } from "$app/state";
 
-	export let data: Array<Record<string, number>>;
-	export let x1 = "weighted_average";
-	export let x2 = "weighted_user";
+	let {
+		data,
+		x1,
+		x2,
+	}: {
+		data: Array<Record<string, number>>;
+		x1: string;
+		x2: string;
+	} = $props();
 
 	const padding = { top: 40, right: 40, bottom: 0, left: 150 };
-	const username = $page.url.searchParams.get("username");
+	const username = page.url.searchParams.get("username");
 
-	let width = 913;
+	let width = $state(913);
 	let height = 1000;
 
-	$: xMin =
+	let xMin = $derived(
 		Math.ceil(
 			Math.min(
 				min(data, (d) => +d[x1]),
 				min(data, (d) => +d[x2]),
 			),
-		) - 1;
+		) - 1,
+	);
 
-	$: xMax = Math.ceil(
-		Math.max(
-			max(data, (d) => +d[x1]),
-			max(data, (d) => +d[x2]),
+	let xMax = $derived(
+		Math.ceil(
+			Math.max(
+				max(data, (d) => +d[x1]),
+				max(data, (d) => +d[x2]),
+			),
 		),
 	);
 
@@ -37,20 +46,24 @@
 		}
 		return rangeRec(low, hi, []);
 	}
-	$: xTicks = range(xMin, xMax, 1);
+	let xTicks = $derived(range(xMin, xMax, 1));
 
-	$: xScale = scaleLinear()
-		.domain([Math.min.apply(null, xTicks), Math.max.apply(null, xTicks)])
-		.range([padding.left, width - padding.right]);
+	let xScale = $derived(
+		scaleLinear()
+			.domain([Math.min.apply(null, xTicks), Math.max.apply(null, xTicks)])
+			.range([padding.left, width - padding.right]),
+	);
 
-	$: yScale = scaleLinear()
-		.domain([0, data.length])
-		.range([padding.top, height - padding.bottom]);
+	let yScale = $derived(
+		scaleLinear()
+			.domain([0, data.length])
+			.range([padding.top, height - padding.bottom]),
+	);
 
-	$: innerWidth = width - (padding.left + padding.right);
-	$: barWidth = innerWidth / data.length;
-	$: innerHeight = height - (padding.top + padding.bottom);
-	$: barHeight = innerHeight / data.length;
+	let innerWidth = $derived(width - (padding.left + padding.right));
+	let barWidth = $derived(innerWidth / data.length);
+	let innerHeight = $derived(height - (padding.top + padding.bottom));
+	let barHeight = $derived(innerHeight / data.length);
 
 	let tooltipPosition = new Spring(
 		{ x: 0, y: 0 },
@@ -60,11 +73,11 @@
 		},
 	);
 
-	let tooltipVisible = false;
-	let toolUser = "";
-	let toolAvg = "";
-	let toolDiff = "";
-	let hoveredIndex = -1;
+	let tooltipVisible = $state(false);
+	let toolUser = $state("");
+	let toolAvg = $state("");
+	let toolDiff = $state("");
+	let hoveredIndex = $state(-1);
 
 	function handleMouseMove(event: MouseEvent) {
 		const svgRect = (event.currentTarget as SVGElement).getBoundingClientRect();
@@ -104,8 +117,8 @@
 		{width}
 		{height}
 		viewBox="0 0 {width} {height}"
-		on:mousemove={handleMouseMove}
-		on:mouseleave={hideTooltip}
+		onmousemove={handleMouseMove}
+		onmouseleave={hideTooltip}
 		role="tooltip"
 	>
 		<g class="axis x-axis">

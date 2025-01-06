@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from "./$types";
   import { onMount } from "svelte";
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
 
   import * as Card from "$lib/components/ui/card";
   import * as Table from "$lib/components/ui/table";
@@ -16,7 +16,6 @@
   import AnimatedScroll from "$lib/components/AnimatedScroll.svelte";
 
   import Bar from "$lib/components/Bar.svelte";
-  import DivergingBar from "$lib/components/DivergingBar.svelte";
   import DoubleBar from "$lib/components/DoubleBar.svelte";
   import HorizontalBar from "$lib/components/HorizontalBar.svelte";
 
@@ -24,7 +23,7 @@
 
   export let data: PageData;
 
-  const username = $page.url.searchParams.get("username");
+  const username = page.url.searchParams.get("username");
 
   function copyURL() {
     const currentURL = window.location.href;
@@ -98,7 +97,8 @@
           <Card.Content class="inline-flex">
             <DoubleBar
               data={data.insights.userData}
-              yKeys={["user_score", "average_score"]}
+              y1="user_count"
+              y2="average_count"
               x="score"
             />
           </Card.Content>
@@ -217,7 +217,11 @@
           </Card.Header>
           <Card.Content class="space-y-6">
             <div class="inline-flex">
-              <HorizontalBar data={data.insights.genreData} />
+              <HorizontalBar
+                data={data.insights.genreData}
+                x1="weighted_average"
+                x2="weighted_user"
+              />
             </div>
           </Card.Content>
         </Card.Root>
