@@ -17,15 +17,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: SSH (build and deploy)
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.0
         env:
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
+          AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
         with:
           host: ${{ secrets.HOST }}
           port: ${{ secrets.PORT }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          envs: STORAGE_CONNECTION_STRING
+          envs: STORAGE_CONNECTION_STRING,AZURE_ODBC
           script: |
             cd ~/popularity-tool-for-anilist/site
             git pull origin main
