@@ -25,6 +25,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Microsoft ODBC
+        run: sudo ACCEPT_EULA=Y apt install msodbcsql18 -y
+
       - name: Set up uv
         uses: astral-sh/setup-uv@v5
 
