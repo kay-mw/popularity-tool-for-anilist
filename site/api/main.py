@@ -63,7 +63,7 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
     plot_json = create_plot_data(df=merged_dfs, fill_df=new_rows)
     table_dict = create_table(df=merged_dfs)
     genre_dict = create_genre_data(genre_df=genre_info)
-    abs_data, avg_data = create_abs_avg_plot_data()
+    abs_data, avg_data = create_abs_avg_plot_data(format=format)
 
     # NOTE: Upload
     dfs = [format_info, user_info, user_score]

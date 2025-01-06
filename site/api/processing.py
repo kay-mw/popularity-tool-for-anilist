@@ -245,12 +245,16 @@ def create_genre_data(genre_df: pd.DataFrame) -> list[dict]:
     return genre_dict
 
 
-def create_abs_avg_plot_data() -> tuple[list[dict], list[dict]]:
+def create_abs_avg_plot_data(format: str) -> tuple[list[dict], list[dict]]:
     existing_data_path = "./api/existing_user_data.parquet"
     file_exists = os.path.isfile(existing_data_path)
-    last_queried = dt.datetime.now() - dt.datetime.fromtimestamp(
-        os.path.getmtime(existing_data_path)
-    )
+
+    if file_exists:
+        last_queried = dt.datetime.now() - dt.datetime.fromtimestamp(
+            os.path.getmtime(existing_data_path)
+        )
+    else:
+        last_queried = dt.timedelta(days=0)
 
     if (not file_exists) or (last_queried >= dt.timedelta(days=1)):
         connection_string = os.environ["AZURE_ODBC"]
