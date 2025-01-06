@@ -291,8 +291,6 @@ def create_abs_avg_plot_data() -> tuple[list[dict], list[dict]]:
             agg_data.value_counts(f"{calc_type}_score_diff", sort=False)
         ).reset_index()
 
-        print(agg_data)
-
         agg_data = agg_data.to_dict(orient="records")
 
         return agg_data

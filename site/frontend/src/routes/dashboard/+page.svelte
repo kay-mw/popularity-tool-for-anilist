@@ -9,14 +9,10 @@
   import { Button } from "$lib/components/ui/button";
   import { Toaster } from "$lib/components/ui/sonner";
   import { toast } from "svelte-sonner";
-  import { Separator } from "$lib/components/ui/separator";
 
   import DashboardContainer from "$lib/components/DashboardContainer.svelte";
   import ImageCard from "$lib/components/ImageCard.svelte";
-  import H2 from "$lib/components/H2.svelte";
   import SectionHeader from "$lib/components/SectionHeader.svelte";
-  import AvgCard from "$lib/components/AvgCard.svelte";
-  import AbsCard from "$lib/components/AbsCard.svelte";
   import AnimatedScroll from "$lib/components/AnimatedScroll.svelte";
 
   import Bar from "$lib/components/Bar.svelte";
@@ -129,6 +125,10 @@
               x="abs_score_diff"
               y="count"
               scoreVariable={data.insights.absScoreDiff}
+              colorX1="fill-primary"
+              colorX2="fill-plot-accent"
+              xLabel="Difference"
+              diverging={false}
             />
           </Card.Content>
         </Card.Root>
@@ -151,11 +151,15 @@
             </Card.Description>
           </Card.Header>
           <Card.Content class="inline-flex">
-            <DivergingBar
+            <Bar
               data={data.insights.avgData}
               x="avg_score_diff"
               y="count"
               scoreVariable={data.insights.avgScoreDiff}
+              colorX1="fill-plot-accent"
+              colorX2="fill-destructive"
+              xLabel="Positive"
+              diverging={true}
             />
           </Card.Content>
         </Card.Root>
