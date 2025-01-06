@@ -42,4 +42,4 @@ jobs:
         env:
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
           AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
-        run: python -m pytest
+        run: pytest
