@@ -2,8 +2,8 @@ name: test
 
 on: 
   push:
-    branches:
-      - dev
+    branches-ignore:
+      - main
     paths:
       - 'site/**'
       - 'pyproject.toml'
@@ -30,14 +30,17 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
       - name: Install dependencies
         working-directory: ./site
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          uv sync --all-extras --dev
 
       - name: Run tests
         working-directory: ./site
         env:
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
+          AZURE_ODBC: ${{ secrets.AZURE_ODBC }}
         run: python -m pytest

@@ -2,8 +2,8 @@ name: lint
 
 on: 
   push:
-    branches:
-      - dev
+    branches-ignore:
+      - main
     paths:
       - 'site/**'
       - 'pipelines/**'
