@@ -34,7 +34,6 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Install dependencies
-        working-directory: ./site
         run: |
           uv sync --all-extras --dev
 
