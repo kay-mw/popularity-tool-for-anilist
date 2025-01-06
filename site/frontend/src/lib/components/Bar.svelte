@@ -1,188 +1,147 @@
 <script lang="ts">
 	import { scaleLinear } from "d3-scale";
 	import { max } from "d3-array";
-	import { spring } from "svelte/motion";
-	import { page } from "$app/stores";
 
-	export let data;
+	let {
+		data,
+		x,
+		y,
+		scoreVariable,
+		colorX1,
+		colorX2,
+		xLabel,
+		diverging,
+	}: {
+		data: Array<Record<string, number>>;
+		x: string;
+		y: string;
+		scoreVariable: number;
+		colorX1: string;
+		colorX2: string;
+		xLabel: string;
+		diverging: boolean;
+	} = $props();
 
-	const username = $page.url.searchParams.get("username");
+	scoreVariable = Math.round(scoreVariable);
 
-	$: yMax = Math.max(
-		max(data.insights.userData, (d) => +d.user_count),
-		max(data.insights.userData, (d) => +d.average_count),
+	let width = $state(900);
+	let height = $state(400);
+	const padding = { top: 20, bottom: 65, left: 65, right: 0 };
+
+	let yMax = $derived(max(data, (d) => +d[y]));
+
+	let yTicks = $derived(
+		Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5),
 	);
 
-	$: yTicks = Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5);
-	const padding = { top: 20, right: 15, bottom: 20, left: 25 };
-
-	let width = 913;
-	let height = 525;
-
-	$: xScale = scaleLinear()
-		.domain([0, data.insights.userData.length])
-		.range([padding.left, width - padding.right]);
-
-	$: yScale = scaleLinear()
-		.domain([0, Math.max.apply(null, yTicks)])
-		.range([height - padding.bottom, padding.top]);
-
-	$: innerWidth = width - (padding.left + padding.right);
-	$: barWidth = innerWidth / data.insights.userData.length;
-
-	let tooltipVisible = false;
-	const tooltipPosition = spring(
-		{ x: 0, y: 0 },
-		{
-			stiffness: 0.15,
-			damping: 0.4,
-		},
+	let xScale = $derived(
+		scaleLinear()
+			.domain([0, data.length])
+			.range([padding.left, width - padding.right]),
 	);
-	let toolUser = "";
-	let toolAvg = "";
-	let hoveredIndex = -1;
 
-	function handleMouseMove(event) {
-		const svgRect = event.currentTarget.getBoundingClientRect();
-		const mouseX = event.clientX - svgRect.left;
-		const mouseY = event.clientY - svgRect.top;
-		const index = Math.floor((mouseX - padding.left) / barWidth);
+	let yScale = $derived(
+		scaleLinear()
+			.domain([0, Math.max.apply(null, yTicks)])
+			.range([height - padding.bottom, padding.top]),
+	);
 
-		if (index >= 0 && index < data.insights.userData.length) {
-			const point = data.insights.userData[index];
-			tooltipVisible = true;
-			tooltipPosition.set({ x: mouseX + 20, y: mouseY - 90 });
-			toolUser = `${point.user_count}`;
-			toolAvg = `${point.average_count}`;
-			hoveredIndex = index;
-		} else {
-			hideTooltip();
-		}
+	let innerWidth = $derived(width - (padding.left + padding.right));
+	let barWidth = $derived(innerWidth / data.length);
+
+	let i = 0;
+	let percentile = $state(0);
+	let pct = 0;
+	const sum = data.reduce((sm, d) => sm + +d[y], 0);
+	while (data[i] && data[i][x] < scoreVariable) {
+		pct = Math.round((data[i][y] / sum) * 100);
+		percentile += pct;
+		i++;
 	}
+	percentile = scoreVariable > 0 ? percentile : 100 - percentile;
 
-	function hideTooltip() {
-		tooltipVisible = false;
-		hoveredIndex = -1;
+	const barRadius = "0.5em";
+
+	let hovering = $state(false);
+	function handleEnter() {
+		hovering = true;
+	}
+	function handleLeave() {
+		hovering = false;
 	}
 </script>
 
-<div class="chart" bind:clientWidth={width} bind:clientHeight={height}>
+<div bind:clientWidth={width} bind:clientHeight={height}>
 	<svg
 		{width}
 		{height}
-		on:mousemove={handleMouseMove}
-		on:mouseleave={hideTooltip}
-		role="tooltip"
 		viewBox="0 0 {width} {height}"
+		onmouseenter={handleEnter}
+		onmouseleave={handleLeave}
+		role="presentation"
 	>
 		<g class="axis y-axis">
 			{#each yTicks as tick}
-				<g class="tick tick-{tick}" transform="translate(0, {yScale(tick)})">
+				<g class="tick tick-{tick}" transform="translate(25, {yScale(tick)})">
 					<line x2="100%" />
 					<text y="-4">{tick}</text>
 				</g>
 			{/each}
+			<g
+				class="tick"
+				transform="translate({10}, {(height - padding.bottom + padding.top) /
+					2}) rotate(-90)"
+			>
+				<text style="text-anchor: middle;">% of Users →</text>
+			</g>
 		</g>
 		<g class="bars">
-			{#each data.insights.userData as point, i}
-				<g
-					class:hovered={hoveredIndex === i}
-					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
-				>
-					{#if point.average_count > 0 && point.user_count > 0}
-						<rect
-							class="fill-plot-accent"
-							rx="0.5rem"
-							x={xScale(i) + barWidth / 2}
-							y={yScale(point.average_count)}
-							width={barWidth * 0.35}
-							height={yScale(0) - yScale(point.average_count)}
-						/>
-						<rect
-							class="fill-primary"
-							rx="0.5rem"
-							x={xScale(i) + 6.5}
-							y={yScale(point.user_count)}
-							width={barWidth * 0.35}
-							height={yScale(0) - yScale(point.user_count)}
-						/>
-					{:else if point.average_count > 0 && point.user_count == 0}
-						<rect
-							class="fill-plot-accent"
-							rx="0.5rem"
-							x={xScale(i) + 2}
-							y={yScale(point.average_count)}
-							width={barWidth * 0.9}
-							height={yScale(0) - yScale(point.average_count)}
-						/>
-					{:else}
-						<rect
-							class="fill-primary"
-							rx="0.5rem"
-							x={xScale(i) + 2}
-							y={yScale(point.user_count)}
-							width={barWidth * 0.9}
-							height={yScale(0) - yScale(point.user_count)}
-						/>
-					{/if}
-				</g>
+			{#each data as point, i}
+				<rect
+					class="{scoreVariable == point[x] && !diverging
+						? `${colorX1}`
+						: `${colorX2}`} 
+					{scoreVariable != point[x] && hovering ? 'opacity-30' : 'opacity-100'} 
+					{diverging && point[x] >= 0 && point[x] != scoreVariable
+						? `${colorX1}`
+						: `${colorX2}`} 
+					{diverging && point[x] == scoreVariable ? 'fill-primary' : ''}"
+					rx={barRadius}
+					x={xScale(i)}
+					y={yScale(point[y])}
+					width={barWidth * 0.4}
+					height={yScale(0) - yScale(point[y])}
+				/>
+				{#if scoreVariable == point[x]}
+					<text
+						class="fill-primary font-bold text-sm md:text-lg"
+						style="text-anchor: middle;"
+						x={xScale(i) + barWidth * 0.2}
+						y={height - 22}
+						>&gt;{percentile}% of Users
+					</text>
+				{/if}
 			{/each}
 		</g>
 		<g class="axis x-axis">
-			{#each data.insights.userData as point, i}
-				<g
-					class:hovered={hoveredIndex === i}
-					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
-				>
-					<g class="tick" transform="translate({xScale(i)}, {height})">
-						<text x={barWidth / 2}>
-							{point.score}
-						</text>
-					</g>
+			{#each data as point, i}
+				<g class="tick" transform="translate({xScale(i)}, {height - 50})">
+					<text x={barWidth * 0.2} y="5">
+						{point[x]}
+					</text>
 				</g>
 			{/each}
+			<g class="tick" transform="translate({width / 2 + 25}, {height - 5})">
+				<text>{xLabel} →</text>
+			</g>
 		</g>
 	</svg>
-	{#if tooltipVisible}
-		<div
-			class="tooltip"
-			style="left: {$tooltipPosition.x}px; top: {$tooltipPosition.y}px"
-		>
-			<span class="text-primary">{username}: {toolUser}</span><br /><span
-				class="text-plot-accent">AniList: {toolAvg}</span
-			>
-		</div>
-	{/if}
 </div>
 
 <style lang="postcss">
 	.x-axis .tick text {
 		@apply text-center text-current;
 		text-anchor: middle;
-	}
-
-	.bars rect {
-		transition: opacity 0.2s ease-in-out;
-	}
-
-	.bars g.dimmed rect {
-		opacity: 0.3;
-	}
-
-	.bars g.hovered rect {
-		opacity: 1;
-	}
-
-	.x-axis text {
-		transition: opacity 0.2s ease-in-out;
-	}
-
-	.x-axis g.dimmed text {
-		opacity: 0.3;
-	}
-
-	.x-axis g.hovered text {
-		opacity: 1;
 	}
 
 	.tick {
@@ -202,10 +161,7 @@
 		@apply inline-block;
 	}
 
-	.tooltip {
-		@apply absolute bg-background border border-secondary font-semibold p-2 rounded shadow-lg text-base;
-		pointer-events: none;
-		z-index: 100;
-		transition: opacity 0.2s ease-in-out;
+	.bars rect {
+		transition: opacity 0.5s ease-in-out;
 	}
 </style>

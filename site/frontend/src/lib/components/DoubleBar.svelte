@@ -1,69 +1,52 @@
 <script lang="ts">
-	import { min, max } from "d3-array";
 	import { scaleLinear } from "d3-scale";
+	import { max } from "d3-array";
 	import { Spring } from "svelte/motion";
 	import { page } from "$app/state";
 
 	let {
 		data,
-		x1,
-		x2,
+		y1,
+		y2,
+		x,
 	}: {
 		data: Array<Record<string, number>>;
-		x1: string;
-		x2: string;
+		y1: string;
+		y2: string;
+		x: string;
 	} = $props();
 
-	const padding = { top: 40, right: 40, bottom: 0, left: 150 };
 	const username = page.url.searchParams.get("username");
 
-	let width = $state(913);
-	let height = 1000;
-
-	let xMin = $derived(
-		Math.ceil(
-			Math.min(
-				min(data, (d) => +d[x1]),
-				min(data, (d) => +d[x2]),
-			),
-		) - 1,
-	);
-
-	let xMax = $derived(
-		Math.ceil(
-			Math.max(
-				max(data, (d) => +d[x1]),
-				max(data, (d) => +d[x2]),
-			),
+	let yMax = $derived(
+		Math.max(
+			max(data, (d) => +d[y1]),
+			max(data, (d) => +d[y2]),
 		),
 	);
 
-	function range(low: number, hi: number, increment: number) {
-		function rangeRec(low: number, hi: number, vals: Array<number>) {
-			if (low > hi) return vals;
-			vals.push(low);
-			return rangeRec(low + increment, hi, vals);
-		}
-		return rangeRec(low, hi, []);
-	}
-	let xTicks = $derived(range(xMin, xMax, 1));
+	let yTicks = $derived(
+		Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5),
+	);
+	const padding = { top: 20, right: 15, bottom: 20, left: 25 };
+
+	let width = $state(913);
+	let height = $state(525);
 
 	let xScale = $derived(
 		scaleLinear()
-			.domain([Math.min.apply(null, xTicks), Math.max.apply(null, xTicks)])
+			.domain([0, data.length])
 			.range([padding.left, width - padding.right]),
 	);
 
 	let yScale = $derived(
 		scaleLinear()
-			.domain([0, data.length])
-			.range([padding.top, height - padding.bottom]),
+			.domain([0, Math.max.apply(null, yTicks)])
+			.range([height - padding.bottom, padding.top]),
 	);
 
 	let innerWidth = $derived(width - (padding.left + padding.right));
 	let barWidth = $derived(innerWidth / data.length);
-	let innerHeight = $derived(height - (padding.top + padding.bottom));
-	let barHeight = $derived(innerHeight / data.length);
 
 	let tooltipPosition = new Spring(
 		{ x: 0, y: 0 },
@@ -76,28 +59,27 @@
 	let tooltipVisible = $state(false);
 	let toolUser = $state("");
 	let toolAvg = $state("");
-	let toolDiff = $state("");
 	let hoveredIndex = $state(-1);
 
 	function handleMouseMove(event: MouseEvent) {
 		const svgRect = (event.currentTarget as SVGElement).getBoundingClientRect();
-		const mouseY = event.clientY - svgRect.top;
 		const mouseX = event.clientX - svgRect.left;
-		const index = Math.floor((mouseY - padding.top + 25) / barHeight);
+		const mouseY = event.clientY - svgRect.top;
+		const index = Math.floor((mouseX - padding.left) / barWidth);
 
 		if (index >= 0 && index < data.length) {
 			const point = data[index];
 			tooltipVisible = true;
-			if (mouseY - 100 < 0) {
+			tooltipPosition.target = { x: mouseX + 25, y: mouseY - 100 };
+			if (mouseX + 25 > 820) {
 				tooltipPosition.damping = 1;
-				tooltipPosition.set({ x: mouseX + 20, y: mouseY - 40 });
+				tooltipPosition.target = { x: mouseX - 115, y: mouseY - 100 };
 			} else {
 				tooltipPosition.damping = 0.4;
-				tooltipPosition.set({ x: mouseX + 20, y: mouseY - 100 });
+				tooltipPosition.target = { x: mouseX + 25, y: mouseY - 100 };
 			}
-			toolUser = `${point[x2]}`;
-			toolAvg = `${point[x1]}`;
-			toolDiff = `${point.weighted_diff}`;
+			toolUser = `${point[y1]}`;
+			toolAvg = `${point[y2]}`;
 			hoveredIndex = index;
 		} else {
 			hideTooltip();
@@ -108,27 +90,22 @@
 		tooltipVisible = false;
 		hoveredIndex = -1;
 	}
-
-	let yAdj = 4;
 </script>
 
-<div class="chart" bind:clientWidth={width}>
+<div bind:clientWidth={width} bind:clientHeight={height}>
 	<svg
 		{width}
 		{height}
-		viewBox="0 0 {width} {height}"
 		onmousemove={handleMouseMove}
 		onmouseleave={hideTooltip}
-		role="tooltip"
+		role="presentation"
+		viewBox="0 0 {width} {height}"
 	>
-		<g class="axis x-axis">
-			{#each xTicks as tick}
-				<g
-					class="tick tick-{tick}"
-					transform="translate({xScale(tick)}, {height})"
-				>
-					<line y1="-20" y2={-height} />
-					<text>{tick}</text>
+		<g class="axis y-axis">
+			{#each yTicks as tick}
+				<g class="tick tick-{tick}" transform="translate(0, {yScale(tick)})">
+					<line x2="100%" />
+					<text y="-4">{tick}</text>
 				</g>
 			{/each}
 		</g>
@@ -138,37 +115,60 @@
 					class:hovered={hoveredIndex === i}
 					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
 				>
-					<rect
-						class="fill-primary"
-						rx="0.5rem"
-						x={xScale(xMin)}
-						y={yScale(i) - yAdj - barWidth / 2.5}
-						height={width > 380 ? barWidth * 0.4 : barWidth * 1.5}
-						width={xScale(point[x2]) - xScale(xMin)}
-					/>
-					<rect
-						class="fill-plot-accent"
-						rx="0.5rem"
-						x={xScale(xMin)}
-						y={yScale(i) - yAdj}
-						height={width > 380 ? barWidth * 0.4 : barWidth * 1.5}
-						width={xScale(point[x1]) - xScale(xMin)}
-					/>
+					{#if point[y2] > 0 && point[y1] > 0}
+						<rect
+							class="fill-plot-accent"
+							rx="0.5rem"
+							x={xScale(i) + barWidth / 2}
+							y={yScale(point[y2])}
+							width={barWidth * 0.35}
+							height={yScale(0) - yScale(point[y2])}
+						/>
+						<rect
+							class="fill-primary"
+							rx="0.5rem"
+							x={xScale(i) + 6.5}
+							y={yScale(point[y1])}
+							width={barWidth * 0.35}
+							height={yScale(0) - yScale(point[y1])}
+						/>
+					{:else if point[y2] > 0 && point[y1] == 0}
+						<rect
+							class="fill-plot-accent"
+							rx="0.5rem"
+							x={xScale(i) + 2}
+							y={yScale(point[y2])}
+							width={barWidth * 0.9}
+							height={yScale(0) - yScale(point[y2])}
+						/>
+					{:else}
+						<rect
+							class="fill-primary"
+							rx="0.5rem"
+							x={xScale(i) + 2}
+							y={yScale(point[y1])}
+							width={barWidth * 0.9}
+							height={yScale(0) - yScale(point[y1])}
+						/>
+					{/if}
 				</g>
 			{/each}
 		</g>
-		<g class="axis y-axis">
+		<g class="axis x-axis">
 			{#each data as point, i}
 				<g
 					class:hovered={hoveredIndex === i}
 					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
 				>
-					<g class="tick" transform="translate(0, {yScale(i)})">
-						<text x={xScale(xMin) - 20}>{point.genres}</text>
+					<g class="tick" transform="translate({xScale(i)}, {height})">
+						<text x={barWidth / 2}>
+							{point[x]}
+						</text>
 					</g>
 				</g>
 			{/each}
 		</g>
+
 		{#if tooltipVisible}
 			<foreignObject
 				x={tooltipPosition.current.x}
@@ -179,7 +179,7 @@
 				<div class="tooltip">
 					<span class="text-primary">{username}: {toolUser}</span><br /><span
 						class="text-plot-accent">AniList: {toolAvg}</span
-					><br /><span class="text-destructive">Difference: {toolDiff}</span>
+					>
 				</div>
 			</foreignObject>
 		{/if}
@@ -188,7 +188,7 @@
 
 <style lang="postcss">
 	.x-axis .tick text {
-		@apply text-current;
+		@apply text-center text-current;
 		text-anchor: middle;
 	}
 
@@ -204,20 +204,20 @@
 		opacity: 1;
 	}
 
-	.y-axis text {
+	.x-axis text {
 		transition: opacity 0.2s ease-in-out;
 	}
 
-	.y-axis g.dimmed text {
+	.x-axis g.dimmed text {
 		opacity: 0.3;
 	}
 
-	.y-axis g.hovered text {
+	.x-axis g.hovered text {
 		opacity: 1;
 	}
 
 	.tick {
-		@apply text-current text-sm shadow-lg;
+		@apply text-sm text-current;
 	}
 
 	.tick text {
@@ -225,12 +225,8 @@
 		text-anchor: start;
 	}
 
-	.y-axis .tick text {
-		text-anchor: end;
-	}
-
 	.tick line {
-		@apply stroke-secondary stroke-1 opacity-100;
+		@apply stroke-secondary opacity-100;
 	}
 
 	.tick.tick-0 line {

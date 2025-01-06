@@ -3,6 +3,7 @@ from typing import Literal
 from api.insights import general_insights, genre_insights
 from api.processing import (
     check_nulls,
+    create_abs_avg_plot_data,
     create_genre_data,
     create_plot_data,
     create_table,
@@ -17,6 +18,7 @@ from api.upload import blob_upload
 def fetch_data(username: str, format: Literal["anime", "manga"]):
     # Local testing
     # username = "keejan"
+    # format = "anime"
 
     # NOTE: Processing
     anilist_id = get_id(username=username)
@@ -61,6 +63,7 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
     plot_json = create_plot_data(df=merged_dfs, fill_df=new_rows)
     table_dict = create_table(df=merged_dfs)
     genre_dict = create_genre_data(genre_df=genre_info)
+    abs_data, avg_data = create_abs_avg_plot_data(format=format)
 
     # NOTE: Upload
     dfs = [format_info, user_info, user_score]
@@ -88,6 +91,8 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
         "genreDiffAvg": genre_fav_avg_score,
         "tableData": table_dict,
         "genreData": genre_dict,
+        "absData": abs_data,
+        "avgData": avg_data,
     }
 
     return dfs, anilist_id, insights

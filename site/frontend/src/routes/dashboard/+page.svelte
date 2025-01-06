@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from "./$types";
   import { onMount } from "svelte";
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
 
   import * as Card from "$lib/components/ui/card";
   import * as Table from "$lib/components/ui/table";
@@ -9,24 +9,21 @@
   import { Button } from "$lib/components/ui/button";
   import { Toaster } from "$lib/components/ui/sonner";
   import { toast } from "svelte-sonner";
-  import { Separator } from "$lib/components/ui/separator";
 
   import DashboardContainer from "$lib/components/DashboardContainer.svelte";
   import ImageCard from "$lib/components/ImageCard.svelte";
-  import H2 from "$lib/components/H2.svelte";
   import SectionHeader from "$lib/components/SectionHeader.svelte";
-  import AvgCard from "$lib/components/AvgCard.svelte";
-  import AbsCard from "$lib/components/AbsCard.svelte";
   import AnimatedScroll from "$lib/components/AnimatedScroll.svelte";
 
   import Bar from "$lib/components/Bar.svelte";
+  import DoubleBar from "$lib/components/DoubleBar.svelte";
   import HorizontalBar from "$lib/components/HorizontalBar.svelte";
 
   import ScrollArrow from "$lib/components/ScrollArrow.svelte";
 
   export let data: PageData;
 
-  const username = $page.url.searchParams.get("username");
+  const username = page.url.searchParams.get("username");
 
   function copyURL() {
     const currentURL = window.location.href;
@@ -82,71 +79,6 @@
       <SectionHeader header="your overall taste" />
     </DashboardContainer>
   </AnimatedScroll>
-  <AnimatedScroll>
-    <DashboardContainer>
-      {#if Math.floor(valueAbs) < 5}
-        <AbsCard
-          {valueAbs}
-          colour="primary"
-          image="https://media1.tenor.com/m/YjiuFd-KUVQAAAAC/one-piece-one-piece-movie-9.gif"
-          alt="chopper lying in snow"
-          descriptor="chillin"
-          emphasis="only"
-        />
-      {:else if Math.floor(valueAbs) <= 10}
-        <AbsCard
-          {valueAbs}
-          colour="red-400"
-          image="https://cdn.midjourney.com/b5d8c3da-776d-4a6e-a40b-381eac63862c/0_1.png"
-          alt="roy mustang snapping fingers"
-          descriptor="heating up...!"
-          emphasis="a solid"
-        />
-      {:else if Math.floor(valueAbs) < 20}
-        <AbsCard
-          {valueAbs}
-          colour="destructive"
-          image="https://media1.tenor.com/m/862gCSNfYggAAAAd/kyojuro-rengoku-9th-form-rengoku.gif"
-          alt="rengoku conjuring fire"
-          descriptor="SCALDING"
-          emphasis="a WHOPPING"
-        />
-      {:else}
-        <AbsCard
-          {valueAbs}
-          colour="destructive"
-          image="https://media1.tenor.com/m/TYpc9J_jeRUAAAAd/sukuna-fire-arrow.gif"
-          alt="sukuna conjuring fire arrow"
-          descriptor="fire arrow"
-          emphasis="a MASSIVE"
-        />
-      {/if}
-    </DashboardContainer>
-  </AnimatedScroll>
-
-  <AnimatedScroll>
-    <DashboardContainer>
-      {#if valueAvg > 0}
-        <AvgCard
-          {valueAvg}
-          accentColour="text-plot-accent"
-          valueDirection="higher"
-          image="https://media.tenor.com/q27KhS9kKmwAAAAi/dazai-liar-dancer.gif"
-          alt="dazai dancing"
-          descriptor="enjoyer"
-        />
-      {:else}
-        <AvgCard
-          {valueAvg}
-          accentColour="text-destructive"
-          valueDirection="lower"
-          image="https://media1.tenor.com/m/9C-wnbKI-IQAAAAd/death-note.gif"
-          alt="yamagi light frantically writing"
-          descriptor="destroyer"
-        />
-      {/if}
-    </DashboardContainer>
-  </AnimatedScroll>
 
   <AnimatedScroll>
     <DashboardContainer>
@@ -163,7 +95,72 @@
             </Card.Description>
           </Card.Header>
           <Card.Content class="inline-flex">
-            <Bar {data} />
+            <DoubleBar
+              data={data.insights.userData}
+              y1="user_count"
+              y2="average_count"
+              x="score"
+            />
+          </Card.Content>
+        </Card.Root>
+      </section>
+    </DashboardContainer>
+  </AnimatedScroll>
+
+  <AnimatedScroll>
+    <DashboardContainer>
+      <section class="m-auto w-full">
+        <Card.Root class="overflow-x-auto">
+          <Card.Header>
+            <Card.Title class="text-4xl text-primary">
+              Overall Score Difference
+            </Card.Title>
+            <Card.Description>
+              How controversial your scores are compared to the average user.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content class="inline-flex">
+            <Bar
+              data={data.insights.absData}
+              x="abs_score_diff"
+              y="count"
+              scoreVariable={data.insights.absScoreDiff}
+              colorX1="fill-primary"
+              colorX2="fill-plot-accent"
+              xLabel="Difference"
+              diverging={false}
+            />
+          </Card.Content>
+        </Card.Root>
+      </section>
+    </DashboardContainer>
+  </AnimatedScroll>
+
+  <AnimatedScroll>
+    <DashboardContainer>
+      <section class="m-auto w-full">
+        <Card.Root class="overflow-x-auto">
+          <Card.Header>
+            <Card.Title class="text-4xl">
+              <span class="text-plot-accent">Positivity</span>/<span
+                class="text-destructive">Negativity</span
+              >
+            </Card.Title>
+            <Card.Description>
+              How positive your scores are compared to the average user.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content class="inline-flex">
+            <Bar
+              data={data.insights.avgData}
+              x="avg_score_diff"
+              y="count"
+              scoreVariable={data.insights.avgScoreDiff}
+              colorX1="fill-plot-accent"
+              colorX2="fill-destructive"
+              xLabel="Positive"
+              diverging={true}
+            />
           </Card.Content>
         </Card.Root>
       </section>
@@ -210,24 +207,21 @@
       <div class="m-auto w-full">
         <Card.Root class="overflow-x-auto">
           <Card.Header>
-            <Card.Title
-              class={data.insights.genreMax > 0
-                ? "text-plot-accent"
-                : "text-destructive"}>Score Difference by Genre</Card.Title
-            >
+            <Card.Title>
+              <span class="text-primary">{username}</span> vs.
+              <span class="text-plot-accent">the AniList Average</span> (by genre)
+            </Card.Title>
             <Card.Description>
               Which genre do you love (or hate) the most?
             </Card.Description>
           </Card.Header>
           <Card.Content class="space-y-6">
-            <h1
-              class="text-2xl font-semibold leading-none tracking-tight"
-            >
-              <span class="text-primary">{username}</span> vs.
-              <span class="text-plot-accent">the AniList Average</span> (by genre)
-            </h1>
             <div class="inline-flex">
-              <HorizontalBar {data} />
+              <HorizontalBar
+                data={data.insights.genreData}
+                x1="weighted_average"
+                x2="weighted_user"
+              />
             </div>
           </Card.Content>
         </Card.Root>
@@ -250,71 +244,67 @@
           : "text-destructive"}
         {username}
       ></ImageCard>
+
+      <div
+        class="grid grid-cols-2 grid-rows-2 justify-center items-center p-6 gap-4 max-w-screen-lg"
+      >
+        <Dialog.Root>
+          <Dialog.Trigger>
+            <Button>See All My Scores</Button>
+          </Dialog.Trigger>
+          <Dialog.Content
+            class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-2xl max-h-[80vh] rounded-lg shadow-xl flex flex-col"
+          >
+            <Dialog.Header>
+              <Dialog.Title>Scores</Dialog.Title>
+              <Dialog.Description>
+                All your scores, ordered from most to least controversial.
+              </Dialog.Description>
+            </Dialog.Header>
+            <div class="flex-grow overflow-auto p-6 pt-4">
+              <Table.Root class="w-full">
+                <Table.Header>
+                  <Table.Row>
+                    <Table.Head>Title</Table.Head>
+                    <Table.Head>{username}</Table.Head>
+                    <Table.Head>AniList</Table.Head>
+                    <Table.Head>Difference</Table.Head>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {#each data.insights.tableData as row}
+                    <Table.Row>
+                      <Table.Cell class="text-current"
+                        >{row.title_romaji}</Table.Cell
+                      >
+                      <Table.Cell class="text-primary"
+                        >{row.user_score}</Table.Cell
+                      >
+                      <Table.Cell class="text-plot-accent"
+                        >{row.average_score}</Table.Cell
+                      >
+                      <Table.Cell class="text-destructive"
+                        >{row.score_diff}</Table.Cell
+                      >
+                    </Table.Row>
+                  {/each}
+                </Table.Body>
+              </Table.Root>
+            </div>
+            <Dialog.Footer>
+              <Dialog.Close>
+                <Button>Close</Button>
+              </Dialog.Close>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Root>
+        <Button on:click={copyURL}>Share</Button>
+        <Button class="col-span-2" variant="outline" href="/"
+          >Return Home</Button
+        >
+      </div>
     </DashboardContainer>
   </AnimatedScroll>
 </section>
 
 <Toaster richColors position="bottom-right" />
-
-<div class="flex justify-center mt-32">
-  <AnimatedScroll>
-    <div
-      class="grid grid-cols-2 grid-rows-2 justify-center items-center m-auto w-full gap-4 p-8 max-w-screen-lg"
-    >
-      <Dialog.Root>
-        <Dialog.Trigger>
-          <Button>See All My Scores</Button>
-        </Dialog.Trigger>
-        <Dialog.Content
-          class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-2xl max-h-[80vh] rounded-lg shadow-xl flex flex-col"
-        >
-          <Dialog.Header>
-            <Dialog.Title>Scores</Dialog.Title>
-            <Dialog.Description>
-              All your scores, ordered from most to least controversial.
-            </Dialog.Description>
-          </Dialog.Header>
-          <div class="flex-grow overflow-auto p-6 pt-4">
-            <Table.Root class="w-full">
-              <Table.Header>
-                <Table.Row>
-                  <Table.Head>Title</Table.Head>
-                  <Table.Head>{username}</Table.Head>
-                  <Table.Head>AniList</Table.Head>
-                  <Table.Head>Difference</Table.Head>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {#each data.insights.tableData as row}
-                  <Table.Row>
-                    <Table.Cell class="text-current"
-                      >{row.title_romaji}</Table.Cell
-                    >
-                    <Table.Cell class="text-primary"
-                      >{row.user_score}</Table.Cell
-                    >
-                    <Table.Cell class="text-plot-accent"
-                      >{row.average_score}</Table.Cell
-                    >
-                    <Table.Cell class="text-destructive"
-                      >{row.score_diff}</Table.Cell
-                    >
-                  </Table.Row>
-                {/each}
-              </Table.Body>
-            </Table.Root>
-          </div>
-          <Dialog.Footer>
-            <Dialog.Close>
-              <Button>Close</Button>
-            </Dialog.Close>
-          </Dialog.Footer>
-        </Dialog.Content>
-      </Dialog.Root>
-
-      <Button on:click={copyURL}>Share</Button>
-
-      <Button class="col-span-2" variant="outline" href="/">Return Home</Button>
-    </div>
-  </AnimatedScroll>
-</div>
