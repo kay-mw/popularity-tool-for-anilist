@@ -5,21 +5,14 @@ let
   myPython = pkgs.python311;
   pythonPackages = pkgs.python311Packages;
 
-  pythonWithPkgs = myPython.withPackages (pythonPkgs:
-    with pythonPkgs; [
-      ipython
-      pip
-      debugpy
-      setuptools
-      wheel
-      grpcio
-    ]);
+  pythonWithPkgs = myPython.withPackages
+    (pythonPkgs: with pythonPkgs; [ ipython debugpy setuptools wheel grpcio ]);
 
   extraBuildInputs = with pythonPackages;
     [
       # this list contains packages that you want to be available at runtime and might not be able to be installed properly via pip
       pyodbc
-    ] ++ (with pkgs; [ act nodejs ]);
+    ] ++ (with pkgs; [ act nodejs uv ]);
 in import ./python-shell.nix {
   extraBuildInputs = extraBuildInputs;
   # extraLibPackages = extraLibPackages;

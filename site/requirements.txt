@@ -1,9 +1,0 @@
-aiohttp==3.11.8
-pandas==2.2.2
-Requests==2.32.3
-azure-storage-blob==12.21.0
-fastapi[standard]==0.111.1
-fastapi-cache2==0.2.2
-great_expectations==0.18.19
-pytest==8.3.1
-pyarrow==18.1.0

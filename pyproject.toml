@@ -4,16 +4,25 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "popularity-tool-for-anilist"
-description = "refactor"
-requires-python = ">=3.9"
-
-[project.optional-dependencies]
-dev = [
-  "black==24.4.0",
-  "isort==5.13.2"
+description = "A basic website that determines your most popular and least popular AniList scores compared to the site-wide average."
+version = "1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "aiohttp==3.11.8",
+  "pandas==2.2.2",
+  "Requests==2.32.3",
+  "azure-storage-blob==12.21.0",
+  "fastapi[standard]==0.111.1",
+  "fastapi-cache2==0.2.2",
+  "great_expectations==0.18.19",
+  "pytest==8.3.1",
+  "pyarrow==18.1.0"
 ]
 
 [tool.pytest.ini_options]
 testpaths = [
   "./**/tests"
 ]
+
+[tool.setuptools]
+py-modules = []
