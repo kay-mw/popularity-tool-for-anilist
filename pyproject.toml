@@ -16,7 +16,8 @@ dependencies = [
   "fastapi-cache2==0.2.2",
   "great_expectations==0.18.19",
   "pytest==8.3.1",
-  "pyarrow==18.1.0"
+  "pyarrow==18.1.0",
+  "sqlalchemy==2.0.36"
 ]
 
 [tool.pytest.ini_options]
