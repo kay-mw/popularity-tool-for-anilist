@@ -20,9 +20,9 @@ app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://www.anipop.uk",  # Prod
-        "https://anipop.uk",  # Prod
-        # "http://localhost:5173",  # Dev
+        # "https://www.anipop.uk",  # Prod
+        # "https://anipop.uk",  # Prod
+        "http://localhost:5173",  # Dev
     ],
     allow_credentials=True,
     allow_methods=["*"],
