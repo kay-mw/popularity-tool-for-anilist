@@ -5,12 +5,16 @@ import pandas as pd
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 from sqlalchemy import Engine, create_engine, text
+from sqlalchemy.engine import URL
+from sqlalchemy.exc import DataError
 
 
 def sql_init() -> Engine:
     load_dotenv()
     connection_string = os.environ["AZURE_ODBC"]
-    connection_url = f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
+    connection_url = URL.create(
+        "mssql+pyodbc", query={"odbc_connect": quote_plus(connection_string)}
+    )
     engine = create_engine(connection_url)
     return engine
 
@@ -35,16 +39,19 @@ def upload(
     with engine.connect() as connection:
         df.to_sql("temp_table", con=connection, if_exists="replace")
 
-        query = (
-            f"MERGE {table_name} AS target USING temp_table AS source "
-            f"ON source.{primary_key} = target.{primary_key} "
-            f"WHEN NOT MATCHED BY target THEN INSERT ({primary_key}, {column_1}, {column_2}) "
-            f"VALUES (source.{primary_key}, source.{column_1}, source.{column_2}) "
-            f"WHEN MATCHED THEN UPDATE "
-            f"SET target.{column_1} = source.{column_1}, "
-            f"target.{column_2} = source.{column_2};"
+        query = f"""
+            MERGE {table_name} AS target USING temp_table AS source
+            ON source.{primary_key} = target.{primary_key}
+            WHEN NOT MATCHED BY target
+            THEN INSERT ({primary_key}, {column_1}, {column_2})
+            VALUES (source.{primary_key}, source.{column_1}, source.{column_2})
+            WHEN MATCHED THEN UPDATE 
+            SET target.{column_1} = source.{column_1}, target.{column_2} = source.{column_2};
+        """
+
+        connection.execute(
+            text(query),
         )
-        connection.execute(text(query))
         connection.commit()
 
 
@@ -55,9 +62,26 @@ def upload_many_to_many(
     foreign_key_2: str,
     column_1: str,
     anilist_id: int,
+    insert_date: str,
     engine,
 ) -> None:
-    check_query = f"SELECT {foreign_key_1}, {foreign_key_2}, {column_1} FROM {table_name} WHERE {foreign_key_1} = {anilist_id};"
+    check_query = f"""
+        SELECT {foreign_key_1}, {foreign_key_2}, {column_1}, start_date, end_date 
+        FROM (
+            SELECT 
+                {foreign_key_1}, {foreign_key_2}, {column_1}, start_date, end_date,
+                ROW_NUMBER() OVER(ORDER BY start_date DESC) AS rn
+            FROM {table_name} 
+            WHERE {foreign_key_1} = {anilist_id}
+        ) AS t
+        WHERE t.rn = 1;
+    """
+
+    # table_name="user_anime_score",
+    # foreign_key_1="user_id",
+    # foreign_key_2="anime_id",
+    # column_1="user_score",
+    # anilist_id=anilist_id,
 
     with engine.connect() as connection:
         check_exists = pd.read_sql(check_query, con=connection)
@@ -71,10 +95,39 @@ def upload_many_to_many(
                 index=False,
             )
     else:
-        query = f"DELETE FROM {table_name} WHERE {foreign_key_1} = {anilist_id}"
+        old_start_date = check_exists.loc[0, "start_date"]
+
+        if old_start_date != None:
+            query = f"""
+                UPDATE user_anime_score 
+                SET end_date = '{insert_date}'
+                WHERE user_id = {anilist_id}
+                AND start_date = '{old_start_date}';
+            """
+        else:
+            query = f"""
+                UPDATE user_anime_score
+                SET end_date = '{insert_date}'
+                WHERE user_id = {anilist_id}
+                AND start_date IS NULL;
+            """
+
         with engine.connect() as connection:
-            connection.execute(text(query))
-            connection.commit()
+            try:
+                connection.execute(text(query))
+                connection.commit()
+            except DataError:
+                old_start_date = check_exists.loc[0, "start_date"].strftime(
+                    "%Y-%m-%d %H:%M:%S.%f"
+                )[:-3]
+                query = f"""
+                    UPDATE user_anime_score 
+                    SET end_date = '{insert_date}'
+                    WHERE user_id = {anilist_id}
+                    AND start_date = '{old_start_date}';
+                """
+                connection.execute(text(query))
+                connection.commit()
 
         with engine.connect() as connection:
             df.to_sql(

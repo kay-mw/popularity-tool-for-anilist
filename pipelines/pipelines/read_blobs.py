@@ -1,6 +1,8 @@
+import datetime as dt
 from io import StringIO
 from typing import List
 
+import numpy as np
 import pandas as pd
 from azure.storage.blob import BlobServiceClient
 
@@ -18,7 +20,10 @@ def get_blob(
 
 
 def read_anime_and_manga(
-    blob_service_client: BlobServiceClient, container_id: str, blobs: List[str]
+    blob_service_client: BlobServiceClient,
+    container_id: str,
+    blobs: List[str],
+    insert_date: str,
 ) -> tuple[
     List[pd.DataFrame],
     pd.DataFrame,
@@ -65,6 +70,9 @@ def read_anime_and_manga(
         },
     )
     user_anime_score.drop(labels="Unnamed: 0", axis=1, inplace=True)
+    user_anime_score["start_date"] = insert_date
+    user_anime_score["end_date"] = np.nan
+    print(user_anime_score)
 
     user_info = get_blob(blob_service_client, container_id, blobs[3])
     user_info = pd.read_csv(
@@ -92,13 +100,19 @@ def read_anime_and_manga(
         },
     )
     user_manga_score.drop(labels="Unnamed: 0", axis=1, inplace=True)
+    user_manga_score["start_date"] = insert_date
+    user_manga_score["end_date"] = np.nan
+    print(user_manga_score)
 
     dfs = [anime_info, manga_info, user_anime_score, user_info, user_manga_score]
     return dfs, anime_info, manga_info, user_anime_score, user_info, user_manga_score
 
 
 def read_anime(
-    blob_service_client: BlobServiceClient, container_id: str, blobs: List[str]
+    blob_service_client: BlobServiceClient,
+    container_id: str,
+    blobs: List[str],
+    insert_date: str,
 ) -> tuple[List[pd.DataFrame], pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     anime_info = get_blob(blob_service_client, container_id, blobs[0])
     anime_info = pd.read_csv(
@@ -125,6 +139,8 @@ def read_anime(
         },
     )
     user_anime_score.drop(labels="Unnamed: 0", axis=1, inplace=True)
+    user_anime_score["start_date"] = insert_date
+    user_anime_score["end_date"] = np.nan
 
     user_info = get_blob(blob_service_client, container_id, blobs[2])
     user_info = pd.read_csv(
@@ -145,7 +161,10 @@ def read_anime(
 
 
 def read_manga(
-    blob_service_client: BlobServiceClient, container_id: str, blobs: List[str]
+    blob_service_client: BlobServiceClient,
+    container_id: str,
+    blobs: List[str],
+    insert_date: str,
 ) -> tuple[List[pd.DataFrame], pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     manga_info = get_blob(blob_service_client, container_id, blobs[0])
     manga_info = pd.read_csv(
@@ -186,6 +205,8 @@ def read_manga(
         },
     )
     user_manga_score.drop(labels="Unnamed: 0", axis=1, inplace=True)
+    user_manga_score["start_date"] = insert_date
+    user_manga_score["end_date"] = np.nan
 
     dfs = [manga_info, user_info, user_manga_score]
     return dfs, manga_info, user_info, user_manga_score
