@@ -6,7 +6,7 @@ let
   pythonPackages = pkgs.python311Packages;
 
   pythonWithPkgs = myPython.withPackages
-    (pythonPkgs: with pythonPkgs; [ ipython debugpy setuptools wheel grpcio ]);
+    (pythonPkgs: with pythonPkgs; [ ipython debugpy setuptools wheel ]);
 
   extraBuildInputs = with pythonPackages;
     [
