@@ -264,12 +264,19 @@ def create_abs_avg_plot_data(format: str) -> tuple[list[dict], list[dict]]:
         engine = create_engine(connection_url)
 
         with engine.connect() as connection:
-            query = f"""SELECT *
-            FROM user_{format}_score;"""
+            query = f"""
+                SELECT {format}_id, user_score
+                FROM user_{format}_score
+                WHERE end_date IS NULL;
+            """
             existing_user_score = pd.read_sql(sql=query, con=connection)
-            query = f"""SELECT *
-            FROM {format}_info;"""
+
+            query = f"""
+                SELECT {format}_id, average_score
+                FROM {format}_info;
+            """
             existing_format_info = pd.read_sql(sql=query, con=connection)
+
             existing_merged_dfs = existing_user_score.merge(
                 existing_format_info, on=f"{format}_id", how="left"
             )
