@@ -1,5 +1,6 @@
-# generated file
+# generated files
 existing_user_data.parquet
+*.csv
 
 # created by virtualenv automatically
 venv/Lib

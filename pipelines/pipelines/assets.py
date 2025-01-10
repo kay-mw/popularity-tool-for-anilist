@@ -28,6 +28,8 @@ def upload_data() -> None:
     unique_ids = set(ids)
     blobs_by_user = dict.fromkeys(unique_ids)
 
+    insert_date = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+
     for key in unique_ids:
         blobs = [name for name in blob_names if str(key) in name]
         blobs = sorted(blobs)
@@ -57,6 +59,7 @@ def upload_data() -> None:
                     blob_service_client=blob_service_client,
                     container_id=container_id,
                     blobs=blobs,
+                    insert_date=insert_date,
                 )
                 test_anime_and_manga(
                     dfs=dfs,
@@ -99,6 +102,7 @@ def upload_data() -> None:
                     foreign_key_2="anime_id",
                     column_1="user_score",
                     anilist_id=anilist_id,
+                    insert_date=insert_date,
                     engine=engine,
                 )
                 upload_many_to_many(
@@ -108,6 +112,7 @@ def upload_data() -> None:
                     foreign_key_2="manga_id",
                     column_1="user_score",
                     anilist_id=anilist_id,
+                    insert_date=insert_date,
                     engine=engine,
                 )
             elif len(blobs) == 3 and manga == False:
@@ -115,6 +120,7 @@ def upload_data() -> None:
                     blob_service_client=blob_service_client,
                     container_id=container_id,
                     blobs=blobs,
+                    insert_date=insert_date,
                 )
                 test_anime(
                     dfs=dfs,
@@ -147,6 +153,7 @@ def upload_data() -> None:
                     foreign_key_2="anime_id",
                     column_1="user_score",
                     anilist_id=anilist_id,
+                    insert_date=insert_date,
                     engine=engine,
                 )
             elif len(blobs) == 3 and manga == True:
@@ -154,6 +161,7 @@ def upload_data() -> None:
                     blob_service_client=blob_service_client,
                     container_id=container_id,
                     blobs=blobs,
+                    insert_date=insert_date,
                 )
                 test_manga(
                     dfs=dfs,
@@ -186,5 +194,6 @@ def upload_data() -> None:
                     foreign_key_2="manga_id",
                     column_1="user_score",
                     anilist_id=anilist_id,
+                    insert_date=insert_date,
                     engine=engine,
                 )

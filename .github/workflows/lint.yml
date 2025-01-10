@@ -28,6 +28,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Lint
-      uses: astral-sh/ruff-action@v1
+      uses: astral-sh/ruff-action@v3
       with:
+        version: "0.8.6"
         args: "format --check"
