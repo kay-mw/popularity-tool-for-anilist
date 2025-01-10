@@ -30,4 +30,5 @@ jobs:
     - name: Lint
       uses: astral-sh/ruff-action@v3
       with:
+        version: "0.8.6"
         args: "format --check"
