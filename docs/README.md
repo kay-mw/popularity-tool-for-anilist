@@ -1,7 +1,7 @@
-<p float="left">
+<div float="left">
   <img src="./media/plotMain.png" width="400" style="vertical-align: middle;" />
   <img src="./media/plotPos.png" width="400" style="vertical-align: middle;" />
-</p>
+</div>
 
 # Popularity Tool for AniList
 
