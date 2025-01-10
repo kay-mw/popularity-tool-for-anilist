@@ -31,4 +31,4 @@ jobs:
       uses: astral-sh/ruff-action@v1
       with:
         args: "format --check"
-        version: 0.8.6
+        version: "0.8.6"
