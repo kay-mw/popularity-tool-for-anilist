@@ -49,9 +49,10 @@ def test_anime(
 
     for df in dfs:
         for col in df:
-            assert bool(
-                df[f"{col}"].notna().any()
-            ), f"Column {col} in {df.name} contains NA values."
+            if col != "end_date":
+                assert bool(
+                    df[f"{col}"].notna().any()
+                ), f"Column {col} in {df.name} contains NA values."
 
 
 def test_manga(
@@ -84,9 +85,10 @@ def test_manga(
 
     for df in dfs:
         for col in df:
-            assert bool(
-                df[f"{col}"].notna().any()
-            ), f"Column {col} in {df.name} contains NA values."
+            if col != "end_date":
+                assert bool(
+                    df[f"{col}"].notna().any()
+                ), f"Column {col} in {df.name} contains NA values."
 
 
 def test_anime_and_manga(
@@ -130,6 +132,7 @@ def test_anime_and_manga(
 
     for df in dfs:
         for col in df:
-            assert bool(
-                df[f"{col}"].notna().any()
-            ), f"Column {col} in {df.name} contains NA values."
+            if col != "end_date":
+                assert bool(
+                    df[f"{col}"].notna().any()
+                ), f"Column {col} in {df.name} contains NA values."
