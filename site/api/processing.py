@@ -265,7 +265,7 @@ def create_abs_avg_plot_data(format: str) -> tuple[list[dict], list[dict]]:
 
         with engine.connect() as connection:
             query = f"""
-                SELECT {format}_id, user_score
+                SELECT {format}_id, user_score, user_id
                 FROM user_{format}_score
                 WHERE end_date IS NULL;
             """
