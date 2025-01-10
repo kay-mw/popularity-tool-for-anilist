@@ -1,3 +1,4 @@
+import sys
 from contextlib import asynccontextmanager
 
 from api.main import fetch_data
@@ -7,6 +8,8 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.inmemory import InMemoryBackend
 from fastapi_cache.decorator import cache
 from requests.exceptions import HTTPError
+
+context = str(sys.argv)
 
 
 @asynccontextmanager
@@ -20,9 +23,12 @@ app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        # "https://www.anipop.uk",  # Prod
-        # "https://anipop.uk",  # Prod
-        "http://localhost:5173",  # Dev
+        "http://localhost:5173",
+    ]
+    if "dev" in context
+    else [
+        "https://www.anipop.uk",
+        "https://anipop.uk",
     ],
     allow_credentials=True,
     allow_methods=["*"],
