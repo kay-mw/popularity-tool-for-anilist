@@ -35,19 +35,34 @@ def upload(
     column_1: str,
     column_2: str,
     engine,
+    column_3="genres",
 ) -> None:
     with engine.connect() as connection:
         df.to_sql("temp_table", con=connection, if_exists="replace")
 
-        query = f"""
-            MERGE {table_name} AS target USING temp_table AS source
-            ON source.{primary_key} = target.{primary_key}
-            WHEN NOT MATCHED BY target
-            THEN INSERT ({primary_key}, {column_1}, {column_2})
-            VALUES (source.{primary_key}, source.{column_1}, source.{column_2})
-            WHEN MATCHED THEN UPDATE 
-            SET target.{column_1} = source.{column_1}, target.{column_2} = source.{column_2};
-        """
+        if table_name in ["anime_info", "manga_info"]:
+            query = f"""
+                MERGE {table_name} AS target USING temp_table AS source
+                ON source.{primary_key} = target.{primary_key}
+                WHEN NOT MATCHED BY target
+                THEN INSERT ({primary_key}, {column_1}, {column_2}, {column_3})
+                VALUES (source.{primary_key}, source.{column_1}, source.{column_2}, source.{column_3})
+                WHEN MATCHED THEN UPDATE 
+                SET target.{column_1} = source.{column_1}, 
+                target.{column_2} = source.{column_2},
+                target.{column_3} = source.{column_3};
+            """
+        else:
+            query = f"""
+                MERGE {table_name} AS target USING temp_table AS source
+                ON source.{primary_key} = target.{primary_key}
+                WHEN NOT MATCHED BY target
+                THEN INSERT ({primary_key}, {column_1}, {column_2})
+                VALUES (source.{primary_key}, source.{column_1}, source.{column_2})
+                WHEN MATCHED THEN UPDATE 
+                SET target.{column_1} = source.{column_1}, 
+                target.{column_2} = source.{column_2};
+            """
 
         connection.execute(
             text(query),
