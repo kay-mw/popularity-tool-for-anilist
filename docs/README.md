@@ -29,7 +29,6 @@ Try it yourself by clicking the link above or going to https://www.anipop.uk!
 
 ### Why Build This?
 
-I've always been curious about how my feelings towards anime stack up against
-the wider community, especially regarding how controversial my scores were
-overall. I couldn't find a tool that could satisfy this curiosity, so I decided
-to make my own!
+I've always been curious how controversial my anime taste is. Am I harsher in my
+scoring than most people, or more generous? Since I couldn't find a tool to
+answer these questions, I decided to build one myself!
