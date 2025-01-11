@@ -9,6 +9,7 @@ export const load: PageLoad = async ({ fetch, url }) => {
 
   const response = await fetch(
     `${API_URL}/home/?username=${username}&manga=${manga}`,
+  );
 
   if (!response.ok) {
     const errorData = await response.json();
