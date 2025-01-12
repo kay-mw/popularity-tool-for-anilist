@@ -10,6 +10,8 @@
   import { Toaster } from "$lib/components/ui/sonner";
   import { toast } from "svelte-sonner";
 
+  import H2 from "$lib/components/H2.svelte";
+
   import DashboardContainer from "$lib/components/DashboardContainer.svelte";
   import ImageCard from "$lib/components/ImageCard.svelte";
   import SectionHeader from "$lib/components/SectionHeader.svelte";
@@ -69,19 +71,30 @@
   });
 </script>
 
-<div class="hidden md:flex sticky z-10 md:top-[45.5%] h-0">
-  <ScrollArrow class="absolute z-10 md:right-0 pr-8" {g} {block} {up} />
-</div>
+<!--<div class="hidden md:flex sticky z-10 md:top-[45.5%] h-0">-->
+<!--  <ScrollArrow class="absolute z-10 md:right-0 pr-8" {g} {block} {up} />-->
+<!--</div>-->
 
-<section class="space-y-[50vw]">
+<!-- TODO: Add nice animation to this, like have it fall onto the screen when people load in or something-->
+<section>
   <AnimatedScroll>
     <DashboardContainer>
-      <SectionHeader header="your overall taste" />
+      <H2 class="text-primary text-center text-6xl">
+        welcome to popularity tool for anilist.
+      </H2>
+      <H2 class="text-primary text-center text-6xl border-none">
+        let's see how controversial your anime taste is...
+      </H2>
     </DashboardContainer>
   </AnimatedScroll>
+</section>
 
+<section class="bg-cyan-950">
   <AnimatedScroll>
-    <DashboardContainer>
+    <DashboardContainer class="space-y-6">
+      <H2 class="text-center text-white border-white text-6xl">
+        your overall taste
+      </H2>
       <section class="m-auto w-full">
         <Card.Root class="overflow-x-auto">
           <Card.Header>
@@ -106,9 +119,14 @@
       </section>
     </DashboardContainer>
   </AnimatedScroll>
+</section>
 
+<section class="bg-violet-950">
   <AnimatedScroll>
-    <DashboardContainer>
+    <DashboardContainer class="space-y-6">
+      <H2 class="text-center text-white border-white text-6xl">
+        compared to other users
+      </H2>
       <section class="m-auto w-full">
         <Card.Root class="overflow-x-auto">
           <Card.Header>
@@ -166,9 +184,14 @@
       </section>
     </DashboardContainer>
   </AnimatedScroll>
+</section>
 
+<section class="bg-indigo-950">
   <AnimatedScroll>
-    <DashboardContainer>
+    <DashboardContainer class="space-y-6">
+      <H2 class="text-center text-white border-white text-6xl">
+        specific takes
+      </H2>
       <section
         class="flex flex-col gap-3 md:grid md:grid-cols-2 md:grid-rows-1"
       >
@@ -195,116 +218,114 @@
       </section>
     </DashboardContainer>
   </AnimatedScroll>
-
-  <AnimatedScroll>
-    <DashboardContainer>
-      <SectionHeader header="your genre opinions" />
-    </DashboardContainer>
-  </AnimatedScroll>
-
-  <AnimatedScroll>
-    <DashboardContainer>
-      <div class="m-auto w-full">
-        <Card.Root class="overflow-x-auto">
-          <Card.Header>
-            <Card.Title>
-              <span class="text-primary">{username}</span> vs.
-              <span class="text-plot-accent">the AniList Average</span> (by genre)
-            </Card.Title>
-            <Card.Description>
-              Which genre do you love (or hate) the most?
-            </Card.Description>
-          </Card.Header>
-          <Card.Content class="space-y-6">
-            <div class="inline-flex">
-              <HorizontalBar
-                data={data.insights.genreData}
-                x1="weighted_average"
-                x2="weighted_user"
-              />
-            </div>
-          </Card.Content>
-        </Card.Root>
-      </div>
-    </DashboardContainer>
-  </AnimatedScroll>
-
-  <AnimatedScroll>
-    <DashboardContainer>
-      <ImageCard
-        title="Your Hottest {data.insights.genreMaxTitle} Take"
-        description="The {data.insights
-          .genreMaxTitle} show you scored most differently compared to the AniList average."
-        animeTitle={data.insights.genreDiffTitle}
-        image={data.insights.imageGenre}
-        userScore={data.insights.genreDiffUser}
-        avgScore={data.insights.genreDiffAvg}
-        textColour={data.insights.genreDiffUser > data.insights.genreDiffAvg
-          ? "text-primary"
-          : "text-destructive"}
-        {username}
-      ></ImageCard>
-
-      <div
-        class="grid grid-cols-2 grid-rows-2 justify-center items-center p-6 gap-4 max-w-screen-lg"
-      >
-        <Dialog.Root>
-          <Dialog.Trigger>
-            <Button>See All My Scores</Button>
-          </Dialog.Trigger>
-          <Dialog.Content
-            class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-2xl max-h-[80vh] rounded-lg shadow-xl flex flex-col"
-          >
-            <Dialog.Header>
-              <Dialog.Title>Scores</Dialog.Title>
-              <Dialog.Description>
-                All your scores, ordered from most to least controversial.
-              </Dialog.Description>
-            </Dialog.Header>
-            <div class="flex-grow overflow-auto p-6 pt-4">
-              <Table.Root class="w-full">
-                <Table.Header>
-                  <Table.Row>
-                    <Table.Head>Title</Table.Head>
-                    <Table.Head>{username}</Table.Head>
-                    <Table.Head>AniList</Table.Head>
-                    <Table.Head>Difference</Table.Head>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {#each data.insights.tableData as row}
-                    <Table.Row>
-                      <Table.Cell class="text-current"
-                        >{row.title_romaji}</Table.Cell
-                      >
-                      <Table.Cell class="text-primary"
-                        >{row.user_score}</Table.Cell
-                      >
-                      <Table.Cell class="text-plot-accent"
-                        >{row.average_score}</Table.Cell
-                      >
-                      <Table.Cell class="text-destructive"
-                        >{row.score_diff}</Table.Cell
-                      >
-                    </Table.Row>
-                  {/each}
-                </Table.Body>
-              </Table.Root>
-            </div>
-            <Dialog.Footer>
-              <Dialog.Close>
-                <Button>Close</Button>
-              </Dialog.Close>
-            </Dialog.Footer>
-          </Dialog.Content>
-        </Dialog.Root>
-        <Button on:click={copyURL}>Share</Button>
-        <Button class="col-span-2" variant="outline" href="/"
-          >Return Home</Button
-        >
-      </div>
-    </DashboardContainer>
-  </AnimatedScroll>
 </section>
+
+<AnimatedScroll>
+  <DashboardContainer>
+    <SectionHeader header="your genre opinions" />
+  </DashboardContainer>
+</AnimatedScroll>
+
+<AnimatedScroll>
+  <DashboardContainer>
+    <div class="m-auto w-full">
+      <Card.Root class="overflow-x-auto">
+        <Card.Header>
+          <Card.Title>
+            <span class="text-primary">{username}</span> vs.
+            <span class="text-plot-accent">the AniList Average</span> (by genre)
+          </Card.Title>
+          <Card.Description>
+            Which genre do you love (or hate) the most?
+          </Card.Description>
+        </Card.Header>
+        <Card.Content class="space-y-6">
+          <div class="inline-flex">
+            <HorizontalBar
+              data={data.insights.genreData}
+              x1="weighted_average"
+              x2="weighted_user"
+            />
+          </div>
+        </Card.Content>
+      </Card.Root>
+    </div>
+  </DashboardContainer>
+</AnimatedScroll>
+
+<AnimatedScroll>
+  <DashboardContainer>
+    <ImageCard
+      title="Your Hottest {data.insights.genreMaxTitle} Take"
+      description="The {data.insights
+        .genreMaxTitle} show you scored most differently compared to the AniList average."
+      animeTitle={data.insights.genreDiffTitle}
+      image={data.insights.imageGenre}
+      userScore={data.insights.genreDiffUser}
+      avgScore={data.insights.genreDiffAvg}
+      textColour={data.insights.genreDiffUser > data.insights.genreDiffAvg
+        ? "text-primary"
+        : "text-destructive"}
+      {username}
+    ></ImageCard>
+
+    <div
+      class="grid grid-cols-2 grid-rows-2 justify-center items-center p-6 gap-4 max-w-screen-lg"
+    >
+      <Dialog.Root>
+        <Dialog.Trigger>
+          <Button>See All My Scores</Button>
+        </Dialog.Trigger>
+        <Dialog.Content
+          class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-2xl max-h-[80vh] rounded-lg shadow-xl flex flex-col"
+        >
+          <Dialog.Header>
+            <Dialog.Title>Scores</Dialog.Title>
+            <Dialog.Description>
+              All your scores, ordered from most to least controversial.
+            </Dialog.Description>
+          </Dialog.Header>
+          <div class="flex-grow overflow-auto p-6 pt-4">
+            <Table.Root class="w-full">
+              <Table.Header>
+                <Table.Row>
+                  <Table.Head>Title</Table.Head>
+                  <Table.Head>{username}</Table.Head>
+                  <Table.Head>AniList</Table.Head>
+                  <Table.Head>Difference</Table.Head>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {#each data.insights.tableData as row}
+                  <Table.Row>
+                    <Table.Cell class="text-current"
+                      >{row.title_romaji}</Table.Cell
+                    >
+                    <Table.Cell class="text-primary"
+                      >{row.user_score}</Table.Cell
+                    >
+                    <Table.Cell class="text-plot-accent"
+                      >{row.average_score}</Table.Cell
+                    >
+                    <Table.Cell class="text-destructive"
+                      >{row.score_diff}</Table.Cell
+                    >
+                  </Table.Row>
+                {/each}
+              </Table.Body>
+            </Table.Root>
+          </div>
+          <Dialog.Footer>
+            <Dialog.Close>
+              <Button>Close</Button>
+            </Dialog.Close>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog.Root>
+      <Button on:click={copyURL}>Share</Button>
+      <Button class="col-span-2" variant="outline" href="/">Return Home</Button>
+    </div>
+  </DashboardContainer>
+</AnimatedScroll>
 
 <Toaster richColors position="bottom-right" />

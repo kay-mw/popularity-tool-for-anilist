@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
 	import { onMount } from "svelte";
 
 	export let threshold = 0.1;
 
-	let element;
-	let intersecting;
+	let element: HTMLDivElement;
+	let intersecting: boolean;
 
 	onMount(() => {
 		const observer = new IntersectionObserver(
