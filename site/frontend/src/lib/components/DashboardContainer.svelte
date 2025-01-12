@@ -1,5 +1,11 @@
+<script lang="ts">
+	let { maxWidth = true, class: className = "", children, ...rest } = $props();
+</script>
+
 <div
-	class="flex flex-col items-center justify-center m-auto w-full max-w-screen-lg min-h-[40vh] p-4 {$$restProps.class}"
+	class="flex flex-col items-center justify-center m-auto w-full {maxWidth
+		? 'max-w-screen-lg'
+		: ''} p-4 {className}"
 >
-	<slot></slot>
+	{@render children?.()}
 </div>

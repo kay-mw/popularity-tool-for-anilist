@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 
-	export let threshold = 0.1;
+	let { threshold = 0.2, children, duration = "2s" } = $props();
 
 	let element: HTMLDivElement;
-	let intersecting: boolean;
+	let intersecting = $state();
 
 	onMount(() => {
 		const observer = new IntersectionObserver(
@@ -18,8 +18,12 @@
 	});
 </script>
 
-<div bind:this={element} class:animated={intersecting}>
-	<slot />
+<div
+	bind:this={element}
+	class:animated={intersecting}
+	style="--duration: {duration}"
+>
+	{@render children?.()}
 </div>
 
 <style>
@@ -27,7 +31,7 @@
 		opacity: 0;
 		transform: translateY(20px);
 		transition:
-			opacity 2s,
+			opacity var(--duration),
 			transform 2s;
 	}
 
