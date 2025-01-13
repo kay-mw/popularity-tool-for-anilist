@@ -32,4 +32,3 @@ jobs:
       with:
         version: "0.8.6"
         args: "format --check"
-        version: "0.8.6"
