@@ -114,8 +114,7 @@
 			{/each}
 			<g
 				class="tick"
-				transform="translate({10}, {(height - 35) /
-					2}) rotate(-90)"
+				transform="translate({10}, {(height - 35) / 2}) rotate(-90)"
 			>
 				<text style="text-anchor: middle;">{yLabel}</text>
 			</g>
@@ -176,7 +175,11 @@
 							{point[x]}
 						</text>
 					</g>
-					<g class="tick" transform="translate({(width + padding.left - padding.right) / 2}, {height - 3})">
+					<g
+						class="tick"
+						transform="translate({(width + padding.left - padding.right) /
+							2}, {height - 3})"
+					>
 						<text>{xLabel}</text>
 					</g>
 				</g>

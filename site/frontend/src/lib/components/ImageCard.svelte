@@ -16,7 +16,7 @@
 	} = $props();
 </script>
 
-<Card.Root class="max-w-xl {borderColour}">
+<Card.Root class="max-w-xl {borderColour} shadow-2xl">
 	<Card.Header>
 		<Card.Title class={textColour}>{title}</Card.Title>
 		<Card.Description>{description}</Card.Description>

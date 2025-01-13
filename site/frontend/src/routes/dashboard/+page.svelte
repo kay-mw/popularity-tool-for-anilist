@@ -77,7 +77,7 @@
 
 <!-- TODO: Add nice animation to this, like have it fall onto the screen when people load in or something-->
 <section>
-  <AnimatedScroll duration="3s">
+  <AnimatedScroll>
     <DashboardContainer class="min-h-[40vh]">
       <H2 class="text-primary text-center text-6xl">
         welcome to popularity tool for anilist.
@@ -89,14 +89,14 @@
   </AnimatedScroll>
 </section>
 
-<section class="bg-band">
-  <AnimatedScroll duration="5s">
+<section class="bg-primary">
+  <AnimatedScroll>
     <DashboardContainer class="space-y-6">
-      <H2 class="text-center text-background border-background text-6xl">
+      <H2 class="text-center text-white border-white text-6xl">
         your overall taste
       </H2>
       <section class="m-auto w-full">
-        <Card.Root class="overflow-x-auto border-primary">
+        <Card.Root class="overflow-x-auto shadow-2xl">
           <Card.Header>
             <Card.Title class="text-4xl">
               <span class="text-primary">{username}</span> vs.
@@ -127,7 +127,7 @@
       class="space-y-6 max-w-screen-lg md:max-w-full"
       maxWidth={false}
     >
-      <H2 class="text-center text-band border-band text-6xl">
+      <H2 class="text-center text-primary border-primary text-6xl">
         compared to other users
       </H2>
       <div
@@ -189,10 +189,10 @@
   </AnimatedScroll>
 </section>
 
-<section class="bg-band">
+<section class="bg-primary">
   <AnimatedScroll>
     <DashboardContainer class="space-y-6">
-      <H2 class="text-center text-background border-background text-6xl">
+      <H2 class="text-center text-white border-white text-6xl">
         specific takes
       </H2>
       <section
@@ -216,7 +216,7 @@
           image={data.insights.imageMin}
           userScore={data.insights.userMinScore}
           avgScore={data.insights.avgMinScore}
-          borderColour="border-primary"
+          borderColour=""
           textColour="text-primary"
           {username}
         ></ImageCard>
@@ -228,7 +228,7 @@
 <section>
   <AnimatedScroll>
     <DashboardContainer class="space-y-6">
-      <H2 class="text-center text-band border-band text-6xl"
+      <H2 class="text-center text-primary border-primary text-6xl"
         >your genre opinions</H2
       >
       <div class="m-auto w-full">
@@ -269,6 +269,9 @@
         textColour={data.insights.genreDiffUser > data.insights.genreDiffAvg
           ? "text-primary"
           : "text-destructive"}
+        borderColour={data.insights.genreDiffUser > data.insights.genreDiffAvg
+          ? "border-primary"
+          : "border-destructive"}
         {username}
       ></ImageCard>
     </DashboardContainer>
