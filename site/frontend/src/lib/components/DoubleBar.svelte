@@ -176,7 +176,7 @@
 							{point[x]}
 						</text>
 					</g>
-					<g class="tick" transform="translate({width / 2 + 20}, {height})">
+					<g class="tick" transform="translate({(width + padding.left - padding.right) / 2}, {height - 3})">
 						<text>{xLabel}</text>
 					</g>
 				</g>

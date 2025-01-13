@@ -131,7 +131,7 @@
 					</text>
 				</g>
 			{/each}
-			<g class="tick" transform="translate({width / 2 + 25}, {height - 5})">
+			<g class="tick" transform="translate({(width + padding.left - padding.right) / 2}, {height - 5})">
 				<text>{xLabel} →</text>
 			</g>
 		</g>

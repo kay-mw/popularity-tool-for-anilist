@@ -14,7 +14,7 @@
 		x2: string;
 	} = $props();
 
-	const padding = { top: 40, right: 40, bottom: 0, left: 150 };
+	const padding = { top: 40, right: 40, bottom: 25, left: 150 };
 	const username = page.url.searchParams.get("username");
 
 	let width = $state(913);
@@ -125,12 +125,15 @@
 			{#each xTicks as tick}
 				<g
 					class="tick tick-{tick}"
-					transform="translate({xScale(tick)}, {height})"
+					transform="translate({xScale(tick)}, {height - padding.bottom})"
 				>
 					<line y1="-20" y2={-height} />
 					<text>{tick}</text>
 				</g>
 			{/each}
+			<g class="tick" transform="translate({(width + padding.left - padding.right) / 2}, {height})">
+				<text>Score →</text>
+			</g>
 		</g>
 		<g class="bars">
 			{#each data as point, i}

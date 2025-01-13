@@ -273,9 +273,7 @@
       ></ImageCard>
     </DashboardContainer>
   </AnimatedScroll>
-</section>
 
-<section class="bg-band">
   <AnimatedScroll>
     <DashboardContainer>
       <div class="grid grid-cols-2 grid-rows-2 gap-4">
