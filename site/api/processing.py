@@ -245,7 +245,9 @@ def create_genre_data(genre_df: pd.DataFrame) -> list[dict]:
     return genre_dict
 
 
-def create_abs_avg_plot_data(format: str) -> tuple[list[dict], list[dict]]:
+def create_abs_avg_plot_data(
+    format: str, abs_score_diff: float, avg_score_diff: float
+) -> tuple[list[dict], list[dict]]:
     existing_data_path = "./api/existing_user_data.parquet"
     file_exists = os.path.isfile(existing_data_path)
 
@@ -302,6 +304,14 @@ def create_abs_avg_plot_data(format: str) -> tuple[list[dict], list[dict]]:
             agg_data.value_counts(f"{calc_type}_score_diff", sort=False)
         ).reset_index()
 
+        if calc_type == "abs":
+            if round(abs_score_diff) not in agg_data[f"{calc_type}_score_diff"].values:
+                agg_data.loc[len(agg_data)] = [round(abs_score_diff), 1]
+        else:
+            if round(avg_score_diff) not in agg_data[f"{calc_type}_score_diff"].values:
+                agg_data.loc[len(agg_data)] = [round(avg_score_diff), 1]
+
+        agg_data = agg_data.sort_values(by=f"{calc_type}_score_diff")
         agg_data = agg_data.to_dict(orient="records")
 
         return agg_data

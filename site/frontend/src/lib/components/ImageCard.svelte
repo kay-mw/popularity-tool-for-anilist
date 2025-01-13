@@ -3,17 +3,20 @@
 	import H2 from "$lib/components/H2.svelte";
 	import { Separator } from "$lib/components/ui/separator";
 
-	export let title = "";
-	export let description = "";
-	export let image = "";
-	export let animeTitle = "";
-	export let userScore = 0;
-	export let avgScore = 0;
-	export let textColour = "";
-	export let username;
+	let {
+		title = "",
+		description = "",
+		image = "",
+		animeTitle = "",
+		userScore = 0,
+		avgScore = 0,
+		textColour = "",
+		borderColour = "",
+		username,
+	} = $props();
 </script>
 
-<Card.Root class="max-w-xl">
+<Card.Root class="max-w-xl {borderColour} shadow-2xl">
 	<Card.Header>
 		<Card.Title class={textColour}>{title}</Card.Title>
 		<Card.Description>{description}</Card.Description>
@@ -28,7 +31,10 @@
 					alt="coldest take anime"
 				/>
 			</figure>
-			<div class="absolute space-y-2 font-semibold text-xl md:text-3xl top-1/2 left-1/2 w-[75%] text-center" style="transform: translate(-50%, -50%);">
+			<div
+				class="absolute space-y-2 font-semibold text-xl md:text-3xl top-1/2 left-1/2 w-[75%] text-center"
+				style="transform: translate(-50%, -50%);"
+			>
 				{#if userScore < avgScore}
 					<p class={textColour}>{username} ↓ {userScore}</p>
 					<Separator />

@@ -17,19 +17,19 @@
 
 <ModeWatcher />
 <div class="md:sticky z-10 top-0 h-0">
-<div class="absolute z-10 right-0 p-4">
-  <Button on:click={toggleMode} variant="outline" size="sm">
-    <span class="hidden dark:flex">Dark</span>
-    <span class="dark:hidden">Light</span>
-  </Button>
-</div>
+  <div class="absolute z-10 right-0 p-4">
+    <Button on:click={toggleMode} variant="outline" size="sm">
+      <span class="hidden dark:flex">Dark</span>
+      <span class="dark:hidden">Light</span>
+    </Button>
   </div>
+</div>
 
 {#if $navigating}
   <Container>
     <div
       class="border-border h-20 w-20 animate-spin rounded-full border-[12px] border-t-primary"
-    />
+    ></div>
   </Container>
 {/if}
 <slot />

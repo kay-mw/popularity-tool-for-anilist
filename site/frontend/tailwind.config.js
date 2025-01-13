@@ -55,6 +55,7 @@ const config = {
           foreground: "hsl(var(--card-foreground) / <alpha-value>)",
         },
         "plot-accent": "hsl(var(--plot-accent) / <alpha-value>)",
+        "band": "hsl(var(--band) / <alpha-value>)",
       },
       borderRadius: {
         lg: "var(--radius)",

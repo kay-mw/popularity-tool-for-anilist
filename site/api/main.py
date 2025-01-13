@@ -59,11 +59,14 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
         cover_image_3,
     ) = general_insights(merged_dfs=merged_dfs, genre_fav=genre_fav, format=format)
 
-    merged_dfs, new_rows = round_scores(df=merged_dfs)
-    plot_json = create_plot_data(df=merged_dfs, fill_df=new_rows)
     table_dict = create_table(df=merged_dfs)
     genre_dict = create_genre_data(genre_df=genre_info)
-    abs_data, avg_data = create_abs_avg_plot_data(format=format)
+    abs_data, avg_data = create_abs_avg_plot_data(
+        format=format, abs_score_diff=abs_score_diff, avg_score_diff=avg_score_diff
+    )
+
+    merged_dfs, new_rows = round_scores(df=merged_dfs)
+    plot_json = create_plot_data(df=merged_dfs, fill_df=new_rows)
 
     # NOTE: Upload
     dfs = [format_info, user_info, user_score]

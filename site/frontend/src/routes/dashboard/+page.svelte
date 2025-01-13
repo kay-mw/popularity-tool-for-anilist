@@ -10,6 +10,8 @@
   import { Toaster } from "$lib/components/ui/sonner";
   import { toast } from "svelte-sonner";
 
+  import H2 from "$lib/components/H2.svelte";
+
   import DashboardContainer from "$lib/components/DashboardContainer.svelte";
   import ImageCard from "$lib/components/ImageCard.svelte";
   import SectionHeader from "$lib/components/SectionHeader.svelte";
@@ -69,21 +71,32 @@
   });
 </script>
 
-<div class="hidden md:flex sticky z-10 md:top-[45.5%] h-0">
-  <ScrollArrow class="absolute z-10 md:right-0 pr-8" {g} {block} {up} />
-</div>
+<!--<div class="hidden md:flex sticky z-10 md:top-[45.5%] h-0">-->
+<!--  <ScrollArrow class="absolute z-10 md:right-0 pr-8" {g} {block} {up} />-->
+<!--</div>-->
 
-<section class="space-y-[50vw]">
+<!-- TODO: Add nice animation to this, like have it fall onto the screen when people load in or something-->
+<section>
   <AnimatedScroll>
-    <DashboardContainer>
-      <SectionHeader header="your overall taste" />
+    <DashboardContainer class="min-h-[40vh]">
+      <H2 class="text-primary text-center text-6xl">
+        welcome to popularity tool for anilist.
+      </H2>
+      <H2 class="text-primary text-center text-6xl border-none">
+        let's see how controversial your anime taste is...
+      </H2>
     </DashboardContainer>
   </AnimatedScroll>
+</section>
 
+<section class="bg-primary">
   <AnimatedScroll>
-    <DashboardContainer>
+    <DashboardContainer class="space-y-6">
+      <H2 class="text-center text-white border-white text-6xl">
+        your overall taste
+      </H2>
       <section class="m-auto w-full">
-        <Card.Root class="overflow-x-auto">
+        <Card.Root class="overflow-x-auto shadow-2xl">
           <Card.Header>
             <Card.Title class="text-4xl">
               <span class="text-primary">{username}</span> vs.
@@ -106,11 +119,23 @@
       </section>
     </DashboardContainer>
   </AnimatedScroll>
+</section>
 
+<section>
   <AnimatedScroll>
-    <DashboardContainer>
-      <section class="m-auto w-full">
-        <Card.Root class="overflow-x-auto">
+    <DashboardContainer
+      class="space-y-6 max-w-screen-lg md:max-w-full"
+      maxWidth={false}
+    >
+      <H2 class="text-center text-primary border-primary text-6xl">
+        compared to other users
+      </H2>
+      <div
+        class="flex flex-col m-auto w-full gap-6 md:w-auto md:grid md:grid-cols-2 md:grid-rows-2"
+      >
+        <Card.Root
+          class="overflow-x-auto md:col-start-1 md:row-start-1 md:translate-x-40"
+        >
           <Card.Header>
             <Card.Title class="text-4xl text-primary">
               Overall Score Difference
@@ -132,14 +157,10 @@
             />
           </Card.Content>
         </Card.Root>
-      </section>
-    </DashboardContainer>
-  </AnimatedScroll>
 
-  <AnimatedScroll>
-    <DashboardContainer>
-      <section class="m-auto w-full">
-        <Card.Root class="overflow-x-auto">
+        <Card.Root
+          class="overflow-x-auto md:col-start-2 md:row-start-2 md:-translate-x-40"
+        >
           <Card.Header>
             <Card.Title class="text-4xl">
               <span class="text-plot-accent">Positivity</span>/<span
@@ -163,12 +184,17 @@
             />
           </Card.Content>
         </Card.Root>
-      </section>
+      </div>
     </DashboardContainer>
   </AnimatedScroll>
+</section>
 
+<section class="bg-primary">
   <AnimatedScroll>
-    <DashboardContainer>
+    <DashboardContainer class="space-y-6">
+      <H2 class="text-center text-white border-white text-6xl">
+        specific takes
+      </H2>
       <section
         class="flex flex-col gap-3 md:grid md:grid-cols-2 md:grid-rows-1"
       >
@@ -179,6 +205,7 @@
           image={data.insights.imageMax}
           userScore={data.insights.userMaxScore}
           avgScore={data.insights.avgMaxScore}
+          borderColour="border-destructive"
           textColour="text-destructive"
           {username}
         ></ImageCard>
@@ -189,21 +216,21 @@
           image={data.insights.imageMin}
           userScore={data.insights.userMinScore}
           avgScore={data.insights.avgMinScore}
+          borderColour=""
           textColour="text-primary"
           {username}
         ></ImageCard>
       </section>
     </DashboardContainer>
   </AnimatedScroll>
+</section>
 
+<section>
   <AnimatedScroll>
-    <DashboardContainer>
-      <SectionHeader header="your genre opinions" />
-    </DashboardContainer>
-  </AnimatedScroll>
-
-  <AnimatedScroll>
-    <DashboardContainer>
+    <DashboardContainer class="space-y-6">
+      <H2 class="text-center text-primary border-primary text-6xl"
+        >your genre opinions</H2
+      >
       <div class="m-auto w-full">
         <Card.Root class="overflow-x-auto">
           <Card.Header>
@@ -242,12 +269,17 @@
         textColour={data.insights.genreDiffUser > data.insights.genreDiffAvg
           ? "text-primary"
           : "text-destructive"}
+        borderColour={data.insights.genreDiffUser > data.insights.genreDiffAvg
+          ? "border-primary"
+          : "border-destructive"}
         {username}
       ></ImageCard>
+    </DashboardContainer>
+  </AnimatedScroll>
 
-      <div
-        class="grid grid-cols-2 grid-rows-2 justify-center items-center p-6 gap-4 max-w-screen-lg"
-      >
+  <AnimatedScroll>
+    <DashboardContainer>
+      <div class="grid grid-cols-2 grid-rows-2 gap-4">
         <Dialog.Root>
           <Dialog.Trigger>
             <Button>See All My Scores</Button>

@@ -9,11 +9,15 @@
 		y1,
 		y2,
 		x,
+		xLabel = "Score →",
+		yLabel = "Count →",
 	}: {
 		data: Array<Record<string, number>>;
 		y1: string;
 		y2: string;
 		x: string;
+		xLabel: string;
+		yLabel: string;
 	} = $props();
 
 	const username = page.url.searchParams.get("username");
@@ -28,7 +32,7 @@
 	let yTicks = $derived(
 		Array.from({ length: Math.ceil(yMax / 5) + 1 }, (_, i) => i * 5),
 	);
-	const padding = { top: 20, right: 15, bottom: 20, left: 25 };
+	const padding = { top: 20, right: 15, bottom: 40, left: 50 };
 
 	let width = $state(913);
 	let height = $state(525);
@@ -104,10 +108,16 @@
 		<g class="axis y-axis">
 			{#each yTicks as tick}
 				<g class="tick tick-{tick}" transform="translate(0, {yScale(tick)})">
-					<line x2="100%" />
-					<text y="-4">{tick}</text>
+					<line x1="25" x2="100%" />
+					<text y="-4" x="25">{tick}</text>
 				</g>
 			{/each}
+			<g
+				class="tick"
+				transform="translate({10}, {(height - 35) / 2}) rotate(-90)"
+			>
+				<text style="text-anchor: middle;">{yLabel}</text>
+			</g>
 		</g>
 		<g class="bars">
 			{#each data as point, i}
@@ -160,10 +170,17 @@
 					class:hovered={hoveredIndex === i}
 					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
 				>
-					<g class="tick" transform="translate({xScale(i)}, {height})">
+					<g class="tick" transform="translate({xScale(i)}, {height - 25})">
 						<text x={barWidth / 2}>
 							{point[x]}
 						</text>
+					</g>
+					<g
+						class="tick"
+						transform="translate({(width + padding.left - padding.right) /
+							2}, {height - 3})"
+					>
+						<text>{xLabel}</text>
 					</g>
 				</g>
 			{/each}

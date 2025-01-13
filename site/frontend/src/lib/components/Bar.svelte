@@ -69,6 +69,11 @@
 	function handleLeave() {
 		hovering = false;
 	}
+
+	let direction = $state("");
+	if (diverging) {
+		direction = scoreVariable >= 0 ? "Positivity" : "Negativity";
+	}
 </script>
 
 <div bind:clientWidth={width} bind:clientHeight={height}>
@@ -118,7 +123,7 @@
 						style="text-anchor: middle;"
 						x={xScale(i) + barWidth * 0.2}
 						y={height - 22}
-						>&gt;{percentile}% of Users
+						>{direction} &gt;{percentile}% of Users
 					</text>
 				{/if}
 			{/each}
@@ -131,7 +136,11 @@
 					</text>
 				</g>
 			{/each}
-			<g class="tick" transform="translate({width / 2 + 25}, {height - 5})">
+			<g
+				class="tick"
+				transform="translate({(width + padding.left - padding.right) /
+					2}, {height - 5})"
+			>
 				<text>{xLabel} →</text>
 			</g>
 		</g>
