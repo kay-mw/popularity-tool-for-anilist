@@ -1,5 +1,6 @@
 import json
 from io import StringIO
+from typing import Literal
 
 import numpy as np
 import pandas as pd
@@ -34,52 +35,30 @@ def parse_genres(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def process_anime_info(
+def process_format_info(
     blob_service_client: BlobServiceClient,
     container_id: str,
     blobs: list[str],
+    format: Literal["anime", "manga"],
     position=0,
 ) -> pd.DataFrame:
-    anime_info = get_blob(blob_service_client, container_id, blobs[position])
-    anime_info = pd.read_csv(
-        anime_info,
+    format_info = get_blob(blob_service_client, container_id, blobs[position])
+    format_info = pd.read_csv(
+        format_info,
         sep=",",
         dtype={
             "Unnamed: 0": int,
-            "anime_id": int,
+            f"{format}_id": int,
             "average_score": int,
             "genres": pd.StringDtype(),
             "title_romaji": str,
+            "popularity": int,
         },
     )
-    anime_info.drop(labels="Unnamed: 0", axis=1, inplace=True)
-    anime_info = parse_genres(anime_info)
+    format_info.drop(labels="Unnamed: 0", axis=1, inplace=True)
+    format_info = parse_genres(format_info)
 
-    return anime_info
-
-
-def process_manga_info(
-    blob_service_client: BlobServiceClient,
-    container_id: str,
-    blobs: list[str],
-    position: int,
-) -> pd.DataFrame:
-    manga_info = get_blob(blob_service_client, container_id, blobs[position])
-    manga_info = pd.read_csv(
-        manga_info,
-        sep=",",
-        dtype={
-            "Unnamed: 0": int,
-            "manga_id": int,
-            "average_score": int,
-            "genres": pd.StringDtype(),
-            "title_romaji": str,
-        },
-    )
-    manga_info.drop(labels="Unnamed: 0", axis=1, inplace=True)
-    manga_info = parse_genres(manga_info)
-
-    return manga_info
+    return format_info
 
 
 def process_user_info(
@@ -168,10 +147,12 @@ def read_anime_and_manga(
     pd.DataFrame,
     pd.DataFrame,
 ]:
-    anime_info = process_anime_info(blob_service_client, container_id, blobs)
+    anime_info = process_format_info(
+        blob_service_client, container_id, blobs, format="anime"
+    )
 
-    manga_info = process_manga_info(
-        blob_service_client, container_id, blobs, position=1
+    manga_info = process_format_info(
+        blob_service_client, container_id, blobs, position=1, format="manga"
     )
 
     user_anime_score = process_user_anime_score(
@@ -194,7 +175,9 @@ def read_anime(
     blobs: list[str],
     insert_date: str,
 ) -> tuple[list[pd.DataFrame], pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    anime_info = process_anime_info(blob_service_client, container_id, blobs)
+    anime_info = process_format_info(
+        blob_service_client, container_id, blobs, format="anime"
+    )
 
     user_anime_score = process_user_anime_score(
         blob_service_client, container_id, blobs, insert_date, position=1
@@ -212,8 +195,8 @@ def read_manga(
     blobs: list[str],
     insert_date: str,
 ) -> tuple[list[pd.DataFrame], pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    manga_info = process_manga_info(
-        blob_service_client, container_id, blobs, position=0
+    manga_info = process_format_info(
+        blob_service_client, container_id, blobs, position=0, format="manga"
     )
 
     user_info = process_user_info(blob_service_client, container_id, blobs, position=1)

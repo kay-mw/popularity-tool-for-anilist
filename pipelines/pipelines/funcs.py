@@ -36,22 +36,24 @@ def upload(
     column_2: str,
     engine,
     column_3="genres",
+    column_4="popularity",
 ) -> None:
     with engine.connect() as connection:
         df.to_sql("temp_table", con=connection, if_exists="replace")
 
         if table_name in ["anime_info", "manga_info"]:
             query = f"""
-                MERGE {table_name} AS target USING temp_table AS source
-                ON source.{primary_key} = target.{primary_key}
-                WHEN NOT MATCHED BY target
-                THEN INSERT ({primary_key}, {column_1}, {column_2}, {column_3})
-                VALUES (source.{primary_key}, source.{column_1}, source.{column_2}, source.{column_3})
-                WHEN MATCHED THEN UPDATE 
-                SET target.{column_1} = source.{column_1}, 
-                target.{column_2} = source.{column_2},
-                target.{column_3} = source.{column_3};
-            """
+                    MERGE {table_name} AS target USING temp_table AS source
+                    ON source.{primary_key} = target.{primary_key}
+                    WHEN NOT MATCHED BY target
+                    THEN INSERT ({primary_key}, {column_1}, {column_2}, {column_3}, {column_4})
+                    VALUES (source.{primary_key}, source.{column_1}, source.{column_2}, source.{column_3}, source.{column_4})
+                    WHEN MATCHED THEN UPDATE 
+                    SET target.{column_1} = source.{column_1}, 
+                    target.{column_2} = source.{column_2},
+                    target.{column_3} = source.{column_3},
+                    target.{column_4} = source.{column_4};
+                """
         else:
             query = f"""
                 MERGE {table_name} AS target USING temp_table AS source
@@ -91,12 +93,6 @@ def upload_many_to_many(
         ) AS t
         WHERE t.rn = 1;
     """
-
-    # table_name="user_anime_score",
-    # foreign_key_1="user_id",
-    # foreign_key_2="anime_id",
-    # column_1="user_score",
-    # anilist_id=anilist_id,
 
     with engine.connect() as connection:
         check_exists = pd.read_sql(check_query, con=connection)
