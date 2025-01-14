@@ -246,7 +246,7 @@ def create_genre_data(genre_df: pd.DataFrame) -> list[dict]:
 
 
 def create_abs_avg_plot_data(
-    format: str, abs_score_diff: float, avg_score_diff: float
+    format: Literal["anime", "manga"], abs_score_diff: float, avg_score_diff: float
 ) -> tuple[list[dict], list[dict]]:
     existing_data_path = "./api/existing_user_data.parquet"
     file_exists = os.path.isfile(existing_data_path)
@@ -322,3 +322,33 @@ def create_abs_avg_plot_data(
     avg_data = diff_buckets(df=existing_user_df, calc_type="avg")
 
     return abs_data, avg_data
+
+
+def create_obscurity_data(
+    format: Literal["anime", "manga"], format_df: pd.DataFrame
+) -> tuple[list[dict], int]:
+    connection_string = os.environ["AZURE_ODBC"]
+    connection_url = f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
+    engine = create_engine(connection_url)
+
+    with engine.connect() as connection:
+        query = f"""
+            SELECT AVG(f.popularity) AS average_popularity, uf.user_id
+            FROM {format}_info AS f
+            LEFT JOIN user_{format}_score uf
+            ON f.{format}_id = uf.{format}_id
+            WHERE uf.end_date IS NULL
+            AND uf.start_date IS NOT NULL
+            AND f.popularity IS NOT NULL
+            GROUP BY user_id;
+        """
+        pop_df = pd.read_sql(sql=query, con=connection)
+
+    user_pop = int(round(format_df["popularity"].mean()))
+
+    if user_pop not in pop_df.values:
+        pop_df.loc[len(pop_df)] = user_pop
+
+    pop_dict = pop_df.to_dict(orient="records")
+
+    return pop_dict, user_pop

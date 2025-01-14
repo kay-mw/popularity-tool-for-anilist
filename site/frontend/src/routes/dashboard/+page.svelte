@@ -39,6 +39,8 @@
       initialLoad = true;
     }, 500);
   });
+
+  console.log(data.insights.popData, data.insights.userPop)
 </script>
 
 <section>
