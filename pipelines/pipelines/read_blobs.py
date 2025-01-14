@@ -48,7 +48,7 @@ def process_anime_info(
             "Unnamed: 0": int,
             "anime_id": int,
             "average_score": int,
-            "genres": object,
+            "genres": pd.StringDtype(),
             "title_romaji": str,
         },
     )
@@ -72,7 +72,7 @@ def process_manga_info(
             "Unnamed: 0": int,
             "manga_id": int,
             "average_score": int,
-            "genres": list[str],
+            "genres": pd.StringDtype(),
             "title_romaji": str,
         },
     )
