@@ -24,7 +24,7 @@
 
 	scoreVariable = Math.round(scoreVariable);
 
-	let width = $state(900);
+	let width = $state(800);
 	let height = $state(400);
 	const padding = { top: 20, bottom: 65, left: 65, right: 0 };
 
@@ -130,8 +130,8 @@
 		</g>
 		<g class="axis x-axis">
 			{#each data as point, i}
-				<g class="tick" transform="translate({xScale(i)}, {height - 50})">
-					<text x={barWidth * 0.2} y="5">
+				<g class="text-xs fill-current font-semibold" style="text-anchor: middle;" transform="translate({xScale(i)}, {height - 55})">
+					<text x={diverging ? "5" : "6.5"} y="5">
 						{point[x]}
 					</text>
 				</g>
