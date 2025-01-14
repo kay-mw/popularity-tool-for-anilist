@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from "./$types";
-  import { onMount } from "svelte";
   import { page } from "$app/state";
+  import { onMount } from "svelte";
 
   import * as Card from "$lib/components/ui/card";
   import * as Table from "$lib/components/ui/table";
@@ -14,16 +14,13 @@
 
   import DashboardContainer from "$lib/components/DashboardContainer.svelte";
   import ImageCard from "$lib/components/ImageCard.svelte";
-  import SectionHeader from "$lib/components/SectionHeader.svelte";
   import AnimatedScroll from "$lib/components/AnimatedScroll.svelte";
 
   import Bar from "$lib/components/Bar.svelte";
   import DoubleBar from "$lib/components/DoubleBar.svelte";
   import HorizontalBar from "$lib/components/HorizontalBar.svelte";
 
-  import ScrollArrow from "$lib/components/ScrollArrow.svelte";
-
-  export let data: PageData;
+  let { data }: { data: PageData } = $props();
 
   const username = page.url.searchParams.get("username");
 
@@ -34,91 +31,79 @@
     });
   }
 
-  let block = "center";
-  let up = false;
+  const initialFadeDuration = "2.75s";
 
-  function* getValidElements() {
-    while (true) {
-      const elements = Array.from(
-        document.getElementsByClassName(
-          "flex flex-col items-center justify-center m-auto w-full max-w-screen-lg p-4 min-h-screen",
-        ),
-      ).slice(1);
-      for (let [i, item] of elements.entries()) {
-        if (i == 4) {
-          block = "start";
-          up = false;
-          yield item;
-        } else if (i == 6) {
-          up = true;
-          yield item;
-        } else {
-          block = "center";
-          up = false;
-          yield item;
-        }
-      }
-    }
-  }
-
-  const g = getValidElements();
-
-  let valueAbs = 0;
-  let valueAvg = 0;
+  let initialLoad = $state(false);
   onMount(() => {
-    valueAbs = data.insights.absScoreDiff;
-    valueAvg = data.insights.avgScoreDiff;
+    setTimeout(() => {
+      initialLoad = true;
+    }, 500);
   });
 </script>
 
-<!--<div class="hidden md:flex sticky z-10 md:top-[45.5%] h-0">-->
-<!--  <ScrollArrow class="absolute z-10 md:right-0 pr-8" {g} {block} {up} />-->
-<!--</div>-->
-
-<!-- TODO: Add nice animation to this, like have it fall onto the screen when people load in or something-->
 <section>
-  <AnimatedScroll>
-    <DashboardContainer class="min-h-[40vh]">
+  <DashboardContainer class="min-h-[40vh] space-y-6">
+    <AnimatedScroll
+      opacityDuration={initialLoad ? "2s" : initialFadeDuration}
+      transformDuration={initialLoad ? "2s" : initialFadeDuration}
+    >
       <H2 class="text-primary text-center text-6xl">
         welcome to popularity tool for anilist.
       </H2>
+    </AnimatedScroll>
+    <AnimatedScroll
+      delay={initialLoad ? "0s" : "0.75s"}
+      opacityDuration={initialLoad ? "2s" : initialFadeDuration}
+      transformDuration={initialLoad ? "2s" : initialFadeDuration}
+    >
       <H2 class="text-primary text-center text-6xl border-none">
         let's see how controversial your anime taste is...
       </H2>
-    </DashboardContainer>
-  </AnimatedScroll>
+    </AnimatedScroll>
+  </DashboardContainer>
 </section>
 
 <section class="bg-primary">
-  <AnimatedScroll>
-    <DashboardContainer class="space-y-6">
+  <DashboardContainer class="space-y-6">
+    <AnimatedScroll
+      delay={initialLoad ? "0s" : "1.6s"}
+      opacityDuration={initialLoad ? "2s" : initialFadeDuration}
+      transformDuration={initialLoad ? "2s" : initialFadeDuration}
+    >
       <H2 class="text-center text-white border-white text-6xl">
         your overall taste
       </H2>
-      <section class="m-auto w-full">
-        <Card.Root class="overflow-x-auto shadow-2xl">
-          <Card.Header>
-            <Card.Title class="text-4xl">
-              <span class="text-primary">{username}</span> vs.
-              <span class="text-plot-accent">the AniList Average</span>
-            </Card.Title>
-            <Card.Description>
-              How frequently you give certain scores compared to the AniList
-              average.
-            </Card.Description>
-          </Card.Header>
-          <Card.Content class="inline-flex">
-            <DoubleBar
-              data={data.insights.userData}
-              y1="user_count"
-              y2="average_count"
-              x="score"
-            />
-          </Card.Content>
-        </Card.Root>
-      </section>
-    </DashboardContainer>
-  </AnimatedScroll>
+    </AnimatedScroll>
+    <AnimatedScroll
+      class="m-auto w-full"
+      delay={initialLoad ? "0s" : "2.45s"}
+      opacityDuration={initialLoad ? "2s" : initialFadeDuration}
+      transformDuration={initialLoad ? "2s" : initialFadeDuration}
+    >
+      <Card.Root class="overflow-x-auto shadow-2xl">
+        <Card.Header>
+          <Card.Title class="text-4xl">
+            <span class="text-primary">{username}</span> vs.
+            <span class="text-plot-accent">the AniList Average</span>
+          </Card.Title>
+          <Card.Description>
+            How frequently you give certain scores compared to the AniList
+            average.
+          </Card.Description>
+        </Card.Header>
+        <Card.Content class="inline-flex">
+          <DoubleBar
+            data={data.insights.userData}
+            y1="user_count"
+            y2="average_count"
+            x="score"
+            xLabel="Score →"
+            yLabel="Count →"
+          />
+        </Card.Content>
+      </Card.Root>
+    </AnimatedScroll>
+  </DashboardContainer>
 </section>
 
 <section>
@@ -330,7 +315,7 @@
             </Dialog.Footer>
           </Dialog.Content>
         </Dialog.Root>
-        <Button on:click={copyURL}>Share</Button>
+        <Button onclick={copyURL}>Share</Button>
         <Button class="col-span-2" variant="outline" href="/"
           >Return Home</Button
         >
