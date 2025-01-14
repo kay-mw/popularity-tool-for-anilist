@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { PageData } from "./$types";
   import { page } from "$app/state";
+  import { onMount } from "svelte";
 
   import * as Card from "$lib/components/ui/card";
   import * as Table from "$lib/components/ui/table";
@@ -31,22 +32,29 @@
   }
 
   const initialFadeDuration = "2.75s";
+
+  let initialLoad = $state(false);
+  onMount(() => {
+    setTimeout(() => {
+      initialLoad = true;
+    }, 500);
+  });
 </script>
 
 <section>
   <DashboardContainer class="min-h-[40vh] space-y-6">
     <AnimatedScroll
-      opacityDuration={initialFadeDuration}
-      transformDuration={initialFadeDuration}
+      opacityDuration={initialLoad ? "2s" : initialFadeDuration}
+      transformDuration={initialLoad ? "2s" : initialFadeDuration}
     >
       <H2 class="text-primary text-center text-6xl">
         welcome to popularity tool for anilist.
       </H2>
     </AnimatedScroll>
     <AnimatedScroll
-      delay="0.75s"
-      opacityDuration={initialFadeDuration}
-      transformDuration={initialFadeDuration}
+      delay={initialLoad ? "0s" : "0.75s"}
+      opacityDuration={initialLoad ? "2s" : initialFadeDuration}
+      transformDuration={initialLoad ? "2s" : initialFadeDuration}
     >
       <H2 class="text-primary text-center text-6xl border-none">
         let's see how controversial your anime taste is...
@@ -58,9 +66,9 @@
 <section class="bg-primary">
   <DashboardContainer class="space-y-6">
     <AnimatedScroll
-      delay="1.6s"
-      opacityDuration={initialFadeDuration}
-      transformDuration={initialFadeDuration}
+      delay={initialLoad ? "0s" : "1.6s"}
+      opacityDuration={initialLoad ? "2s" : initialFadeDuration}
+      transformDuration={initialLoad ? "2s" : initialFadeDuration}
     >
       <H2 class="text-center text-white border-white text-6xl">
         your overall taste
@@ -68,9 +76,9 @@
     </AnimatedScroll>
     <AnimatedScroll
       class="m-auto w-full"
-      delay="2.45s"
-      opacityDuration={initialFadeDuration}
-      transformDuration={initialFadeDuration}
+      delay={initialLoad ? "0s" : "2.45s"}
+      opacityDuration={initialLoad ? "2s" : initialFadeDuration}
+      transformDuration={initialLoad ? "2s" : initialFadeDuration}
     >
       <Card.Root class="overflow-x-auto shadow-2xl">
         <Card.Header>
@@ -89,6 +97,8 @@
             y1="user_count"
             y2="average_count"
             x="score"
+            xLabel="Score →"
+            yLabel="Count →"
           />
         </Card.Content>
       </Card.Root>
@@ -305,7 +315,7 @@
             </Dialog.Footer>
           </Dialog.Content>
         </Dialog.Root>
-        <Button on:click={copyURL}>Share</Button>
+        <Button onclick={copyURL}>Share</Button>
         <Button class="col-span-2" variant="outline" href="/"
           >Return Home</Button
         >

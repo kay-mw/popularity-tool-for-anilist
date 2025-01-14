@@ -9,8 +9,8 @@
 		y1,
 		y2,
 		x,
-		xLabel = "Score →",
-		yLabel = "Count →",
+		xLabel,
+		yLabel,
 	}: {
 		data: Array<Record<string, number>>;
 		y1: string;
