@@ -3,7 +3,8 @@ CREATE TABLE anime_info
     anime_id      INT PRIMARY KEY,
     average_score INT          NOT NULL,
     title_romaji  VARCHAR(256) NOT NULL,
-    genres        JSON         NOT NULL
+    genres        JSON         NOT NULL,
+    popularity    INT          NOT NULL
 );
 
 CREATE TABLE manga_info
@@ -11,7 +12,8 @@ CREATE TABLE manga_info
     manga_id      INT PRIMARY KEY,
     average_score INT          NOT NULL,
     title_romaji  VARCHAR(256) NOT NULL,
-    genres        JSON         NOT NULL
+    genres        JSON         NOT NULL,
+    popularity    INT          NOT NULL
 );
 
 CREATE TABLE user_info
