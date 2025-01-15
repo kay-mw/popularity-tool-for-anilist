@@ -175,15 +175,15 @@
 							{point[x]}
 						</text>
 					</g>
-					<g
-						class="tick"
-						transform="translate({(width + padding.left - padding.right) /
-							2}, {height - 3})"
-					>
-						<text>{xLabel}</text>
-					</g>
 				</g>
 			{/each}
+			<g
+				class="tick"
+				transform="translate({(width + padding.left - padding.right) /
+					2}, {height - 3})"
+			>
+				<text>{xLabel}</text>
+			</g>
 		</g>
 
 		{#if tooltipVisible}

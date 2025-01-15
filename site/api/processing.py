@@ -349,6 +349,7 @@ def create_obscurity_data(
     if user_pop not in pop_df.values:
         pop_df.loc[len(pop_df)] = user_pop
 
+    pop_df = pop_df.sort_values(by="average_popularity", ascending=False)
     pop_dict = pop_df.to_dict(orient="records")
 
     return pop_dict, user_pop
