@@ -271,10 +271,10 @@
       <Card.Root class="overflow-x-auto">
         <Card.Header>
           <Card.Title class="text-4xl text-primary">
-            Overall Score Difference
+            Obscurity
           </Card.Title>
           <Card.Description>
-            How controversial your scores are compared to the average user.
+            How obscure/unknown the anime you've watched are on average, compared to other users of this site.
           </Card.Description>
         </Card.Header>
         <Card.Content class="inline-flex">

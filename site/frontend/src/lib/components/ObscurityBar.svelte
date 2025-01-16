@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { scaleLinear } from "d3-scale";
 	import { max } from "d3-array";
+	import { Spring } from "svelte/motion";
 
 	let {
 		data,
@@ -51,15 +52,7 @@
 
 	const barRadius = "0.5em";
 
-	let hovering = $state(false);
-	function handleEnter() {
-		hovering = true;
-	}
-	function handleLeave() {
-		hovering = false;
-	}
-
-	let percentiles = [];
+	let percentiles: Array<number> = [];
 	for (let i = 0; i < data.length; i++) {
 		let pct = Math.round((i / data.length) * 100);
 		percentiles.push(pct);
@@ -71,6 +64,57 @@
 		i++;
 		percentile = Math.round((i / data.length) * 100);
 	}
+
+	let tooltipVisible = $state(false);
+	let toolPop = $state(0);
+	let toolPct = $state(0);
+	let hoveredIndex = $state(-1);
+
+	let tooltipPosition = new Spring(
+		{ x: 0, y: 0 },
+		{
+			stiffness: 0.15,
+			damping: 0.4,
+		},
+	);
+
+	function handleMouseMove(event: MouseEvent) {
+		const svgRect = (event.currentTarget as SVGElement).getBoundingClientRect();
+		const mouseX = event.clientX - svgRect.left;
+		const mouseY = event.clientY - svgRect.top;
+		const index = Math.floor((mouseX - padding.left) / barWidth);
+
+		if (index >= 0 && index < data.length) {
+			tooltipVisible = true;
+			tooltipPosition.target = { x: mouseX + 20, y: mouseY - 80 };
+
+			if (tooltipPosition.target.x > svgRect.width - 155) {
+				tooltipPosition.damping = 1;
+				if (tooltipPosition.target.y > 0) {
+					tooltipPosition.target.x = mouseX - 175;
+				} else {
+					tooltipPosition.target = { x: mouseX - 175, y: 0 };
+				}
+			} else if (tooltipPosition.target.y < 0) {
+				tooltipPosition.target.y = 0;
+			} else {
+				tooltipPosition.damping = 0.4;
+			}
+
+			const point = data[index];
+			const pctPoint = percentiles[index];
+			toolPop = point[y];
+			toolPct = pctPoint;
+			hoveredIndex = index;
+		} else {
+			hideTooltip();
+		}
+	}
+
+	function hideTooltip() {
+		tooltipVisible = false;
+		hoveredIndex = -1;
+	}
 </script>
 
 <div bind:clientWidth={width} bind:clientHeight={height}>
@@ -78,8 +122,8 @@
 		{width}
 		{height}
 		viewBox="0 0 {width} {height}"
-		onmouseenter={handleEnter}
-		onmouseleave={handleLeave}
+		onmousemove={handleMouseMove}
+		onmouseleave={hideTooltip}
 		role="presentation"
 	>
 		<g class="axis y-axis">
@@ -98,49 +142,72 @@
 		</g>
 		<g class="bars">
 			{#each data as point, i}
-				<rect
-					class="{scoreVariable == point[y]
-						? colorY1
-						: colorY2} {scoreVariable != point[y] && hovering
-						? 'opacity-30'
-						: 'opacity-100'}"
-					rx={barRadius}
-					x={xScale(i)}
-					y={yScale(point[y])}
-					width={barWidth * 0.4}
-					height={yScale(0) - yScale(point[y])}
-				/>
-				{#if scoreVariable == point[y]}
-					<text
-						class="fill-primary font-bold text-sm md:text-lg"
-						style="text-anchor: middle;"
-						x={xScale(i) + 18}
-						y={yScale(point[y]) - 10}
-						>{username}
-					</text>
-				{/if}
+				<g
+					class:hovered={hoveredIndex === i}
+					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
+				>
+					<rect
+						class={scoreVariable == point[y] ? colorY1 : colorY2}
+						rx={barRadius}
+						x={xScale(i)}
+						y={yScale(point[y])}
+						width={barWidth * 0.4}
+						height={yScale(0) - yScale(point[y])}
+					/>
+					{#if scoreVariable == point[y]}
+						<text
+							class="fill-primary font-bold text-sm md:text-lg"
+							style="text-anchor: middle;"
+							x={xScale(i) + 15}
+							y={yScale(point[y]) - 10}
+							>{username}
+						</text>
+					{/if}
+				</g>
 			{/each}
 		</g>
 		<g class="axis x-axis">
 			{#each percentiles as pct, i}
 				<g
-					class="tick"
-					style="text-anchor: middle;"
-					transform="translate({xScale(i)}, {height - 30})"
+					class:hovered={hoveredIndex === i}
+					class:dimmed={hoveredIndex !== -1 && hoveredIndex !== i}
 				>
-					<text x="21" y="5">
-						{pct}%
-					</text>
+					<g
+						class="tick"
+						style="text-anchor: middle;"
+						transform="translate({xScale(i)}, {height - 30})"
+					>
+						<text x="17" y="5">
+							{pct}%
+						</text>
+					</g>
 				</g>
 			{/each}
 			<g
 				class="tick"
-				transform="translate({(width + padding.left / 2 + 10) / 2}, {height -
+				transform="translate({(width + padding.left - 37) / 2}, {height -
 					1})"
 			>
 				<text>{xLabel} →</text>
 			</g>
 		</g>
+		{#if tooltipVisible}
+			<foreignObject
+				x={tooltipPosition.current.x}
+				y={tooltipPosition.current.y}
+				width="100%"
+				height="100%"
+			>
+				<div class="tooltip">
+					<span
+						class={toolPop == scoreVariable
+							? "text-primary"
+							: "text-plot-accent"}
+						>Popularity: {toolPop}<br />Percentile: {toolPct}%</span
+					>
+				</div>
+			</foreignObject>
+		{/if}
 	</svg>
 </div>
 
@@ -167,7 +234,34 @@
 		@apply inline-block;
 	}
 
+	.bars g.dimmed rect {
+		opacity: 0.3;
+	}
+
+	.bars g.hovered rect {
+		opacity: 1;
+	}
+
 	.bars rect {
-		transition: opacity 0.5s ease-in-out;
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	.x-axis text {
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	.x-axis g.dimmed text {
+		opacity: 0.3;
+	}
+
+	.x-axis g.hovered text {
+		opacity: 1;
+	}
+
+	.tooltip {
+		@apply absolute bg-background border border-secondary font-semibold p-2 rounded shadow-lg text-base;
+		pointer-events: none;
+		z-index: 100;
+		transition: opacity 0.2s ease-in-out;
 	}
 </style>

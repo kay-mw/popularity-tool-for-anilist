@@ -80,7 +80,6 @@
 				tooltipPosition.target = { x: mouseX - 115, y: mouseY - 100 };
 			} else {
 				tooltipPosition.damping = 0.4;
-				tooltipPosition.target = { x: mouseX + 25, y: mouseY - 100 };
 			}
 			toolUser = `${point[y1]}`;
 			toolAvg = `${point[y2]}`;
