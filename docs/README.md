@@ -18,17 +18,18 @@ You'll get insights like:
 
 Try it yourself by clicking the link above or going to https://www.anipop.uk!
 
-## Future Plans
-
-1. Beautify the UI.
-2. Integrate historical trends to all insights. For example, display if a user's
-   scores got more/less controversial since the last time they used the website.
-3. Add more interesting insights. For example, a measurement of how obscure your
-   anime taste is based on the "Popularity" data from AniList (inspired by
-   [Obscurify](https://www.obscurifymusic.com)).
-
-### Why Build This?
+#### Why Build This?
 
 I've always been curious how controversial my anime taste is. Am I harsher in my
 scoring than most people, or more generous? Since I couldn't find a tool to
 answer these questions, I decided to build one myself!
+
+## Future Plans
+
+1. Integrate historical trends to all insights. For example, display if a user's
+   scores got more/less controversial since the last time they used the website.
+
+## Credits
+
+[Obscurify](https://www.obscurifymusic.com) for inspiring the "Obscurity"
+section, as well as parts of the UI design.
