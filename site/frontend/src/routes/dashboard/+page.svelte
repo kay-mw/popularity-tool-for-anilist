@@ -268,13 +268,13 @@
   <AnimatedScroll>
     <DashboardContainer class="space-y-6">
       <H2 class="text-center text-white border-white text-6xl">obscurity</H2>
-      <Card.Root class="overflow-x-auto">
+      <Card.Root class="m-auto w-full overflow-x-auto shadow-2xl">
         <Card.Header>
           <Card.Title class="text-4xl text-primary">
             Obscurity
           </Card.Title>
           <Card.Description>
-            How obscure/unknown the anime you've watched are on average, compared to other users of this site.
+            The average popularity of the anime you've watched, compared to all other users of this site.
           </Card.Description>
         </Card.Header>
         <Card.Content class="inline-flex">
@@ -296,7 +296,7 @@
 </section>
 
 <section>
-  <AnimatedScroll>
+  <AnimatedScroll transformDuration="0s">
     <DashboardContainer>
       <div class="grid grid-cols-2 grid-rows-2 gap-4">
         <Dialog.Root>

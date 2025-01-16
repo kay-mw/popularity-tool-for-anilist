@@ -327,29 +327,46 @@ def create_abs_avg_plot_data(
 def create_obscurity_data(
     format: Literal["anime", "manga"], format_df: pd.DataFrame
 ) -> tuple[list[dict], int]:
-    connection_string = os.environ["AZURE_ODBC"]
-    connection_url = f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
-    engine = create_engine(connection_url)
-
-    with engine.connect() as connection:
-        query = f"""
-            SELECT AVG(f.popularity) AS average_popularity, uf.user_id
-            FROM {format}_info AS f
-            LEFT JOIN user_{format}_score uf
-            ON f.{format}_id = uf.{format}_id
-            WHERE uf.end_date IS NULL
-            AND uf.start_date IS NOT NULL
-            AND f.popularity IS NOT NULL
-            GROUP BY user_id;
-        """
-        pop_df = pd.read_sql(sql=query, con=connection)
-
+    existing_data_path = "./api/existing_pop_data.parquet"
+    file_exists = os.path.isfile(existing_data_path)
     user_pop = int(round(format_df["popularity"].mean()))
 
-    if user_pop not in pop_df.values:
-        pop_df.loc[len(pop_df)] = user_pop
+    if file_exists:
+        last_queried = dt.datetime.now() - dt.datetime.fromtimestamp(
+            os.path.getmtime(existing_data_path)
+        )
+    else:
+        last_queried = dt.timedelta(days=0)
 
-    pop_df = pop_df.sort_values(by="average_popularity", ascending=False)
-    pop_dict = pop_df.to_dict(orient="records")
+    if (not file_exists) or (last_queried >= dt.timedelta(days=1)):
+        connection_string = os.environ["AZURE_ODBC"]
+        connection_url = (
+            f"mssql+pyodbc:///?odbc_connect={quote_plus(connection_string)}"
+        )
+        engine = create_engine(connection_url)
+
+        with engine.connect() as connection:
+            query = f"""
+                SELECT AVG(f.popularity) AS average_popularity
+                FROM {format}_info AS f
+                LEFT JOIN user_{format}_score uf
+                ON f.{format}_id = uf.{format}_id
+                WHERE uf.end_date IS NULL
+                AND uf.start_date IS NOT NULL
+                AND f.popularity IS NOT NULL
+                GROUP BY user_id;
+            """
+            pop_df = pd.read_sql(sql=query, con=connection)
+
+            pop_df.to_parquet(existing_data_path)
+
+    existing_df = pd.read_parquet(existing_data_path)
+
+    if user_pop not in existing_df["average_popularity"].values:
+        existing_df.loc[len(existing_df)] = user_pop
+
+    existing_df = existing_df.sort_values(by="average_popularity", ascending=False)
+
+    pop_dict = existing_df.to_dict(orient="records")
 
     return pop_dict, user_pop
