@@ -274,7 +274,7 @@
             Obscurity
           </Card.Title>
           <Card.Description>
-            How obscure/unknown the anime you've watched are on average, compared to other users of this site.
+            The average popularity of the anime you've watched, compared to all other users of this site.
           </Card.Description>
         </Card.Header>
         <Card.Content class="inline-flex">
@@ -296,7 +296,7 @@
 </section>
 
 <section>
-  <AnimatedScroll>
+  <AnimatedScroll transformDuration="0s">
     <DashboardContainer>
       <div class="grid grid-cols-2 grid-rows-2 gap-4">
         <Dialog.Root>

@@ -1,5 +1,5 @@
 # generated files
-existing_user_data.parquet
+*.parquet
 *.csv
 
 # created by virtualenv automatically
