@@ -5,6 +5,7 @@ from api.processing import (
     check_nulls,
     create_abs_avg_plot_data,
     create_genre_data,
+    create_obscurity_data,
     create_plot_data,
     create_table,
     get_format_info,
@@ -64,6 +65,7 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
     abs_data, avg_data = create_abs_avg_plot_data(
         format=format, abs_score_diff=abs_score_diff, avg_score_diff=avg_score_diff
     )
+    pop_data, user_pop = create_obscurity_data(format=format, format_df=format_info)
 
     merged_dfs, new_rows = round_scores(df=merged_dfs)
     plot_json = create_plot_data(df=merged_dfs, fill_df=new_rows)
@@ -96,6 +98,8 @@ def fetch_data(username: str, format: Literal["anime", "manga"]):
         "genreData": genre_dict,
         "absData": abs_data,
         "avgData": avg_data,
+        "userPop": user_pop,
+        "popData": pop_data,
     }
 
     return dfs, anilist_id, insights

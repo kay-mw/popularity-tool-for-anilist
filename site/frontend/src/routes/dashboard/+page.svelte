@@ -19,6 +19,7 @@
   import Bar from "$lib/components/Bar.svelte";
   import DoubleBar from "$lib/components/DoubleBar.svelte";
   import HorizontalBar from "$lib/components/HorizontalBar.svelte";
+  import ObscurityBar from "$lib/components/ObscurityBar.svelte";
 
   let { data }: { data: PageData } = $props();
 
@@ -261,7 +262,40 @@
       ></ImageCard>
     </DashboardContainer>
   </AnimatedScroll>
+</section>
 
+<section class="bg-primary">
+  <AnimatedScroll>
+    <DashboardContainer class="space-y-6">
+      <H2 class="text-center text-white border-white text-6xl">obscurity</H2>
+      <Card.Root class="overflow-x-auto">
+        <Card.Header>
+          <Card.Title class="text-4xl text-primary">
+            Obscurity
+          </Card.Title>
+          <Card.Description>
+            How obscure/unknown the anime you've watched are on average, compared to other users of this site.
+          </Card.Description>
+        </Card.Header>
+        <Card.Content class="inline-flex">
+          <ObscurityBar
+            data={data.insights.popData}
+            x="user_id"
+            y="average_popularity"
+            scoreVariable={data.insights.userPop}
+            colorY1="fill-primary"
+            colorY2="fill-plot-accent"
+            xLabel="Percentile"
+            yLabel="Avg. Popularity"
+            {username}
+          />
+        </Card.Content>
+      </Card.Root>
+    </DashboardContainer>
+  </AnimatedScroll>
+</section>
+
+<section>
   <AnimatedScroll>
     <DashboardContainer>
       <div class="grid grid-cols-2 grid-rows-2 gap-4">

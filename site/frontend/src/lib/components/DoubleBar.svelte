@@ -80,7 +80,6 @@
 				tooltipPosition.target = { x: mouseX - 115, y: mouseY - 100 };
 			} else {
 				tooltipPosition.damping = 0.4;
-				tooltipPosition.target = { x: mouseX + 25, y: mouseY - 100 };
 			}
 			toolUser = `${point[y1]}`;
 			toolAvg = `${point[y2]}`;
@@ -175,15 +174,15 @@
 							{point[x]}
 						</text>
 					</g>
-					<g
-						class="tick"
-						transform="translate({(width + padding.left - padding.right) /
-							2}, {height - 3})"
-					>
-						<text>{xLabel}</text>
-					</g>
 				</g>
 			{/each}
+			<g
+				class="tick"
+				transform="translate({(width + padding.left - padding.right) /
+					2}, {height - 3})"
+			>
+				<text>{xLabel}</text>
+			</g>
 		</g>
 
 		{#if tooltipVisible}
