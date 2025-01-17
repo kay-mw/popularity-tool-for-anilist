@@ -25,8 +25,8 @@
 		username: string;
 	} = $props();
 
-	let width = $state(800);
-	let height = $state(400);
+	let width = $state(913);
+	let height = $state(525);
 	const padding = { top: 20, bottom: 40, left: 130, right: 0 };
 
 	let yMax = $derived(max(data, (d) => +d[y]));
@@ -177,7 +177,7 @@
 						style="text-anchor: middle;"
 						transform="translate({xScale(i)}, {height - 30})"
 					>
-						<text x="17" y="5">
+						<text x={Math.ceil((barWidth * 0.4) / 2)} y="5">
 							{pct}%
 						</text>
 					</g>
@@ -185,8 +185,7 @@
 			{/each}
 			<g
 				class="tick"
-				transform="translate({(width + padding.left - 37) / 2}, {height -
-					1})"
+				transform="translate({(width + padding.left - 37) / 2}, {height - 1})"
 			>
 				<text>{xLabel} →</text>
 			</g>
