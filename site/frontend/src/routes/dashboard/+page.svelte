@@ -138,7 +138,7 @@
               scoreVariable={data.insights.absScoreDiff}
               colorX1="fill-primary"
               colorX2="fill-plot-accent"
-              xLabel="Difference"
+              xLabel="Score Difference"
               diverging={false}
             />
           </Card.Content>
@@ -165,7 +165,7 @@
               scoreVariable={data.insights.avgScoreDiff}
               colorX1="fill-plot-accent"
               colorX2="fill-destructive"
-              xLabel="Positive"
+              xLabel="Positivity"
               diverging={true}
             />
           </Card.Content>
@@ -268,7 +268,7 @@
   <AnimatedScroll>
     <DashboardContainer class="space-y-6">
       <H2 class="text-center text-white border-white text-6xl">obscurity</H2>
-      <Card.Root class="m-auto w-full overflow-x-auto shadow-2xl">
+      <Card.Root class="m-auto w-full md:w-auto overflow-x-auto shadow-2xl">
         <Card.Header>
           <Card.Title class="text-4xl text-primary">
             Obscurity

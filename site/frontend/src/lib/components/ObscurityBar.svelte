@@ -25,8 +25,8 @@
 		username: string;
 	} = $props();
 
-	let width = $state(800);
-	let height = $state(400);
+	let width = $state(913);
+	let height = $state(525);
 	const padding = { top: 20, bottom: 40, left: 130, right: 0 };
 
 	let yMax = $derived(max(data, (d) => +d[y]));
@@ -135,9 +135,9 @@
 			{/each}
 			<g
 				class="tick"
-				transform="translate({10}, {(height - padding.bottom) / 2}) rotate(-90)"
+				transform="translate({10}, {(height - padding.bottom + padding.top) / 2}) rotate(-90)"
 			>
-				<text style="text-anchor: middle;">{yLabel} →</text>
+				<text style="text-anchor: middle;">{yLabel}</text>
 			</g>
 		</g>
 		<g class="bars">
@@ -157,9 +157,9 @@
 					{#if scoreVariable == point[y]}
 						<text
 							class="fill-primary font-bold text-sm md:text-lg"
-							style="text-anchor: middle;"
-							x={xScale(i) + 15}
+							x={xScale(i) + barWidth * 0.2}
 							y={yScale(point[y]) - 10}
+							style="text-anchor: middle;"
 							>{username}
 						</text>
 					{/if}
@@ -174,21 +174,16 @@
 				>
 					<g
 						class="tick"
-						style="text-anchor: middle;"
-						transform="translate({xScale(i)}, {height - 30})"
+						transform="translate({xScale(i) + barWidth * 0.2}, {height - 30})"
 					>
-						<text x="17" y="5">
+						<text x="1" y="5">
 							{pct}%
 						</text>
 					</g>
 				</g>
 			{/each}
-			<g
-				class="tick"
-				transform="translate({(width + padding.left - 37) / 2}, {height -
-					1})"
-			>
-				<text>{xLabel} →</text>
+			<g class="tick" transform="translate({(width + padding.left - barWidth * 0.6) / 2}, {height - 1})">
+				<text>{xLabel}</text>
 			</g>
 		</g>
 		{#if tooltipVisible}
@@ -223,7 +218,6 @@
 
 	.tick text {
 		@apply fill-current text-current font-semibold;
-		text-anchor: start;
 	}
 
 	.tick line {
