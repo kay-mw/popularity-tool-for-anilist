@@ -122,7 +122,7 @@
 						class="fill-primary font-bold text-sm md:text-lg"
 						style="text-anchor: middle;"
 						x={xScale(i) + barWidth * 0.2}
-						y={height - 22}
+						y={height - 28}
 						>{direction} &gt;{percentile}% of Users
 					</text>
 				{/if}
