@@ -248,7 +248,7 @@ def create_genre_data(genre_df: pd.DataFrame) -> list[dict]:
 def create_abs_avg_plot_data(
     format: Literal["anime", "manga"], abs_score_diff: float, avg_score_diff: float
 ) -> tuple[list[dict], list[dict]]:
-    existing_data_path = "./api/existing_user_data.parquet"
+    existing_data_path = f"./api/existing_{format}_data.parquet"
     file_exists = os.path.isfile(existing_data_path)
 
     if file_exists:
@@ -327,7 +327,7 @@ def create_abs_avg_plot_data(
 def create_obscurity_data(
     format: Literal["anime", "manga"], format_df: pd.DataFrame
 ) -> tuple[list[dict], int]:
-    existing_data_path = "./api/existing_pop_data.parquet"
+    existing_data_path = f"./api/existing_{format}_pop_data.parquet"
     file_exists = os.path.isfile(existing_data_path)
     user_pop = int(round(format_df["popularity"].mean()))
 
