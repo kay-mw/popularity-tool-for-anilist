@@ -97,7 +97,7 @@
 				transform="translate({10}, {(height - padding.bottom + padding.top) /
 					2}) rotate(-90)"
 			>
-				<text style="text-anchor: middle;">% of Users →</text>
+				<text style="text-anchor: middle;">% of Users</text>
 			</g>
 		</g>
 		<g class="bars">
@@ -130,18 +130,22 @@
 		</g>
 		<g class="axis x-axis">
 			{#each data as point, i}
-				<g class="text-xs fill-current font-semibold" style="text-anchor: middle;" transform="translate({xScale(i)}, {height - 55})">
-					<text x={diverging ? "5" : "6.5"} y="5">
+				<g
+					class="{data.length > 20 ? "text-xs" : "text-sm"} fill-current font-semibold"
+					style="text-anchor: middle;"
+					transform="translate({xScale(i) + barWidth * 0.2}, {height - 55})"
+				>
+					<text y="5">
 						{point[x]}
 					</text>
 				</g>
 			{/each}
 			<g
 				class="tick"
-				transform="translate({(width + padding.left - padding.right) /
+				transform="translate({(width + padding.left - barWidth * 0.55) /
 					2}, {height - 5})"
 			>
-				<text>{xLabel} →</text>
+				<text>{xLabel}</text>
 			</g>
 		</g>
 	</svg>

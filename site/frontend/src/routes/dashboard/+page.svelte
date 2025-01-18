@@ -138,7 +138,7 @@
               scoreVariable={data.insights.absScoreDiff}
               colorX1="fill-primary"
               colorX2="fill-plot-accent"
-              xLabel="Difference"
+              xLabel="Score Difference"
               diverging={false}
             />
           </Card.Content>
@@ -165,7 +165,7 @@
               scoreVariable={data.insights.avgScoreDiff}
               colorX1="fill-plot-accent"
               colorX2="fill-destructive"
-              xLabel="Positive"
+              xLabel="Positivity"
               diverging={true}
             />
           </Card.Content>
