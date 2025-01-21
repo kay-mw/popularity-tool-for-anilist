@@ -1,6 +1,6 @@
 { pkgs ? import (fetchTarball
-  "https://github.com/NixOS/nixpkgs/archive/6df24922a1400241dae323af55f30e4318a6ca65.tar.gz")
-  { }, extraBuildInputs ? [ ], myPython ? pkgs.python3, extraLibPackages ? [ ]
+  "https://github.com/NixOS/nixpkgs/archive/5df43628fdf08d642be8ba5b3625a6c70731c19c.tar.gz")
+  { }, extraBuildInputs ? [ ], myPython ? pkgs.python313, extraLibPackages ? [ ]
 , pythonWithPkgs ? myPython }:
 
 let
@@ -18,6 +18,9 @@ let
       pkgs.readline
       pkgs.libffi
       pkgs.openssl
+      pkgs.cargo
+      pkgs.rustc
+      pkgs.ninja
 
       # unfortunately needed because of messing with LD_LIBRARY_PATH below
       pkgs.git
