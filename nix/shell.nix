@@ -1,9 +1,9 @@
 let
   pkgs = import (fetchTarball
-    "https://github.com/NixOS/nixpkgs/archive/6df24922a1400241dae323af55f30e4318a6ca65.tar.gz")
+    "https://github.com/NixOS/nixpkgs/archive/5df43628fdf08d642be8ba5b3625a6c70731c19c.tar.gz")
     { };
-  myPython = pkgs.python311;
-  pythonPackages = pkgs.python311Packages;
+  myPython = pkgs.python313;
+  pythonPackages = pkgs.python313Packages;
 
   pythonWithPkgs = myPython.withPackages
     (pythonPkgs: with pythonPkgs; [ ipython debugpy setuptools wheel ]);
@@ -12,7 +12,7 @@ let
     [
       # this list contains packages that you want to be available at runtime and might not be able to be installed properly via pip
       pyodbc
-    ] ++ (with pkgs; [ act nodejs uv ]);
+    ] ++ (with pkgs; [ act bun uv ]);
 in import ./python-shell.nix {
   extraBuildInputs = extraBuildInputs;
   # extraLibPackages = extraLibPackages;

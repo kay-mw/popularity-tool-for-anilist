@@ -9,10 +9,10 @@
   import H1 from "$lib/components/H1.svelte";
   import H3 from "$lib/components/H3.svelte";
 
-  let manga = false;
-  let username = "";
+  let manga = $state(false);
+  let username = $state("");
 
-  $: labelClass = manga ? "text-primary" : "text-current";
+  let labelClass = $derived(manga ? "text-primary" : "text-current");
 </script>
 
 <Container>
