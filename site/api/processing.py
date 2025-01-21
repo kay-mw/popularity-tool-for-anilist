@@ -269,7 +269,8 @@ def create_abs_avg_plot_data(
             query = f"""
                 SELECT {format}_id, user_score, user_id
                 FROM user_{format}_score
-                WHERE end_date IS NULL;
+                WHERE end_date IS NULL 
+                AND start_date IS NOT NULL;
             """
             existing_user_score = pd.read_sql(sql=query, con=connection)
 
