@@ -1,11 +1,12 @@
-FROM node:22 AS build
-
+FROM oven/bun:1 AS base
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json bun.lockb ./
+RUN bun install --frozen-lockfile
 
 COPY . .
-RUN npm run build
+RUN bun --bun run build
 
-CMD node build
+USER bun
+EXPOSE 3000/tcp
+ENTRYPOINT [ "bun", "run", "./build/index.ts" ]

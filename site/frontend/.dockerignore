@@ -1,1 +1,9 @@
 node_modules
+Dockerfile*
+.dockerignore
+Makefile
+helm-charts
+.env
+.editorconfig
+.idea
+coverage*
